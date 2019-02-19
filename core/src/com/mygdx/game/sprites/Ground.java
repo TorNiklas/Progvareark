@@ -15,7 +15,7 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.utils.Box2DBuild;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.mygdx.game.Terrain;
+import com.mygdx.game.TankGame;
 
 import java.util.ArrayList;
 
@@ -30,13 +30,10 @@ public class Ground {
     private World world;
     private Body body;
 
-
     public Ground(World world) {
         this.world = world;
 
-
-
-        //bounds = new Rectangle(com.mygdx.game.Terrain.WIDTH/2 - texture.getWidth()/2, com.mygdx.game.Terrain.HEIGHT/2 - texture.getHeight()/2, texture.getWidth(), texture.getHeight());
+        //bounds = new Rectangle(com.mygdx.game.TankGame.WIDTH/2 - texture.getWidth()/2, com.mygdx.game.TankGame.HEIGHT/2 - texture.getHeight()/2, texture.getWidth(), texture.getHeight());
 
         points = generatePoints(100, 10, 100);
 
@@ -93,8 +90,8 @@ public class Ground {
 
     public Vector2[] generatePoints(int smoothness, int yMin, int yMax) {
         ArrayList<Vector2> v = new ArrayList<Vector2>();
-        for(int i = 0; i < Terrain.WIDTH + smoothness; i+=smoothness) {
-            v.add(new Vector2(i, Terrain.HEIGHT - random(yMin, yMax)));
+        for(int i = 0; i < TankGame.WIDTH + smoothness; i+=smoothness) {
+            v.add(new Vector2(i, TankGame.HEIGHT - random(yMin, yMax)));
         }
         return v.toArray(new Vector2[0]);
     }

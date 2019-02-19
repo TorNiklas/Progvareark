@@ -10,7 +10,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
-import com.mygdx.game.Terrain;
+import com.mygdx.game.TankGame;
 import com.mygdx.game.sprites.Ground;
 import com.mygdx.game.sprites.Tank;
 
@@ -27,7 +27,7 @@ public class PlayState extends State {
 
     public PlayState(GameStateManager gsm) {
         super(gsm);
-        cam.setToOrtho(false, Terrain.WIDTH, Terrain.HEIGHT);
+        cam.setToOrtho(false, TankGame.WIDTH, TankGame.HEIGHT);
         bg = new Texture("bg.png");
 
         tank = new Tank();

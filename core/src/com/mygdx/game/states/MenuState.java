@@ -3,7 +3,7 @@ package com.mygdx.game.states;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.mygdx.game.Terrain;
+import com.mygdx.game.TankGame;
 
 public class MenuState extends State {
     private Texture bg;
@@ -11,7 +11,7 @@ public class MenuState extends State {
 
     public MenuState(GameStateManager gsm) {
         super(gsm);
-        cam.setToOrtho(false, Terrain.WIDTH, Terrain.HEIGHT);
+        cam.setToOrtho(false, TankGame.WIDTH, TankGame.HEIGHT);
         bg = new Texture("bg.png");
         playBtn = new Texture("play.png");
     }

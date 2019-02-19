@@ -3,7 +3,7 @@ package com.mygdx.game.sprites;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
-import com.mygdx.game.Terrain;
+import com.mygdx.game.TankGame;
 
 public class Tank {
     private Vector3 position;
@@ -12,8 +12,8 @@ public class Tank {
 
     public Tank() {
         texture = new Texture("tank.png");
-        position = new Vector3(Terrain.WIDTH/2 - texture.getWidth()/2, Terrain.HEIGHT/2 - texture.getHeight()/2, 0);
-        bounds = new Rectangle(Terrain.WIDTH/2 - texture.getWidth()/2, Terrain.HEIGHT/2 - texture.getHeight()/2, texture.getWidth(), texture.getHeight());
+        position = new Vector3(TankGame.WIDTH/2 - texture.getWidth()/2, TankGame.HEIGHT/2 - texture.getHeight()/2, 0);
+        bounds = new Rectangle(TankGame.WIDTH/2 - texture.getWidth()/2, TankGame.HEIGHT/2 - texture.getHeight()/2, texture.getWidth(), texture.getHeight());
     }
 
     public void update(float dt){

@@ -8,10 +8,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.mygdx.game.states.GameStateManager;
 import com.mygdx.game.states.MenuState;
 
-public class Terrain extends ApplicationAdapter {
+public class TankGame extends ApplicationAdapter {
 	public static final int WIDTH = 1280;
 	public static final int HEIGHT = 720;
-	public static final String TITLE = "Terrain";
+	public static final String TITLE = "Tank_title";
 
 	private GameStateManager gsm;
 	private SpriteBatch batch;
