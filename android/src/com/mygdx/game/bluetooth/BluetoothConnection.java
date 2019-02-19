@@ -6,27 +6,18 @@ import android.content.Intent;
 
 import com.mygdx.game.BTInterface;
 
-public class BluetoothConnection extends Activity implements BTInterface {
-
-    public BluetoothAdapter getAdapter() {
-        BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
-        if (adapter == null) {
-            //IKKENO BT
-        }
-        if (!adapter.isEnabled()) {
-            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            this.startActivityForResult(enableBtIntent, 0);
-        }
-        return adapter;
-    }
+public class BluetoothConnection implements BTInterface {
 
     @Override
     public void startHost() {
+        System.out.println("BLUETOOTH CONNECTION LOL");
+        (new HostConnection()).startHost();
 
     }
 
     @Override
     public void startClient() {
-
+        System.out.println("BLUETOOTH CONNECTION LOL");
+        (new ClientConnection()).startClient();
     }
 }
