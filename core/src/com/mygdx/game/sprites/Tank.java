@@ -1,11 +1,12 @@
 package com.mygdx.game.sprites;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.mygdx.game.TankGame;
 
-public class Tank {
+public class Tank implements GameSprite {
     private Vector3 position;
     private Rectangle bounds;
     private Texture texture;
@@ -32,8 +33,13 @@ public class Tank {
         return bounds;
     }
 
+    @Override
     public void dispose(){
         texture.dispose();
     }
 
+    @Override
+    public void draw(SpriteBatch batch) {
+        batch.draw(texture, position.x, position.y);
+    }
 }

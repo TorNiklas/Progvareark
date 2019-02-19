@@ -13,8 +13,8 @@ public class TankGame extends ApplicationAdapter {
 	public static final int HEIGHT = 720;
 	public static final String TITLE = "Tank_title";
 
-	private GameStateManager gsm;
-	private SpriteBatch batch;
+	private static GameStateManager gsm;
+	private static SpriteBatch batch;
 
 	@Override
 	public void create () {
