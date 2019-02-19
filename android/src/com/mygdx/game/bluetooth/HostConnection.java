@@ -27,7 +27,7 @@ public class HostConnection extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
-
+            System.out.println("BT FUNKA LOL");
         }
     }
 }
