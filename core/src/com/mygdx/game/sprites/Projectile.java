@@ -24,6 +24,7 @@ public class Projectile implements GameSprite {
     public void update(){
         position.add(velocity.x, velocity.y, 0);
         bounds.setPosition(position.x, position.y);
+        velocity.y -= 1;
     }
 
     public void setVelocity(Vector3 velocity) {
