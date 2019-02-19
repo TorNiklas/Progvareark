@@ -15,6 +15,15 @@ public class TankGame extends ApplicationAdapter {
 
 	private static GameStateManager gsm;
 	private static SpriteBatch batch;
+	private static BTInterface bluetooth;
+
+	public TankGame(BTInterface bluetoothCon) {
+		bluetooth = bluetoothCon;
+	}
+
+	public static BTInterface getBluetooth() {
+		return bluetooth;
+	}
 
 	@Override
 	public void create () {
