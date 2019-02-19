@@ -19,7 +19,7 @@ public class MenuState extends State {
     @Override
     public void handleInput() {
         if(Gdx.input.justTouched()){
-            //TankGame.getBluetooth().startHost();
+            TankGame.getBluetooth().startHost();
 
             gsm.set(new PlayState(gsm));
         }
