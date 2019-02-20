@@ -65,6 +65,15 @@ public class PlayState extends State {
         if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             gsm.push(new MenuState(gsm));
         }
+
+        if(Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
+            ((Tank)gameSprites.get(0)).drive(new Vector2(-50f, -5f));
+        }
+
+        if(Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
+            ((Tank)gameSprites.get(0)).drive(new Vector2(50f, -5f));
+        }
+
     }
 
     @Override

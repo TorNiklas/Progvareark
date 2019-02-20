@@ -35,7 +35,7 @@ public class Projectile implements GameSprite {
         body.applyLinearImpulse(impulse, new Vector2(x, y), true);
     }
 
-    public void generateProjectile(World world, Vector2 pos) {
+    private void generateProjectile(World world, Vector2 pos) {
         // body definition
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
