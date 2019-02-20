@@ -10,6 +10,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.ChainShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
@@ -22,76 +23,49 @@ import java.util.ArrayList;
 import static com.badlogic.gdx.math.MathUtils.random;
 
 public class Ground {
-    private Vector2[] points;
     private Vector3 position;
     private Rectangle bounds;
     private Texture texture;
-    private int smoothness;
-    private World world;
-    private Body body;
 
     public Ground(World world) {
-        this.world = world;
+        position = new Vector3(0,0, 0);
 
-        //bounds = new Rectangle(com.mygdx.game.TankGame.WIDTH/2 - texture.getWidth()/2, com.mygdx.game.TankGame.HEIGHT/2 - texture.getHeight()/2, texture.getWidth(), texture.getHeight());
+        // generate random points
+        Vector2[] points = generatePoints(75, 30, 100);
 
-        points = generatePoints(100, 10, 100);
-
-        Pixmap pixmap = new Pixmap(1280, 720, Pixmap.Format.RGBA8888);
-        pixmap.setColor(Color.FOREST);
-
-        for(int i = 0; i < points.length; i++) {
-            Vector2 v0 = points[i];
-            Vector2 v1 = (i+1 < points.length) ? points[i+1] : v0;
-
-            pixmap.drawLine((int)v0.x, (int)v0.y, (int)v1.x, (int)v1.y);
-
-            //System.out.println(v0.x + ", " + v0.y);
-            //System.out.println(v1.x + ", " + v1.y);
-        }
-
-        texture = new Texture(pixmap);
-        position = new Vector3(0,10, 0); //Terrain.WIDTH/2 - texture.getWidth()/2
-
-        makeBody();
-
-        pixmap.dispose();
-
+        // generate ground
+        generateGround(world, points);
 
     }
 
-    public void makeBody() {
+    public void generateGround(World world, Vector2[] points) {
+        // body definition
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.StaticBody;
-        bodyDef.position.x = 0;
-        bodyDef.position.y = 0;
+        bodyDef.position.set(0, 0);
 
+        // create shape
+        ChainShape shape = new ChainShape();
+        shape.createChain(points);
 
+        // create fixture
         FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = new PolygonShape();
-        //((PolygonShape) fixtureDef.shape).set(points);
+        fixtureDef.shape = shape;
+        fixtureDef.friction = 0.5f;
+        fixtureDef.restitution = 0f;
 
-        body = world.createBody(bodyDef);
+        // add body to world and attach fixture
+        Body body = world.createBody(bodyDef);
         body.createFixture(fixtureDef);
-    }
 
-    public Pixmap makePixmap() {
-        Pixmap pixmap = new Pixmap(10, 10, Pixmap.Format.RGBA8888);
-        pixmap.setColor(Color.FOREST);
-        return pixmap;
-
-    }
-
-    public void drawTerrain(Pixmap pixmap, Vector2[] vectors) {
-        for(Vector2 v : vectors) {
-            pixmap.drawPixel((int)v.x, (int)v.y);
-        }
+        // clean up
+        shape.dispose();
     }
 
     public Vector2[] generatePoints(int smoothness, int yMin, int yMax) {
         ArrayList<Vector2> v = new ArrayList<Vector2>();
         for(int i = 0; i < TankGame.WIDTH + smoothness; i+=smoothness) {
-            v.add(new Vector2(i, TankGame.HEIGHT - random(yMin, yMax)));
+            v.add(new Vector2(i, random(yMin, yMax)));
         }
         return v.toArray(new Vector2[0]);
     }

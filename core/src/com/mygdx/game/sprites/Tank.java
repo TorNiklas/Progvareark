@@ -1,46 +1,114 @@
 package com.mygdx.game.sprites;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.World;
 import com.mygdx.game.TankGame;
 
 public class Tank implements GameSprite {
     private Vector3 position;
-    private Rectangle bounds;
-    private Texture texture;
+    private Sprite tankSprite;
+    private Sprite barrelSprite;
+    private Body body;
 
-    public Tank() {
-        texture = new Texture("tank.png");
-        position = new Vector3(TankGame.WIDTH/2 - texture.getWidth()/2, TankGame.HEIGHT/2 - texture.getHeight()/2, 0);
-        bounds = new Rectangle(TankGame.WIDTH/2 - texture.getWidth()/2, TankGame.HEIGHT/2 - texture.getHeight()/2, texture.getWidth(), texture.getHeight());
+    public Tank(World world, int x, int y) {
+        // tank sprite
+        tankSprite = new Sprite(new Texture("tank.png"));
+        tankSprite.setPosition(x, y);
+        tankSprite.setOriginCenter();
+
+        // barrel sprite
+        barrelSprite = new Sprite(new Texture("barrel.png"));
+        barrelSprite.setOrigin(0f, barrelSprite.getHeight()/2);
+
+        // create box2d tank
+        generateTank(world, new Vector2(tankSprite.getX(), tankSprite.getY()));
+    }
+
+    public void generateTank(World world, Vector2 pos) {
+        // body definition
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        bodyDef.position.set(pos.x, pos.y);
+
+        // create shapes
+        PolygonShape tankShape = new PolygonShape();
+        tankShape.setAsBox(tankSprite.getWidth()/2, tankSprite.getHeight()/2);
+
+        PolygonShape barrelShape = new PolygonShape();
+        barrelShape.setAsBox(barrelSprite.getWidth()/2, barrelSprite.getHeight()/4, new Vector2(8f, 4f), 0f);
+
+        // create fixtures
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.density = 2.5f;
+        fixtureDef.friction = 0.7f;
+        fixtureDef.restitution = 0.2f;
+
+        // add body to world
+        body = world.createBody(bodyDef);
+
+        // attach fixtures
+        fixtureDef.shape = tankShape;
+        body.createFixture(fixtureDef);
+
+        fixtureDef.shape = barrelShape;
+        body.createFixture(fixtureDef);
+
+        // clean up
+        tankShape.dispose();
+        barrelShape.dispose();
     }
 
     @Override
     public void update(){
+        // tank
+        tankSprite.setPosition(body.getPosition().x - tankSprite.getWidth()/2, body.getPosition().y - tankSprite.getHeight()/2);
+        tankSprite.setRotation(body.getAngle() * MathUtils.radiansToDegrees);
 
+        // barrel
+        barrelSprite.setPosition(body.getPosition().x - barrelSprite.getWidth()/2 + 8f, body.getPosition().y - barrelSprite.getHeight()/2 + 4f);
+        rotateBarrel();
     }
 
     public Vector3 getPosition() {
         return position;
     }
 
-    public Texture getTexture() {
-        return texture;
+    public void rotateBarrel() {
+        int pointerX = Gdx.input.getX();
+        int pointerY = -(Gdx.input.getY() - TankGame.HEIGHT);
+
+        float deg = (float) Math.atan2(pointerY - body.getPosition().y, pointerX - body.getPosition().x) * MathUtils.radiansToDegrees;
+        barrelSprite.setRotation(deg);
     }
 
-    public Rectangle getBounds() {
-        return bounds;
+    public GameSprite fireProjectile(World world, int pointerX, int pointerY) {
+        float forceX = pointerX - body.getPosition().x;
+        float forceY = -(pointerY - TankGame.HEIGHT) - body.getPosition().y;
+
+        return new Projectile(world, body.getPosition().x, body.getPosition().y + tankSprite.getHeight()/2, new Vector2(forceX, forceY));
     }
 
     @Override
     public void dispose(){
-        texture.dispose();
+
     }
 
     @Override
     public void draw(SpriteBatch batch) {
-        batch.draw(texture, position.x, position.y);
+        barrelSprite.draw(batch);
+        tankSprite.draw(batch);
     }
 }
