@@ -16,14 +16,14 @@ import com.mygdx.game.sprites.Projectile;
 import com.mygdx.game.sprites.Tank;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class PlayState extends State {
     private Texture bg;
-    private ArrayList<GameSprite> gameSprites;
-    private World world;
+    private static ArrayList<GameSprite> gameSprites;
+    private static World world;
     private Box2DDebugRenderer debugRenderer;
     private Ground ground;
-    private BTInterface btInterface;
 
     public PlayState(GameStateManager gsm) {
         super(gsm);
@@ -39,26 +39,24 @@ public class PlayState extends State {
         gameSprites.add(new Tank(world, 500, 110));
 
         ground = new Ground(world);
-
     }
 
-    public void onConnected(boolean isHost) {
-        System.out.println("Connected!");
-    }
-
-    public void onDisconnect() {
-        System.out.println("Disconnected!");
-    }
-
-    public void setBluetoothInterface(BTInterface btInterface) {
-        this.btInterface = btInterface;
+    public static void fire(int x, int y) {
+        System.out.println("FIRING " + x + "-" + y);
+        gameSprites.add(((Tank)gameSprites.get(0)).fireProjectile(world, x, y));
     }
 
     @Override
     protected void handleInput() {
         if(Gdx.input.justTouched()) {
             System.out.println("FIRE!");
-            gameSprites.add(((Tank)gameSprites.get(0)).fireProjectile(world, Gdx.input.getX(), Gdx.input.getY()));
+            //gameSprites.add(((Tank)gameSprites.get(0)).fireProjectile(world, Gdx.input.getX(), Gdx.input.getY()));
+            int x = Gdx.input.getX();
+            int y = Gdx.input.getY();
+            fire(x,y);
+            Integer[] send = { x, y };
+            TankGame.getBluetooth().writeObject(send);
+            //TankGame.getBluetooth().writeObject("FIRE");
         }
 
         // for testing purposes
@@ -79,8 +77,14 @@ public class PlayState extends State {
     @Override
     public void update(float dt) {
         handleInput();
-        for (GameSprite gs : gameSprites) {
+        /*for (GameSprite gs : gameSprites) {
             gs.update();
+        }*/
+        /*for (Iterator<GameSprite> it = gameSprites.iterator(); it.hasNext();) {
+            it.next().update();
+        }*/
+        for (int i = 0; i < gameSprites.size(); i++) {
+            gameSprites.get(i).update();
         }
     }
 
@@ -89,13 +93,19 @@ public class PlayState extends State {
         sb.setProjectionMatrix(cam.combined);
         sb.begin();
         //sb.draw(bg, 0,0, 1280, 720);
-        for (GameSprite gs : gameSprites) {
-            gs.draw(sb);
+        /*for (Iterator<GameSprite> it = gameSprites.iterator(); it.hasNext();) {
+            it.next().draw(sb);
+        }*/
+        for (int i = 0; i < gameSprites.size(); i++) {
+            gameSprites.get(i).draw(sb);
         }
+        /*for (GameSprite gs : gameSprites) {
+            gs.draw(sb);
+        }*/
         sb.end();
 
         // box-2d
-        debugRenderer.render(world, cam.combined);
+        //debugRenderer.render(world, cam.combined);
         world.step(1/60f, 6, 2);
     }
 
@@ -104,8 +114,11 @@ public class PlayState extends State {
         bg.dispose();
         world.dispose();
         debugRenderer.dispose();
-        for (GameSprite gs : gameSprites) {
+        /*for (GameSprite gs : gameSprites) {
             gs.dispose();
+        }*/
+        for (Iterator<GameSprite> it = gameSprites.iterator(); it.hasNext();) {
+            it.next().dispose();
         }
     }
 }

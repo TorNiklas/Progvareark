@@ -20,8 +20,27 @@ public class MenuState extends State {
     public void handleInput() {
         if(Gdx.input.justTouched()){
             //TankGame.getBluetooth().startHost();
-            gsm.set(new PlayState(gsm));
+            if (Gdx.input.getX() > Gdx.graphics.getWidth() / 2 && Gdx.input.getY() > Gdx.graphics.getHeight() / 2) {
+                System.out.println("HOST");
+                TankGame.getBluetooth().startHost();
+            }
+            else if (Gdx.input.getX() < Gdx.graphics.getWidth() / 2 && Gdx.input.getY() > Gdx.graphics.getHeight() / 2) {
+                System.out.println("CLIENT");
+                TankGame.getBluetooth().startClient();
+            }
+            else {
+                gsm.set(new PlayState(gsm));
+            }
         }
+    }
+
+    public static void onConnected(boolean isHost) {
+        System.out.println("Connected!");
+        gsm.set(new PlayState(gsm));
+    }
+
+    public static void onDisconnect() {
+        System.out.println("Disconnected!");
     }
 
     @Override
