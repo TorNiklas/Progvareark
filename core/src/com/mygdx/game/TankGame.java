@@ -13,7 +13,6 @@ public class TankGame extends ApplicationAdapter {
 	public static final int HEIGHT = 720;
 	public static final String TITLE = "Tank_title";
 
-	private static GameStateManager gsm;
 	private static SpriteBatch batch;
 	private static BTInterface bluetooth;
 
@@ -28,16 +27,15 @@ public class TankGame extends ApplicationAdapter {
 	@Override
 	public void create () {
         batch = new SpriteBatch();
-		gsm = new GameStateManager();
 		Gdx.gl.glClearColor(0, 0, 0, 1);
-		gsm.push(new MenuState(gsm));
+		GameStateManager.getGsm().push(new MenuState(/*gsm*/));
 	}
 
 	@Override
 	public void render () {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		gsm.update(Gdx.graphics.getDeltaTime());
-		gsm.render(batch);
+		GameStateManager.getGsm().update(Gdx.graphics.getDeltaTime());
+		GameStateManager.getGsm().render(batch);
 	}
 
 	@Override
