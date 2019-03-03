@@ -31,7 +31,7 @@ public class Ground {
         position = new Vector3(0,0, 0);
 
         // generate random points
-        Vector2[] points = generatePoints(75, 30, 100);
+        Vector2[] points = generatePoints(75, 100, 170);
 
         // generate ground
         generateGround(world, points);

@@ -22,6 +22,7 @@ public class Tank implements GameSprite {
     private Sprite tankSprite;
     private Sprite barrelSprite;
     private Body body;
+    private boolean isStopped;
 
     public Tank(World world, int x, int y) {
         // tank sprite
@@ -35,6 +36,8 @@ public class Tank implements GameSprite {
 
         // create box2d tank
         generateTank(world, new Vector2(tankSprite.getX(), tankSprite.getY()));
+
+        isStopped = true;
     }
 
     public void generateTank(World world, Vector2 pos) {
@@ -94,11 +97,30 @@ public class Tank implements GameSprite {
         barrelSprite.setRotation(deg);
     }
 
+    public void moveLeft() {
+        isStopped = false;
+        body.setLinearVelocity(new Vector2(-1000, -10));
+    }
+
+    public void moveRight() {
+        isStopped = false;
+        body.setLinearVelocity(new Vector2(1000, -10));
+    }
+
+    public void stop() {
+        isStopped = true;
+        body.setLinearVelocity(new Vector2(0, 0));
+    }
+
     public GameSprite fireProjectile(World world, int pointerX, int pointerY) {
         float forceX = pointerX - body.getPosition().x;
         float forceY = -(pointerY - TankGame.HEIGHT) - body.getPosition().y;
 
         return new Projectile(world, body.getPosition().x, body.getPosition().y + tankSprite.getHeight()/2, new Vector2(forceX, forceY));
+    }
+
+    public Body getBody() {
+        return body;
     }
 
     @Override

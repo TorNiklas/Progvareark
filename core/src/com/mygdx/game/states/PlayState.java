@@ -2,6 +2,7 @@ package com.mygdx.game.states;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -10,6 +11,7 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.mygdx.game.BTInterface;
 import com.mygdx.game.TankGame;
+import com.mygdx.game.sprites.GUI;
 import com.mygdx.game.sprites.GameSprite;
 import com.mygdx.game.sprites.Ground;
 import com.mygdx.game.sprites.Projectile;
@@ -24,6 +26,7 @@ public class PlayState extends State {
     private Box2DDebugRenderer debugRenderer;
     private Ground ground;
     private BTInterface btInterface;
+    private GUI gui;
 
     public PlayState(GameStateManager gsm) {
         super(gsm);
@@ -36,9 +39,13 @@ public class PlayState extends State {
         debugRenderer = new Box2DDebugRenderer();
 
         gameSprites = new ArrayList<GameSprite>();
-        gameSprites.add(new Tank(world, 500, 110));
+        gameSprites.add(new Tank(world, 500, 170));
 
         ground = new Ground(world);
+
+
+        // test simple gui
+        gui = new GUI((Tank)gameSprites.get(0));
 
     }
 
@@ -56,6 +63,7 @@ public class PlayState extends State {
 
     @Override
     protected void handleInput() {
+        /*
         if(Gdx.input.justTouched()) {
             System.out.println("FIRE!");
             gameSprites.add(((Tank)gameSprites.get(0)).fireProjectile(world, Gdx.input.getX(), Gdx.input.getY()));
@@ -65,6 +73,7 @@ public class PlayState extends State {
         if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             gsm.push(new MenuState(gsm));
         }
+        */
     }
 
     @Override
@@ -79,6 +88,7 @@ public class PlayState extends State {
     public void render(SpriteBatch sb) {
         sb.setProjectionMatrix(cam.combined);
         sb.begin();
+        gui.draw(sb);
         //sb.draw(bg, 0,0, 1280, 720);
         for (GameSprite gs : gameSprites) {
             gs.draw(sb);
@@ -94,6 +104,7 @@ public class PlayState extends State {
     public void dispose() {
         bg.dispose();
         world.dispose();
+        gui.dispose();
         debugRenderer.dispose();
         for (GameSprite gs : gameSprites) {
             gs.dispose();
