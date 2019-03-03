@@ -38,7 +38,7 @@ public class Ground {
 
     }
 
-    public void generateGround(World world, Vector2[] points) {
+    private void generateGround(World world, Vector2[] points) {
         // body definition
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.StaticBody;

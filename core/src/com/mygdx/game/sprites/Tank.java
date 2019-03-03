@@ -40,7 +40,7 @@ public class Tank implements GameSprite {
         isStopped = true;
     }
 
-    public void generateTank(World world, Vector2 pos) {
+    private void generateTank(World world, Vector2 pos) {
         // body definition
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -89,7 +89,7 @@ public class Tank implements GameSprite {
         return position;
     }
 
-    public void rotateBarrel() {
+    private void rotateBarrel() {
         int pointerX = Gdx.input.getX();
         int pointerY = -(Gdx.input.getY() - TankGame.HEIGHT);
 
@@ -117,6 +117,10 @@ public class Tank implements GameSprite {
         float forceY = -(pointerY - TankGame.HEIGHT) - body.getPosition().y;
 
         return new Projectile(world, body.getPosition().x, body.getPosition().y + tankSprite.getHeight()/2, new Vector2(forceX, forceY));
+    }
+
+    public void drive(Vector2 force) {
+        body.setLinearVelocity(force);
     }
 
     public Body getBody() {

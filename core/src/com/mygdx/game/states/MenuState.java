@@ -9,8 +9,8 @@ public class MenuState extends State {
     private Texture bg;
     private Texture playBtn;
 
-    public MenuState(GameStateManager gsm) {
-        super(gsm);
+    public MenuState(/*GameStateManager gsm*/) {
+        super(/*gsm*/);
         cam.setToOrtho(false, TankGame.WIDTH, TankGame.HEIGHT);
         bg = new Texture("bg.png");
         playBtn = new Texture("play.png");
@@ -20,8 +20,27 @@ public class MenuState extends State {
     public void handleInput() {
         if(Gdx.input.justTouched()){
             //TankGame.getBluetooth().startHost();
-            gsm.set(new PlayState(gsm));
+            if (Gdx.input.getX() > Gdx.graphics.getWidth() / 2 && Gdx.input.getY() > Gdx.graphics.getHeight() / 2) {
+                System.out.println("HOST");
+                TankGame.getBluetooth().startHost();
+            }
+            else if (Gdx.input.getX() < Gdx.graphics.getWidth() / 2 && Gdx.input.getY() > Gdx.graphics.getHeight() / 2) {
+                System.out.println("CLIENT");
+                TankGame.getBluetooth().startClient();
+            }
+            else {
+                GameStateManager.getGsm().set(new PlayState(/*gsm*/));
+            }
         }
+    }
+
+    public static void onConnected(boolean isHost) {
+        System.out.println("Connected!");
+        GameStateManager.getGsm().set(new PlayState(/*gsm*/));
+    }
+
+    public static void onDisconnect() {
+        System.out.println("Disconnected!");
     }
 
     @Override
