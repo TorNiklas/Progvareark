@@ -63,6 +63,8 @@ public class AndroidLauncher extends AndroidApplication implements BTInterface {
 		registerReceiver(receiver, filter3);
 
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
+		config.useAccelerometer = false;
+		config.useCompass = false;
 		initialize(new TankGame(this), config);
 	}
 
