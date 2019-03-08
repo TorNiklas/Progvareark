@@ -54,6 +54,8 @@ public class PlayState extends State {
     private TextButton decreaseElevation;
     private int deg = 0;
     private int aimRate = 5;
+    private boolean isIncreasing;
+    private boolean isDecreasing;
 
     public PlayState(/*GameStateManager gsm*/) {
         super(/*gsm*/);
@@ -84,6 +86,7 @@ public class PlayState extends State {
         stage.addActor(increaseElevation);
         stage.addActor(decreaseElevation);
         Gdx.input.setInputProcessor(stage);
+
         button.addListener(new EventListener() {
             @Override
             public boolean handle(Event event) {
@@ -105,18 +108,21 @@ public class PlayState extends State {
         });
         increaseElevation.addListener(new InputListener() {
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                deg-=aimRate;
-                System.out.println(deg);
-                ((Tank)gameSprites.get(0)).updateBarrel(deg);
+                isIncreasing = true;
                 return true;
+            }
+            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+                isIncreasing = false;
             }
         });
         decreaseElevation.addListener(new InputListener() {
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                deg+=aimRate;
-                System.out.println(deg);
-                ((Tank)gameSprites.get(0)).updateBarrel(deg);
+
+                isDecreasing = true;
                 return true;
+            }
+            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+                isDecreasing = false;
             }
         });
         // init box2d world
@@ -169,6 +175,15 @@ public class PlayState extends State {
         }*/
         for (int i = 0; i < gameSprites.size(); i++) {
             gameSprites.get(i).update();
+        }
+
+        if(isIncreasing || isDecreasing) {
+            if (isIncreasing) {
+                deg -= aimRate;
+            } else {
+                deg += aimRate;
+            }
+            ((Tank) gameSprites.get(0)).updateBarrel(deg);
         }
     }
 
