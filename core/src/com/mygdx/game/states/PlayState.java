@@ -145,16 +145,12 @@ public class PlayState extends State {
                 // start pos
                 Vector2 pos = ((Tank)gameSprites.get(0)).getBarrelPosition();
 
-                // prevent clipping
-                //pos.x += gameSprites.get(0).getSprite().getWidth();
-                //pos.y += gameSprites.get(0).getSprite().getHeight();
-
                 // exit velocity
                 Vector2 velocity = new Vector2(vectorX * 1000f, vectorY * 1000f);
+                fireFromPool(pos, velocity);
 
                 System.out.println(pos.x + " - " + pos.y);
                 System.out.println(velocity.x + " - " + velocity.y);
-                fireFromPool(pos, velocity);
 
                 // Integer[] send = { x, y };
                 // TankGame.getBluetooth().writeObject(send);

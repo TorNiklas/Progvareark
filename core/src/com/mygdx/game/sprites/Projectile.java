@@ -103,7 +103,7 @@ public class Projectile implements GameSprite, Pool.Poolable {
     }
 
     public boolean inactiveBody() {
-        return !(body.isAwake() && body.isActive());
+        return !(body.isAwake() && body.getLinearVelocity().len() > 0.05f);
     }
 
     @Override
