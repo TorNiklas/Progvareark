@@ -88,16 +88,16 @@ public class PlayState extends State {
                 ground = new Ground(world, 10, 30, 100, 10, Color.FOREST);
                 break;
 
-            // desert level
-            case 2:
-                spawnHeight = 70;
-                ground = new Ground(world, 10, 30, 70, 10, Color.GOLDENROD);
-                break;
-
             // snow level
-            case 3:
+            case 2:
                 spawnHeight = 200;
                 ground = new Ground(world, 10, 30, 200, 10, Color.WHITE);
+                break;
+
+            // desert level
+            case 3:
+                spawnHeight = 70;
+                ground = new Ground(world, 10, 30, 70, 10, Color.GOLDENROD);
                 break;
 
             // default to forest
