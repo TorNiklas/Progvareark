@@ -4,10 +4,18 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.Event;
+import com.badlogic.gdx.scenes.scene2d.EventListener;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.mygdx.game.BTInterface;
 import com.mygdx.game.TankGame;
 import com.mygdx.game.sprites.GameSprite;
@@ -25,11 +33,29 @@ public class PlayState extends State {
     private Box2DDebugRenderer debugRenderer;
     private Ground ground;
 
+    private Texture leftBtn;
+    private Drawable drawable;
+    private Stage stage;
+    private ImageButton button;
+
     public PlayState(/*GameStateManager gsm*/) {
         super(/*gsm*/);
         cam.setToOrtho(false, TankGame.WIDTH, TankGame.HEIGHT);
         bg = new Texture("bg.png");
 
+        leftBtn = new Texture("play.png");
+        drawable = new TextureRegionDrawable(new TextureRegion(leftBtn));
+        button = new ImageButton(drawable);
+        stage = new Stage(new ScreenViewport());
+        stage.addActor(button);
+        Gdx.input.setInputProcessor(stage);
+        button.addListener(new EventListener() {
+            @Override
+            public boolean handle(Event event) {
+                System.out.println("Pressed button");
+                return true;
+            }
+        });
         // init box2d world
         Box2D.init();
         world = new World(new Vector2(0, -50f), true);
@@ -104,6 +130,8 @@ public class PlayState extends State {
         }*/
         sb.end();
 
+        stage.act(Gdx.graphics.getDeltaTime());
+        stage.draw();
         // box-2d
         //debugRenderer.render(world, cam.combined);
         world.step(1/60f, 6, 2);
