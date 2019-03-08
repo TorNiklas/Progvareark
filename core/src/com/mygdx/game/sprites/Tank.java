@@ -107,7 +107,8 @@ public class Tank implements GameSprite {
 
     @Override
     public void dispose(){
-
+        tankSprite.getTexture().dispose();
+        barrelSprite.getTexture().dispose();
     }
 
     @Override

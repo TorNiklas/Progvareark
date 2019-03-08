@@ -2,7 +2,9 @@ package com.mygdx.game.states;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -33,38 +35,78 @@ public class PlayState extends State {
     private Box2DDebugRenderer debugRenderer;
     private Ground ground;
 
-    private Texture leftBtn;
-    private Drawable drawable;
     private Stage stage;
-    private ImageButton button;
+    private ImageButton leftBtn;
+    private ImageButton rightBtn;
 
-    public PlayState(/*GameStateManager gsm*/) {
+    public PlayState(/*GameStateManager gsm*/int level) {
         super(/*gsm*/);
         cam.setToOrtho(false, TankGame.WIDTH, TankGame.HEIGHT);
         bg = new Texture("bg.png");
 
-        leftBtn = new Texture("play.png");
-        drawable = new TextureRegionDrawable(new TextureRegion(leftBtn));
-        button = new ImageButton(drawable);
+        Texture buttons = new Texture("buttons.png");
+        Drawable rightBtnDrawable = new TextureRegionDrawable(new TextureRegion(buttons, 100,0,100,100));
+        Drawable leftBtnDrawable = new TextureRegionDrawable(new TextureRegion(buttons, 0,0,100,100));
+        leftBtn = new ImageButton(leftBtnDrawable);
+        rightBtn = new ImageButton(rightBtnDrawable);
+        rightBtn.setPosition(150, 0);
         stage = new Stage(new ScreenViewport());
-        stage.addActor(button);
+        stage.addActor(leftBtn);
+        stage.addActor(rightBtn);
         Gdx.input.setInputProcessor(stage);
-        button.addListener(new EventListener() {
+        //Button event handlers, should probably not be here
+        leftBtn.addListener(new EventListener() {
             @Override
             public boolean handle(Event event) {
-                System.out.println("Pressed button");
+                System.out.println("Pressed left button");
+                ((Tank)gameSprites.get(0)).drive(new Vector2(-50f, -5f));
                 return true;
             }
         });
+        rightBtn.addListener(new EventListener() {
+            @Override
+            public boolean handle(Event event) {
+                System.out.println("Pressed right button");
+                ((Tank)gameSprites.get(0)).drive(new Vector2(50f, -5f));
+                return true;
+            }
+        });
+
         // init box2d world
         Box2D.init();
         world = new World(new Vector2(0, -50f), true);
         debugRenderer = new Box2DDebugRenderer();
 
         gameSprites = new ArrayList<GameSprite>();
-        gameSprites.add(new Tank(world, 500, 110));
+        int spawnHeight = 100;
 
-        ground = new Ground(world);
+        // eeh way to do this, but
+        switch (level) {
+            // forest level
+            case 1:
+                spawnHeight = 100;
+                ground = new Ground(world, 10, 30, 100, 10, Color.FOREST);
+                break;
+
+            // snow level
+            case 2:
+                spawnHeight = 200;
+                ground = new Ground(world, 10, 30, 200, 10, Color.WHITE);
+                break;
+
+            // desert level
+            case 3:
+                spawnHeight = 70;
+                ground = new Ground(world, 10, 30, 70, 10, Color.GOLDENROD);
+                break;
+
+            // default to forest
+            default:
+                ground = new Ground(world, 10, 30, 100, 10, Color.FOREST);
+        }
+
+        gameSprites.add(new Tank(world, 500, spawnHeight));
+
     }
 
     public static void fire(int x, int y) {
@@ -115,10 +157,10 @@ public class PlayState extends State {
     }
 
     @Override
-    public void render(SpriteBatch sb) {
+    public void render(SpriteBatch sb, PolygonSpriteBatch psb) {
         sb.setProjectionMatrix(cam.combined);
         sb.begin();
-        //sb.draw(bg, 0,0, 1280, 720);
+        sb.draw(bg, 0,0, 1280, 720);
         /*for (Iterator<GameSprite> it = gameSprites.iterator(); it.hasNext();) {
             it.next().draw(sb);
         }*/
@@ -130,6 +172,12 @@ public class PlayState extends State {
         }*/
         sb.end();
 
+        // ground terrain
+        psb.begin();
+        ground.draw(psb);
+        psb.end();
+
+        //stage for buttons
         stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();
         // box-2d
