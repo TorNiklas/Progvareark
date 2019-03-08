@@ -3,7 +3,9 @@ package com.mygdx.game.states;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2D;
@@ -11,8 +13,12 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -37,6 +43,10 @@ public class PlayState extends State {
     private Drawable drawable;
     private Stage stage;
     private ImageButton button;
+    private TextButton fireButton;
+    Skin skin;
+    private int aimedX;
+    private int aimedY;
 
     public PlayState(/*GameStateManager gsm*/) {
         super(/*gsm*/);
@@ -46,14 +56,30 @@ public class PlayState extends State {
         leftBtn = new Texture("play.png");
         drawable = new TextureRegionDrawable(new TextureRegion(leftBtn));
         button = new ImageButton(drawable);
+
+        skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
+
+        fireButton = new TextButton("Fire!", skin);
+        fireButton.setSize(Gdx.graphics.getWidth() / 20,Gdx.graphics.getHeight() / 10);
+        fireButton.setPosition(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()-200);
+
         stage = new Stage(new ScreenViewport());
         stage.addActor(button);
+        stage.addActor(fireButton);
         Gdx.input.setInputProcessor(stage);
         button.addListener(new EventListener() {
             @Override
             public boolean handle(Event event) {
                 System.out.println("Pressed button");
                 return true;
+            }
+        });
+        fireButton.addListener(new ClickListener() {
+            public void clicked(InputEvent e, float x, float y) {
+                System.out.println("Firebutton has been pressed!");
+                fire(aimedX,aimedY);
+                // Integer[] send = { x, y };
+                // TankGame.getBluetooth().writeObject(send);
             }
         });
         // init box2d world
@@ -75,13 +101,8 @@ public class PlayState extends State {
     @Override
     protected void handleInput() {
         if(Gdx.input.justTouched()) {
-            System.out.println("FIRE!");
+            //System.out.println("FIRE!");
             //gameSprites.add(((Tank)gameSprites.get(0)).fireProjectile(world, Gdx.input.getX(), Gdx.input.getY()));
-            int x = Gdx.input.getX();
-            int y = Gdx.input.getY();
-            fire(x,y);
-            Integer[] send = { x, y };
-            TankGame.getBluetooth().writeObject(send);
             //TankGame.getBluetooth().writeObject("FIRE");
         }
 
