@@ -321,7 +321,6 @@ public class PlayState extends State {
         for(int i = activeProjectiles.size; --i >= 0;) {
             p = activeProjectiles.get(i);
             if(!p.isAlive()) {
-                System.out.println("dead");
                 activeProjectiles.removeIndex(i);
                 projectilePool.free(p);
                 gameSprites.remove(p);
