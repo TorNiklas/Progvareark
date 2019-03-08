@@ -40,7 +40,7 @@ public class Ground {
     private Body body;
     private PolygonSprite polygonSprite;
 
-    public Ground(World world, int xoff, int yMin, int yMax, int smoothing) {
+    public Ground(World world, int xoff, int yMin, int yMax, int smoothing, Color color) {
         position = new Vector3(0,0, 0);
         sprite = new Sprite(new Texture("surface.png"));
 
@@ -50,7 +50,7 @@ public class Ground {
         float[] floatPoints = v2ToFloat(points);
 
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
-        pixmap.setColor(0, 100, 0, .6f);
+        pixmap.setColor(color);
         pixmap.fill();
 
         TextureRegion textureRegion = new TextureRegion(new Texture(pixmap));

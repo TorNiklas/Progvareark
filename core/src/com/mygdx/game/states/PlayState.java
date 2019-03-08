@@ -2,6 +2,7 @@ package com.mygdx.game.states;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -39,7 +40,7 @@ public class PlayState extends State {
         gameSprites = new ArrayList<GameSprite>();
         gameSprites.add(new Tank(world, 500, 150));
 
-        ground = new Ground(world, 10, 30, 150, 10);
+        ground = new Ground(world, 10, 30, 100, 10, Color.GOLDENROD);
     }
 
     public static void fire(int x, int y) {
@@ -93,7 +94,7 @@ public class PlayState extends State {
     public void render(SpriteBatch sb, PolygonSpriteBatch psb) {
         sb.setProjectionMatrix(cam.combined);
         sb.begin();
-        //sb.draw(bg, 0,0, 1280, 720);
+        sb.draw(bg, 0,0, 1280, 720);
         /*for (Iterator<GameSprite> it = gameSprites.iterator(); it.hasNext();) {
             it.next().draw(sb);
         }*/
