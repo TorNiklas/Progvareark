@@ -10,6 +10,7 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.mygdx.game.BTInterface;
 import com.mygdx.game.TankGame;
+import com.mygdx.game.network.SpriteSerialize;
 import com.mygdx.game.sprites.GameSprite;
 import com.mygdx.game.sprites.Ground;
 import com.mygdx.game.sprites.Projectile;
@@ -17,6 +18,8 @@ import com.mygdx.game.sprites.Tank;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class PlayState extends State {
     private Texture bg;
@@ -39,11 +42,22 @@ public class PlayState extends State {
         gameSprites.add(new Tank(world, 500, 110));
 
         ground = new Ground(world);
+
+        /*Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                readNetSprites();
+            }
+        }, 100, 100, TimeUnit.MILLISECONDS);*/
     }
 
     public static void fire(int x, int y) {
-        System.out.println("FIRING " + x + "-" + y);
+        //System.out.println("FIRING " + x + "-" + y);
         gameSprites.add(((Tank)gameSprites.get(0)).fireProjectile(world, x, y));
+    }
+
+    public static World getWorld() {
+        return world;
     }
 
     @Override
@@ -54,11 +68,10 @@ public class PlayState extends State {
             int x = Gdx.input.getX();
             int y = Gdx.input.getY();
             fire(x,y);
-            Integer[] send = { x, y };
-            TankGame.getBluetooth().writeObject(send);
+            /*Integer[] send = { x, y };
+            TankGame.getBluetooth().writeObject(send);*/
             //TankGame.getBluetooth().writeObject("FIRE");
         }
-
         // for testing purposes
         if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             GameStateManager.getGsm().push(new MenuState(/*gsm*/));
@@ -74,17 +87,39 @@ public class PlayState extends State {
 
     }
 
+    public static ArrayList<SpriteSerialize> getNetSprites() {
+        ArrayList<SpriteSerialize> spriteSerializes = new ArrayList<SpriteSerialize>();
+        for (GameSprite g : gameSprites) {
+            if (g.isLocal()) {
+                spriteSerializes.add(g.getSerialize());
+            }
+        }
+        return spriteSerializes;
+    }
+
+    private void readNetSprites() {
+        ArrayList<SpriteSerialize> sprites = TankGame.getBluetooth().getSprites();
+        //System.out.println(sprites);
+        for (SpriteSerialize s : sprites) {
+            boolean exists = false;
+            for (GameSprite g : gameSprites) {
+                if (s.getId() == g.getId()) {
+                    g.readSerialize(s);
+                    exists = true;
+                }
+            }
+            if (!exists && s.getType() == SpriteSerialize.Type.PROJECTILE) {
+                gameSprites.add(new Projectile(world, s.getId(), s.getPos().x, s.getPos().y, s.getLinVel()));
+            }
+        }
+    }
+
     @Override
     public void update(float dt) {
         handleInput();
-        /*for (GameSprite gs : gameSprites) {
+        readNetSprites();
+        for (GameSprite gs : gameSprites) {
             gs.update();
-        }*/
-        /*for (Iterator<GameSprite> it = gameSprites.iterator(); it.hasNext();) {
-            it.next().update();
-        }*/
-        for (int i = 0; i < gameSprites.size(); i++) {
-            gameSprites.get(i).update();
         }
     }
 
@@ -93,15 +128,11 @@ public class PlayState extends State {
         sb.setProjectionMatrix(cam.combined);
         sb.begin();
         //sb.draw(bg, 0,0, 1280, 720);
-        /*for (Iterator<GameSprite> it = gameSprites.iterator(); it.hasNext();) {
-            it.next().draw(sb);
-        }*/
+
         for (int i = 0; i < gameSprites.size(); i++) {
             gameSprites.get(i).draw(sb);
         }
-        /*for (GameSprite gs : gameSprites) {
-            gs.draw(sb);
-        }*/
+
         sb.end();
 
         // box-2d
@@ -120,5 +151,9 @@ public class PlayState extends State {
         for (Iterator<GameSprite> it = gameSprites.iterator(); it.hasNext();) {
             it.next().dispose();
         }
+    }
+
+    public static ArrayList<GameSprite> getGameSprites() {
+        return gameSprites;
     }
 }

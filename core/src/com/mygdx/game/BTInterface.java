@@ -1,5 +1,6 @@
 package com.mygdx.game;
 
+import com.mygdx.game.network.SpriteSerialize;
 import com.mygdx.game.sprites.GameSprite;
 
 import java.io.Serializable;
@@ -15,5 +16,7 @@ public interface BTInterface {
     public void writeSprites(ArrayList<GameSprite> sprites);
 
     public void disconnect();
+
+    public ArrayList<SpriteSerialize> getSprites();
 
 }
