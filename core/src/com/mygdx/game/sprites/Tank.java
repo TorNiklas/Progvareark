@@ -58,7 +58,7 @@ public class Tank implements GameSprite {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.density = 2.5f;
         fixtureDef.friction = 0.7f;
-        fixtureDef.restitution = 0.2f;
+        fixtureDef.restitution = 0.05f;
 
         // add body to world
         body = world.createBody(bodyDef);
