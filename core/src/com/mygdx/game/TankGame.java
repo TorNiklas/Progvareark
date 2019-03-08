@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.mygdx.game.states.GameStateManager;
 import com.mygdx.game.states.MenuState;
+import com.mygdx.game.states.OptionState;
 
 public class TankGame extends ApplicationAdapter {
 	public static final int WIDTH = 1280;
