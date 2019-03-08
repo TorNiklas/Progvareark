@@ -33,29 +33,46 @@ public class PlayState extends State {
     private Box2DDebugRenderer debugRenderer;
     private Ground ground;
 
-    private Texture leftBtn;
-    private Drawable drawable;
+    private Texture buttons;
+
+    private Drawable leftBtnDrawable;
+    private Drawable rightBtnDrawable;
     private Stage stage;
-    private ImageButton button;
+    private ImageButton leftBtn;
+    private ImageButton rightBtn;
 
     public PlayState(/*GameStateManager gsm*/) {
         super(/*gsm*/);
         cam.setToOrtho(false, TankGame.WIDTH, TankGame.HEIGHT);
         bg = new Texture("bg.png");
 
-        leftBtn = new Texture("play.png");
-        drawable = new TextureRegionDrawable(new TextureRegion(leftBtn));
-        button = new ImageButton(drawable);
+        buttons = new Texture("buttons.png");
+        rightBtnDrawable = new TextureRegionDrawable(new TextureRegion(buttons, 100,0,100,100));
+        leftBtnDrawable = new TextureRegionDrawable(new TextureRegion(buttons, 0,0,100,100));
+        leftBtn = new ImageButton(leftBtnDrawable);
+        rightBtn = new ImageButton(rightBtnDrawable);
+        rightBtn.setPosition(150, 0);
         stage = new Stage(new ScreenViewport());
-        stage.addActor(button);
+        stage.addActor(leftBtn);
+        stage.addActor(rightBtn);
         Gdx.input.setInputProcessor(stage);
-        button.addListener(new EventListener() {
+        leftBtn.addListener(new EventListener() {
             @Override
             public boolean handle(Event event) {
-                System.out.println("Pressed button");
+                System.out.println("Pressed left button");
+                ((Tank)gameSprites.get(0)).drive(new Vector2(-50f, -5f));
                 return true;
             }
         });
+        rightBtn.addListener(new EventListener() {
+            @Override
+            public boolean handle(Event event) {
+                System.out.println("Pressed right button");
+                ((Tank)gameSprites.get(0)).drive(new Vector2(50f, -5f));
+                return true;
+            }
+        });
+
         // init box2d world
         Box2D.init();
         world = new World(new Vector2(0, -50f), true);
