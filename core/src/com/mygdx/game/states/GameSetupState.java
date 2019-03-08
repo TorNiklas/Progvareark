@@ -19,7 +19,7 @@ public class GameSetupState extends State {
 
     @Override
     public void handleInput() {
-        
+
     }
 
     public static void onConnected(boolean isHost) {

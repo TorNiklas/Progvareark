@@ -6,10 +6,18 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.Event;
+import com.badlogic.gdx.scenes.scene2d.EventListener;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.mygdx.game.BTInterface;
 import com.mygdx.game.TankGame;
 import com.mygdx.game.sprites.GameSprite;
@@ -27,10 +35,42 @@ public class PlayState extends State {
     private Box2DDebugRenderer debugRenderer;
     private Ground ground;
 
+    private Stage stage;
+    private ImageButton leftBtn;
+    private ImageButton rightBtn;
+
     public PlayState(/*GameStateManager gsm*/) {
         super(/*gsm*/);
         cam.setToOrtho(false, TankGame.WIDTH, TankGame.HEIGHT);
         bg = new Texture("bg.png");
+
+        Texture buttons = new Texture("buttons.png");
+        Drawable rightBtnDrawable = new TextureRegionDrawable(new TextureRegion(buttons, 100,0,100,100));
+        Drawable leftBtnDrawable = new TextureRegionDrawable(new TextureRegion(buttons, 0,0,100,100));
+        leftBtn = new ImageButton(leftBtnDrawable);
+        rightBtn = new ImageButton(rightBtnDrawable);
+        rightBtn.setPosition(150, 0);
+        stage = new Stage(new ScreenViewport());
+        stage.addActor(leftBtn);
+        stage.addActor(rightBtn);
+        Gdx.input.setInputProcessor(stage);
+        //Button event handlers, should probably not be here
+        leftBtn.addListener(new EventListener() {
+            @Override
+            public boolean handle(Event event) {
+                System.out.println("Pressed left button");
+                ((Tank)gameSprites.get(0)).drive(new Vector2(-50f, -5f));
+                return true;
+            }
+        });
+        rightBtn.addListener(new EventListener() {
+            @Override
+            public boolean handle(Event event) {
+                System.out.println("Pressed right button");
+                ((Tank)gameSprites.get(0)).drive(new Vector2(50f, -5f));
+                return true;
+            }
+        });
 
         // init box2d world
         Box2D.init();
@@ -106,10 +146,14 @@ public class PlayState extends State {
         }*/
         sb.end();
 
+        // ground terrain
         psb.begin();
         ground.draw(psb);
         psb.end();
 
+        //stage for buttons
+        stage.act(Gdx.graphics.getDeltaTime());
+        stage.draw();
         // box-2d
         //debugRenderer.render(world, cam.combined);
         world.step(1/60f, 6, 2);
