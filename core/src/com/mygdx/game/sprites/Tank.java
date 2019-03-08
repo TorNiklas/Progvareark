@@ -10,20 +10,24 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.CircleShape;
-import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.mygdx.game.TankGame;
+import com.mygdx.game.network.SpriteSerialize;
 
 public class Tank implements GameSprite {
+    private int id = -1;
+    private boolean local = true;
     private Vector3 position;
     private Sprite tankSprite;
     private Sprite barrelSprite;
     private Body body;
+    //private static final AtomicInteger idCounter = new AtomicInteger();
 
     public Tank(World world, int x, int y) {
+        //id = idCounter.incrementAndGet();
+
         // tank sprite
         tankSprite = new Sprite(new Texture("tank.png"));
         tankSprite.setPosition(x, y);
@@ -72,6 +76,11 @@ public class Tank implements GameSprite {
     }
 
     @Override
+    public boolean isLocal() {
+        return local;
+    }
+
+    @Override
     public void update(){
         // tank
         tankSprite.setPosition(body.getPosition().x - tankSprite.getWidth()/2, body.getPosition().y - tankSprite.getHeight()/2);
@@ -79,24 +88,53 @@ public class Tank implements GameSprite {
 
         // barrel
         barrelSprite.setPosition(body.getPosition().x - barrelSprite.getWidth()/2 + 8f, body.getPosition().y - barrelSprite.getHeight()/2 + 4f);
-        rotateBarrel();
     }
 
-    public Vector3 getPosition() {
-        return position;
+    @Override
+    public Vector2 getPosition() {
+        return new Vector2(tankSprite.getX(), tankSprite.getY());
     }
 
-    private void rotateBarrel() {
-        int pointerX = Gdx.input.getX();
-        int pointerY = -(Gdx.input.getY() - TankGame.HEIGHT);
+    @Override
+    public int getId() {
+        return id;
+    }
 
-        float deg = (float) Math.atan2(pointerY - body.getPosition().y, pointerX - body.getPosition().x) * MathUtils.radiansToDegrees;
+    @Override
+    public SpriteSerialize getSerialize() {
+        return new SpriteSerialize(id, SpriteSerialize.Type.TANK, getPosition(), body.getLinearVelocity());
+    }
+
+    @Override
+    public void readSerialize(SpriteSerialize sprite) {
+        if (id == sprite.getId()) {
+            this.tankSprite.setX(sprite.getPos().x);
+            this.tankSprite.setY(sprite.getPos().y);
+            body.setLinearVelocity(sprite.getLinVel());
+        }
+        else {
+            System.out.println("Wrong ID!");
+        }
+    }
+
+    public void updateBarrel(int deg){
+        //int pointerX = x;
+        //int pointerY = -(y - TankGame.HEIGHT);
+        //float deg = (float) Math.atan2(pointerY - body.getPosition().y, pointerX - body.getPosition().x) * MathUtils.radiansToDegrees;
         barrelSprite.setRotation(deg);
     }
 
-    public GameSprite fireProjectile(World world, int pointerX, int pointerY) {
-        float forceX = pointerX - body.getPosition().x;
-        float forceY = -(pointerY - TankGame.HEIGHT) - body.getPosition().y;
+    private void rotateBarrel() {
+
+
+    }
+
+    public GameSprite fireProjectile(World world, float pointerX, float pointerY) {
+        //float forceX = pointerX - body.getPosition().x;
+        //float forceY = -(pointerY - TankGame.HEIGHT) - body.getPosition().y;
+
+        float forceX = pointerX * 1000;
+        float forceY = pointerY * 1000;
 
         return new Projectile(world, body.getPosition().x, body.getPosition().y + tankSprite.getHeight()/2, new Vector2(forceX, forceY));
     }
@@ -107,7 +145,8 @@ public class Tank implements GameSprite {
 
     @Override
     public void dispose(){
-
+        tankSprite.getTexture().dispose();
+        barrelSprite.getTexture().dispose();
     }
 
     @Override
