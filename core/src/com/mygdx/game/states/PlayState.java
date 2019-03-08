@@ -25,8 +25,8 @@ public class PlayState extends State {
     private Box2DDebugRenderer debugRenderer;
     private Ground ground;
 
-    public PlayState(GameStateManager gsm) {
-        super(gsm);
+    public PlayState(/*GameStateManager gsm*/) {
+        super(/*gsm*/);
         cam.setToOrtho(false, TankGame.WIDTH, TankGame.HEIGHT);
         bg = new Texture("bg.png");
 
@@ -61,7 +61,7 @@ public class PlayState extends State {
 
         // for testing purposes
         if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-            gsm.push(new MenuState(gsm));
+            GameStateManager.getGsm().push(new MenuState(/*gsm*/));
         }
 
         if(Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {

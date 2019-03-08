@@ -12,8 +12,8 @@ public class MenuState extends State{
     private Texture playBtn;
     private Texture optionBtn;
 
-    public MenuState(GameStateManager gsm) {
-        super(gsm);
+    public MenuState(/*GameStateManager gsm*/) {
+        super(/*gsm*/);
         cam.setToOrtho(false, TankGame.WIDTH, TankGame.HEIGHT);
         bg = new Texture("bg.png");
         playBtn = new Texture("play.png");
@@ -33,16 +33,14 @@ public class MenuState extends State{
                 TankGame.getBluetooth().startClient();
             }
             else {
-                //gsm.set(new PlayState(gsm));
-                gsm.set(new OptionState(gsm));
+                GameStateManager.getGsm().set(new PlayState(/*gsm*/));
             }
         }
     }
 
     public static void onConnected(boolean isHost) {
         System.out.println("Connected!");
-        //gsm.set(new PlayState(gsm));
-        gsm.set(new OptionState(gsm));
+        GameStateManager.getGsm().set(new PlayState(/*gsm*/));
     }
 
     public static void onDisconnect() {

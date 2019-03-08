@@ -6,8 +6,15 @@ import java.util.Stack;
 public class GameStateManager {
     private Stack<State> states;
 
-    public GameStateManager(){
+    private static GameStateManager gsm = new GameStateManager();
+
+    private GameStateManager(){
         states = new Stack<State>();
+    }
+
+    //SINGLETON
+    public static GameStateManager getGsm() {
+        return gsm;
     }
 
     public void push(State state){
