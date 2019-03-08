@@ -92,7 +92,6 @@ public class PlayState extends State {
             }
         });
 
-        final Sprite barrelSprite = new Sprite(new Texture("barrel.png"));
         fireButton.addListener(new ClickListener() {
             public void clicked(InputEvent e, float x, float y) {
                 System.out.println("Firebutton has been pressed!");
