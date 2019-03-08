@@ -3,21 +3,23 @@ package com.mygdx.game.states;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -32,6 +34,9 @@ import com.mygdx.game.sprites.Tank;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import static java.lang.Math.cos;
+import static java.lang.StrictMath.sin;
+
 public class PlayState extends State {
     private Texture bg;
     private static ArrayList<GameSprite> gameSprites;
@@ -45,8 +50,10 @@ public class PlayState extends State {
     private ImageButton button;
     private TextButton fireButton;
     Skin skin;
-    private int aimedX;
-    private int aimedY;
+    private TextButton increaseElevation;
+    private TextButton decreaseElevation;
+    private int deg = 0;
+    private int aimRate = 5;
 
     public PlayState(/*GameStateManager gsm*/) {
         super(/*gsm*/);
@@ -60,12 +67,22 @@ public class PlayState extends State {
         skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
 
         fireButton = new TextButton("Fire!", skin);
-        fireButton.setSize(Gdx.graphics.getWidth() / 20,Gdx.graphics.getHeight() / 10);
-        fireButton.setPosition(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()-200);
+        fireButton.setSize(200,100);
+        fireButton.setPosition(0, 300);
+
+        increaseElevation = new TextButton("+", skin);
+        increaseElevation.setSize(100,100);
+        increaseElevation.setPosition(100, 200);
+
+        decreaseElevation = new TextButton("-", skin);
+        decreaseElevation.setSize(100,100);
+        decreaseElevation.setPosition(0, 200);
 
         stage = new Stage(new ScreenViewport());
         stage.addActor(button);
         stage.addActor(fireButton);
+        stage.addActor(increaseElevation);
+        stage.addActor(decreaseElevation);
         Gdx.input.setInputProcessor(stage);
         button.addListener(new EventListener() {
             @Override
@@ -74,12 +91,33 @@ public class PlayState extends State {
                 return true;
             }
         });
+
+        final Sprite barrelSprite = new Sprite(new Texture("barrel.png"));
         fireButton.addListener(new ClickListener() {
             public void clicked(InputEvent e, float x, float y) {
                 System.out.println("Firebutton has been pressed!");
-                fire(aimedX,aimedY);
+
+                float vectorY = (float)sin(Math.toRadians(deg));
+                float vectorX = (float)cos(Math.toRadians(deg));
+                fire(vectorX,vectorY);
                 // Integer[] send = { x, y };
                 // TankGame.getBluetooth().writeObject(send);
+            }
+        });
+        increaseElevation.addListener(new InputListener() {
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                deg-=aimRate;
+                System.out.println(deg);
+                ((Tank)gameSprites.get(0)).updateBarrel(deg);
+                return true;
+            }
+        });
+        decreaseElevation.addListener(new InputListener() {
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                deg+=aimRate;
+                System.out.println(deg);
+                ((Tank)gameSprites.get(0)).updateBarrel(deg);
+                return true;
             }
         });
         // init box2d world
@@ -93,8 +131,8 @@ public class PlayState extends State {
         ground = new Ground(world);
     }
 
-    public static void fire(int x, int y) {
-        System.out.println("FIRING " + x + "-" + y);
+    public static void fire(float x, float y) {
+        System.out.println("FIRING " + x + " - " + y);
         gameSprites.add(((Tank)gameSprites.get(0)).fireProjectile(world, x, y));
     }
 
