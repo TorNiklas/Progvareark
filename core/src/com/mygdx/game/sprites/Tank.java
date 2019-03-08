@@ -16,6 +16,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.mygdx.game.TankGame;
+import com.mygdx.game.states.PlayState;
 
 public class Tank implements GameSprite {
     private Vector3 position;
@@ -84,6 +85,10 @@ public class Tank implements GameSprite {
 
     public Vector3 getPosition() {
         return position;
+    }
+
+    public void updateBarrel(int x, int y){
+
     }
 
     private void rotateBarrel() {
