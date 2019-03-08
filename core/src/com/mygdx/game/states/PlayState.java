@@ -1,23 +1,28 @@
 package com.mygdx.game.states;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -34,6 +39,9 @@ import java.util.Iterator;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import static java.lang.Math.cos;
+import static java.lang.StrictMath.sin;
+
 public class PlayState extends State {
     private Texture bg;
     private static ArrayList<GameSprite> gameSprites;
@@ -41,15 +49,22 @@ public class PlayState extends State {
     private Box2DDebugRenderer debugRenderer;
     private Ground ground;
 
+    private Drawable drawable;
     private Stage stage;
+
     private ImageButton leftBtn;
     private ImageButton rightBtn;
 
-    private ImageButton button;
-    private TextButton fireButton;
     Skin skin;
     private int aimedX;
     private int aimedY;
+    private TextButton fireButton;
+    private TextButton increaseElevation;
+    private TextButton decreaseElevation;
+    private int deg = 0;
+    private int aimRate = 5;
+    private boolean isIncreasing;
+    private boolean isDecreasing;
 
     public PlayState(int level) {
         super();
@@ -63,19 +78,26 @@ public class PlayState extends State {
         rightBtn = new ImageButton(rightBtnDrawable);
         rightBtn.setPosition(150, 0);
 
-        // TODO: fix me
         skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
 
         fireButton = new TextButton("Fire!", skin);
-        fireButton.setSize(Gdx.graphics.getWidth() / 20,Gdx.graphics.getHeight() / 10);
-        fireButton.setPosition(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()-200);
+        fireButton.setSize(200,100);
+        fireButton.setPosition(0, 300);
+
+        increaseElevation = new TextButton("+", skin);
+        increaseElevation.setSize(100,100);
+        increaseElevation.setPosition(100, 200);
+
+        decreaseElevation = new TextButton("-", skin);
+        decreaseElevation.setSize(100,100);
+        decreaseElevation.setPosition(0, 200);
 
         stage = new Stage(new ScreenViewport());
         stage.addActor(leftBtn);
         stage.addActor(rightBtn);
-        stage.addActor(button);
         stage.addActor(fireButton);
-
+        stage.addActor(increaseElevation);
+        stage.addActor(decreaseElevation);
 
         Gdx.input.setInputProcessor(stage);
 
@@ -101,9 +123,32 @@ public class PlayState extends State {
         fireButton.addListener(new ClickListener() {
             public void clicked(InputEvent e, float x, float y) {
                 System.out.println("Firebutton has been pressed!");
-                fire(aimedX,aimedY);
+
+                float vectorY = (float)sin(Math.toRadians(deg));
+                float vectorX = (float)cos(Math.toRadians(deg));
+                fire(vectorX,vectorY);
                 // Integer[] send = { x, y };
                 // TankGame.getBluetooth().writeObject(send);
+            }
+        });
+
+        increaseElevation.addListener(new InputListener() {
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                isIncreasing = true;
+                return true;
+            }
+            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+                isIncreasing = false;
+            }
+        });
+
+        decreaseElevation.addListener(new InputListener() {
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                isDecreasing = true;
+                return true;
+            }
+            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+                isDecreasing = false;
             }
         });
 
@@ -151,8 +196,9 @@ public class PlayState extends State {
         }, 100, 100, TimeUnit.MILLISECONDS);*/
     }
 
-    public static void fire(int x, int y) {
-        //System.out.println("FIRING " + x + "-" + y);
+
+    public static void fire(float x, float y) {
+        System.out.println("FIRING " + x + " - " + y);
         gameSprites.add(((Tank)gameSprites.get(0)).fireProjectile(world, x, y));
     }
 
@@ -168,7 +214,7 @@ public class PlayState extends State {
 
             int x = Gdx.input.getX();
             int y = Gdx.input.getY();
-            fire(x,y);
+            //fire(x,y);
             /*Integer[] send = { x, y };
             TankGame.getBluetooth().writeObject(send);*/
             //TankGame.getBluetooth().writeObject("FIRE");
@@ -218,9 +264,21 @@ public class PlayState extends State {
     @Override
     public void update(float dt) {
         handleInput();
-        readNetSprites();
+        // doesn't work on desktop
+        if(Gdx.app.getType() == Application.ApplicationType.Android) {
+            readNetSprites();
+        }
         for (GameSprite gs : gameSprites) {
             gs.update();
+        }
+
+        if(isIncreasing || isDecreasing) {
+            if (isIncreasing) {
+                deg -= aimRate;
+            } else {
+                deg += aimRate;
+            }
+            ((Tank) gameSprites.get(0)).updateBarrel(deg);
         }
     }
 
