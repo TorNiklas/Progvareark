@@ -12,7 +12,7 @@ import com.mygdx.game.states.OptionState;
 public class TankGame extends ApplicationAdapter {
 	public static final int WIDTH = 1280;
 	public static final int HEIGHT = 720;
-	public static final String TITLE = "Tank_title";
+	public static final String TITLE = "Panzerwagen";
 
 	private static SpriteBatch sb;
 	private static PolygonSpriteBatch psb;
