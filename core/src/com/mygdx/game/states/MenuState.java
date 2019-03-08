@@ -14,7 +14,6 @@ import com.mygdx.game.TankGame;
 
 public class MenuState extends State {
     private Texture bg;
-    private Texture playBtn;
     private Image hostBtn;
     private Image connectBtn;
     private Stage stage;
@@ -23,7 +22,6 @@ public class MenuState extends State {
         super(/*gsm*/);
         cam.setToOrtho(false, TankGame.WIDTH, TankGame.HEIGHT);
         bg = new Texture("bg.png");
-        //playBtn = new Texture("play.png");
         hostBtn = new Image(new Texture("host.png"));
         connectBtn = new Image(new Texture("connect.png"));
 
@@ -55,11 +53,13 @@ public class MenuState extends State {
                 Input.TextInputListener textInputListener = new Input.TextInputListener() {
                     @Override
                     public void input(String text) {
+                        // handle input
                         System.out.println(text);
                     }
 
                     @Override
                     public void canceled() {
+                        // handle cancel
                         System.out.println("canceled");
                     }
                 };
