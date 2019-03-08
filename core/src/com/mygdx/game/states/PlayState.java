@@ -3,6 +3,7 @@ package com.mygdx.game.states;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2D;
@@ -36,9 +37,9 @@ public class PlayState extends State {
         debugRenderer = new Box2DDebugRenderer();
 
         gameSprites = new ArrayList<GameSprite>();
-        gameSprites.add(new Tank(world, 500, 110));
+        gameSprites.add(new Tank(world, 500, 150));
 
-        ground = new Ground(world);
+        ground = new Ground(world, 10, 30, 150, 10);
     }
 
     public static void fire(int x, int y) {
@@ -89,7 +90,7 @@ public class PlayState extends State {
     }
 
     @Override
-    public void render(SpriteBatch sb) {
+    public void render(SpriteBatch sb, PolygonSpriteBatch psb) {
         sb.setProjectionMatrix(cam.combined);
         sb.begin();
         //sb.draw(bg, 0,0, 1280, 720);
@@ -103,6 +104,10 @@ public class PlayState extends State {
             gs.draw(sb);
         }*/
         sb.end();
+
+        psb.begin();
+        ground.draw(psb);
+        psb.end();
 
         // box-2d
         //debugRenderer.render(world, cam.combined);

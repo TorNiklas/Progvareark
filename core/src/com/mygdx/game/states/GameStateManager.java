@@ -1,5 +1,6 @@
 package com.mygdx.game.states;
 
+import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import java.util.Stack;
 
@@ -34,7 +35,7 @@ public class GameStateManager {
         states.peek().update(dt);
     }
 
-    public void render(SpriteBatch sb){
-        states.peek().render(sb);
+    public void render(SpriteBatch sb, PolygonSpriteBatch psb){
+        states.peek().render(sb, psb);
     }
 }

@@ -3,7 +3,7 @@ package com.mygdx.game;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.mygdx.game.states.GameStateManager;
 import com.mygdx.game.states.MenuState;
@@ -13,7 +13,8 @@ public class TankGame extends ApplicationAdapter {
 	public static final int HEIGHT = 720;
 	public static final String TITLE = "Tank_title";
 
-	private static SpriteBatch batch;
+	private static SpriteBatch sb;
+	private static PolygonSpriteBatch psb;
 	private static BTInterface bluetooth;
 
 	public TankGame(BTInterface bluetoothCon) {
@@ -26,7 +27,8 @@ public class TankGame extends ApplicationAdapter {
 
 	@Override
 	public void create () {
-        batch = new SpriteBatch();
+		sb = new SpriteBatch();
+		psb = new PolygonSpriteBatch();
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		GameStateManager.getGsm().push(new MenuState(/*gsm*/));
 	}
@@ -35,7 +37,7 @@ public class TankGame extends ApplicationAdapter {
 	public void render () {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		GameStateManager.getGsm().update(Gdx.graphics.getDeltaTime());
-		GameStateManager.getGsm().render(batch);
+		GameStateManager.getGsm().render(sb, psb);
 	}
 
 	@Override
