@@ -18,6 +18,7 @@ public class MenuState extends State{
         bg = new Texture("bg.png");
         playBtn = new Texture("play.png");
         optionBtn = new Texture("option.png");
+        System.out.println("hei");
     }
 
     @Override
@@ -33,14 +34,17 @@ public class MenuState extends State{
                 TankGame.getBluetooth().startClient();
             }
             else {
-                GameStateManager.getGsm().set(new PlayState(/*gsm*/));
+                //GameStateManager.getGsm().set(new PlayState(/*gsm*/));
             }
+            GameStateManager.getGsm().set(new OptionState(/*gsm*/));
+
         }
     }
 
     public static void onConnected(boolean isHost) {
         System.out.println("Connected!");
-        GameStateManager.getGsm().set(new PlayState(/*gsm*/));
+        //GameStateManager.getGsm().set(new PlayState(/*gsm*/));
+        //GameStateManager.getGsm().set(new OptionState(/*gsm*/));
     }
 
     public static void onDisconnect() {
@@ -56,7 +60,7 @@ public class MenuState extends State{
     public void render(SpriteBatch sb) {
         sb.setProjectionMatrix(cam.combined);
         sb.begin();
-        sb.draw(bg, 0,0, 1280, 720);
+        //sb.draw(bg, 0,0, 1280, 720);
         sb.draw(playBtn, cam.position.x - playBtn.getWidth()/2, cam.position.y - playBtn.getHeight()/2);
         sb.draw(optionBtn, cam.position.x+100, cam.position.y);
         sb.end();
@@ -66,5 +70,6 @@ public class MenuState extends State{
     public void dispose() {
         bg.dispose();
         playBtn.dispose();
+        optionBtn.dispose();
     }
 }
