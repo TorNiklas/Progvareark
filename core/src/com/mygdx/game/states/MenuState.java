@@ -30,14 +30,16 @@ public class MenuState extends State {
                 TankGame.getBluetooth().startClient();
             }
             else {
-                GameStateManager.getGsm().set(new PlayState(/*gsm*/));
+                GameStateManager.getGsm().set(new GameSetupState(/*gsm*/));
             }
+            // go to game setup always, for testing
+            GameStateManager.getGsm().set(new GameSetupState(/*gsm*/));
         }
     }
 
     public static void onConnected(boolean isHost) {
         System.out.println("Connected!");
-        GameStateManager.getGsm().set(new PlayState(/*gsm*/));
+        //GameStateManager.getGsm().set(new PlayState(/*gsm*/));
     }
 
     public static void onDisconnect() {

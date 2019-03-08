@@ -39,7 +39,7 @@ public class PlayState extends State {
     private ImageButton leftBtn;
     private ImageButton rightBtn;
 
-    public PlayState(/*GameStateManager gsm*/) {
+    public PlayState(/*GameStateManager gsm*/int level) {
         super(/*gsm*/);
         cam.setToOrtho(false, TankGame.WIDTH, TankGame.HEIGHT);
         bg = new Texture("bg.png");
@@ -78,9 +78,35 @@ public class PlayState extends State {
         debugRenderer = new Box2DDebugRenderer();
 
         gameSprites = new ArrayList<GameSprite>();
-        gameSprites.add(new Tank(world, 500, 150));
+        int spawnHeight = 100;
 
-        ground = new Ground(world, 10, 30, 100, 10, Color.GOLDENROD);
+        // eeh way to do this, but
+        switch (level) {
+            // forest level
+            case 1:
+                spawnHeight = 100;
+                ground = new Ground(world, 10, 30, 100, 10, Color.FOREST);
+                break;
+
+            // desert level
+            case 2:
+                spawnHeight = 70;
+                ground = new Ground(world, 10, 30, 70, 10, Color.GOLDENROD);
+                break;
+
+            // snow level
+            case 3:
+                spawnHeight = 200;
+                ground = new Ground(world, 10, 30, 200, 10, Color.WHITE);
+                break;
+
+            // default to forest
+            default:
+                ground = new Ground(world, 10, 30, 100, 10, Color.FOREST);
+        }
+
+        gameSprites.add(new Tank(world, 500, spawnHeight));
+
     }
 
     public static void fire(int x, int y) {
