@@ -149,9 +149,6 @@ public class PlayState extends State {
                 Vector2 velocity = new Vector2(vectorX * 1000f, vectorY * 1000f);
                 fireFromPool(pos, velocity);
 
-                System.out.println(pos.x + " - " + pos.y);
-                System.out.println(velocity.x + " - " + velocity.y);
-
                 // Integer[] send = { x, y };
                 // TankGame.getBluetooth().writeObject(send);
             }
