@@ -21,8 +21,8 @@ public class MenuState extends State{
     private Image optionBtn;
     private Stage stage;
 
-    public MenuState(/*GameStateManager gsm*/) {
-        super(/*gsm*/);
+    public MenuState() {
+        super();
         cam.setToOrtho(false, TankGame.WIDTH, TankGame.HEIGHT);
         bg = new Texture("bg.png");
 

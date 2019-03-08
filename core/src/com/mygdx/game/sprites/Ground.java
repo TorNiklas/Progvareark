@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.g2d.PolygonRegion;
 import com.badlogic.gdx.graphics.g2d.PolygonSprite;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.EarClippingTriangulator;
 import com.badlogic.gdx.math.Rectangle;
@@ -15,50 +14,41 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.Box2D;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.ChainShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.physics.box2d.utils.Box2DBuild;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.ShortArray;
 import com.mygdx.game.TankGame;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-
 import static com.badlogic.gdx.math.MathUtils.random;
 
 public class Ground {
     private Vector3 position;
-    private Rectangle bounds;
-    private Texture texture;
-    private Sprite sprite;
     private Body body;
     private PolygonSprite polygonSprite;
 
     public Ground(World world, int xoff, int yMin, int yMax, int smoothing, Color color) {
         position = new Vector3(0,0, 0);
-        sprite = new Sprite(new Texture("surface.png"));
 
         // generate random points
         Vector2[] points = generatePoints(xoff, yMin, yMax);
         smoothPoints(smoothing, points);
         float[] floatPoints = v2ToFloat(points);
 
+        // create pixmap
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
         pixmap.setColor(color);
         pixmap.fill();
 
+        // create tex region
         TextureRegion textureRegion = new TextureRegion(new Texture(pixmap));
         EarClippingTriangulator ear = new EarClippingTriangulator();
         ShortArray triangles = ear.computeTriangles(floatPoints);
 
-        PolygonRegion poly_region = new PolygonRegion(textureRegion, floatPoints, triangles.toArray());
-        polygonSprite = new PolygonSprite(poly_region);
+        // create poly region
+        PolygonRegion polygonRegion = new PolygonRegion(textureRegion, floatPoints, triangles.toArray());
+        polygonSprite = new PolygonSprite(polygonRegion);
 
         // generate ground
         generateGround(world, points);
@@ -134,19 +124,11 @@ public class Ground {
         return position;
     }
 
-    public Texture getTexture() {
-        return texture;
-    }
-
-    public Rectangle getBounds() {
-        return bounds;
-    }
-
     public void draw(PolygonSpriteBatch psb) {
         polygonSprite.draw(psb);
     }
 
     public void dispose(){
-        texture.dispose();
+
     }
 }

@@ -21,20 +21,15 @@ import com.mygdx.game.sprites.Tank;
 
 public class OptionState extends State {
     private Texture bg;
-    private Texture soundTexture;
-    private Texture surrenderTexture;
-    private Texture homeTexture;
     private Texture optionTitle;
     private Image soundBtn;
     private Image surrenderBtn;
     private Image homeBtn;
     private Stage stage;
-    private boolean fromMenuState;
 
-    public OptionState(/*GameStateManager gsm*/boolean fromMenuState) {
+    public OptionState(boolean fromMenuState) {
         super();
         cam.setToOrtho(false, TankGame.WIDTH, TankGame.HEIGHT);
-        this.fromMenuState = fromMenuState;
         bg = new Texture("bg.png");
 
         optionTitle = new Texture("optionTitle.png");
@@ -106,14 +101,11 @@ public class OptionState extends State {
         sb.begin();
         sb.draw(bg, 0,0, 1280, 720);
         sb.draw(optionTitle, cam.position.x - optionTitle.getWidth()/2, cam.position.y + optionTitle.getHeight());
-
-        // buttons
-        surrenderBtn.draw(sb, 1f);
-        soundBtn.draw(sb, 1f);
-        if(fromMenuState) {
-            homeBtn.draw(sb, 1f);
-        }
         sb.end();
+
+        // draw stage actors
+        stage.act();
+        stage.draw();
     }
 
 

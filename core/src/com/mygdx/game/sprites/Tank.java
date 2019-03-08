@@ -10,15 +10,11 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.CircleShape;
-import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.mygdx.game.TankGame;
-import com.mygdx.game.states.PlayState;
 import com.mygdx.game.network.SpriteSerialize;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class Tank implements GameSprite {
     private int id = -1;

@@ -5,9 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2D;
@@ -24,7 +22,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.mygdx.game.BTInterface;
 import com.mygdx.game.TankGame;
 import com.mygdx.game.network.SpriteSerialize;
 import com.mygdx.game.sprites.GameSprite;
@@ -54,8 +51,8 @@ public class PlayState extends State {
     private int aimedX;
     private int aimedY;
 
-    public PlayState(/*GameStateManager gsm*/int level) {
-        super(/*gsm*/);
+    public PlayState(int level) {
+        super();
         cam.setToOrtho(false, TankGame.WIDTH, TankGame.HEIGHT);
         bg = new Texture("bg.png");
 
@@ -67,7 +64,7 @@ public class PlayState extends State {
         rightBtn.setPosition(150, 0);
 
         // TODO: fix me
-        skin = new Skin(Gdx.files.internal("uiskin.json"));
+        skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
 
         fireButton = new TextButton("Fire!", skin);
         fireButton.setSize(Gdx.graphics.getWidth() / 20,Gdx.graphics.getHeight() / 10);

@@ -27,8 +27,8 @@ public class GameSetupState extends State {
     private String gameCodeString;
     private Stage stage;
 
-    public GameSetupState(/*GameStateManager gsm*/) {
-        super(/*gsm*/);
+    public GameSetupState() {
+        super();
         cam.setToOrtho(false, TankGame.WIDTH, TankGame.HEIGHT);
         bg = new Texture("bg.png");
 
@@ -126,16 +126,14 @@ public class GameSetupState extends State {
         // background
         sb.draw(bg, 0,0, 1280, 720);
 
-        // maps
-        forestMapBtn.draw(sb, 1f);
-        snowMapBtn.draw(sb, 1f);
-        desertMapBtn.draw(sb, 1f);
-        backBtn.draw(sb, 1f);
-
         // game code
         gameCode.draw(sb, "Game Code: " + gameCodeString, TankGame.WIDTH/2 - gameCode.getRegion().getRegionWidth()/4, 500);
 
         sb.end();
+
+        // draw stage actors
+        stage.act();
+        stage.draw();
     }
 
     @Override
