@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.mygdx.game.TankGame;
+import com.mygdx.game.sprites.Tank;
 
 
 public class OptionState extends State {
@@ -28,44 +29,39 @@ public class OptionState extends State {
     private Image surrenderBtn;
     private Image homeBtn;
     private Stage stage;
+    private boolean fromMenuState;
 
-    public OptionState(/*GameStateManager gsm*/) {
+    public OptionState(/*GameStateManager gsm*/boolean fromMenuState) {
         super();
         cam.setToOrtho(false, TankGame.WIDTH, TankGame.HEIGHT);
-
+        this.fromMenuState = fromMenuState;
         bg = new Texture("bg.png");
 
         optionTitle = new Texture("optionTitle.png");
 
         soundBtn = new Image(new Texture("volumeBtn.png"));
         surrenderBtn = new Image(new Texture("surrenderBtn.png"));
-        homeBtn = new Image(new Texture("homeBtn.png"));
 
         soundBtn.setSize(surrenderBtn.getWidth()/4, surrenderBtn.getHeight()/4);
         soundBtn.setPosition(cam.position.x - soundBtn.getWidth()/2, cam.position.y);
         surrenderBtn.setSize(surrenderBtn.getWidth()/4, surrenderBtn.getHeight()/4);
         surrenderBtn.setPosition(cam.position.x - surrenderBtn.getWidth()/2, cam.position.y - surrenderBtn.getHeight());
-        //homeBtn.setSize(homeBtn.getWidth()/5, homeBtn.getHeight()/5);
-        homeBtn.setPosition(50,500);
+
 
         stage = new Stage(new ScreenViewport());
-
         stage.addActor(soundBtn);
         stage.addActor(surrenderBtn);
-        stage.addActor(homeBtn);
 
-        final GameStateManager gsm = GameStateManager.getGsm();
+        if(fromMenuState){
+            homeBtn = new Image(new Texture("homeBtn.png"));
+            homeBtn.setSize(homeBtn.getWidth()/5, homeBtn.getHeight()/5);
+            homeBtn.setPosition(TankGame.WIDTH - homeBtn.getWidth()*1.5f,TankGame.HEIGHT - homeBtn.getHeight()*1.5f);
+            stage.addActor(homeBtn);
+        }
 
         Gdx.input.setInputProcessor(stage);
-        homeBtn.addListener(new InputListener() {
-            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Home");
-                gsm.set(new MenuState());
-                return true;
-            }
-        });
 
-        /*
+
         soundBtn.addListener(new InputListener(){
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
                 System.out.println("Volume changed");
@@ -74,22 +70,29 @@ public class OptionState extends State {
 
 
         });
+
         surrenderBtn.addListener(new InputListener() {
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
                 System.out.println("Surrender");
                 return false;
             }
         });
-        */
+
+        if(fromMenuState){
+            homeBtn.addListener(new InputListener() {
+                public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                    System.out.println("Home");
+                    GameStateManager.getGsm().set(new MenuState());
+                    return true;
+                }
+            });
+        }
 
     }
 
     @Override
-    protected void handleInput() {
-        if(Gdx.input.justTouched()) {
-            System.out.println("yayett");
-            GameStateManager.getGsm().set(new MenuState());
-        }
+    public void handleInput() {
+
     }
 
     @Override
@@ -102,16 +105,15 @@ public class OptionState extends State {
         sb.setProjectionMatrix(cam.combined);
         sb.begin();
         sb.draw(bg, 0,0, 1280, 720);
-        //sb.draw(optionTitle, cam.position.x - optionTitle.getWidth()/2, cam.position.y + optionTitle.getHeight());
+        sb.draw(optionTitle, cam.position.x - optionTitle.getWidth()/2, cam.position.y + optionTitle.getHeight());
 
         // buttons
-        //surrenderBtn.draw(sb, 1f);
-        //soundBtn.draw(sb, 1f);
-        homeBtn.draw(sb, 1f);
+        surrenderBtn.draw(sb, 1f);
+        soundBtn.draw(sb, 1f);
+        if(fromMenuState) {
+            homeBtn.draw(sb, 1f);
+        }
         sb.end();
-
-        //stage.act();
-        //stage.draw();
     }
 
 
@@ -119,6 +121,5 @@ public class OptionState extends State {
     public void dispose() {
         bg.dispose();
         optionTitle.dispose();
-
     }
 }

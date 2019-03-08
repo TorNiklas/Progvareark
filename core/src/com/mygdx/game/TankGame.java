@@ -31,7 +31,7 @@ public class TankGame extends ApplicationAdapter {
 		sb = new SpriteBatch();
 		psb = new PolygonSpriteBatch();
 		Gdx.gl.glClearColor(0, 0, 0, 1);
-		GameStateManager.getGsm().push(new OptionState(/*gsm*/));
+		GameStateManager.getGsm().push(new MenuState(/*gsm*/));
 	}
 
 	@Override

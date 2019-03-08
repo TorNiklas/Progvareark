@@ -20,6 +20,7 @@ public class MenuState extends State{
 
     private Image hostBtn;
     private Image connectBtn;
+    private Image optionBtn;
     private Stage stage;
 
     public MenuState(/*GameStateManager gsm*/) {
@@ -30,16 +31,19 @@ public class MenuState extends State{
         //playBtn = new Texture("play.png");
         hostBtn = new Image(new Texture("host.png"));
         connectBtn = new Image(new Texture("connect.png"));
+        optionBtn = new Image(new Texture("options.png"));
 
         // set pos and size
         float center = TankGame.WIDTH/2 - hostBtn.getWidth()/2;
         hostBtn.setPosition(center, 400);
         connectBtn.setPosition(center, 300);
+        optionBtn.setPosition(center, 200);
 
         // create stage and add maps as actors
         stage = new Stage(new ScreenViewport());
         stage.addActor(hostBtn);
         stage.addActor(connectBtn);
+        stage.addActor(optionBtn);
 
         // move l8r
         Gdx.input.setInputProcessor(stage);
@@ -69,6 +73,14 @@ public class MenuState extends State{
                 };
 
                 Gdx.input.getTextInput(textInputListener, "Enter game code", "", "Enter a valid game code");
+                return true;
+            }
+        });
+
+        optionBtn.addListener(new InputListener() {
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("option selected");
+                GameStateManager.getGsm().set(new OptionState(true));
                 return true;
             }
         });
@@ -122,7 +134,7 @@ public class MenuState extends State{
         // menu buttons
         hostBtn.draw(sb, 1f);
         connectBtn.draw(sb, 1f);
-
+        optionBtn.draw(sb, 1f);
         sb.end();
     }
 
