@@ -136,11 +136,19 @@ public class Tank implements GameSprite {
         float forceX = pointerX * 1000;
         float forceY = pointerY * 1000;
 
+        System.out.println(forceX);
+        System.out.println(forceY);
+
         return new Projectile(world, body.getPosition().x, body.getPosition().y + tankSprite.getHeight()/2, new Vector2(forceX, forceY));
     }
 
     public void drive(Vector2 force) {
         body.setLinearVelocity(force);
+    }
+
+    @Override
+    public Sprite getSprite() {
+        return tankSprite;
     }
 
     @Override

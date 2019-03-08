@@ -11,11 +11,13 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Pool;
+import com.mygdx.game.TankGame;
 import com.mygdx.game.network.SpriteSerialize;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class Projectile implements GameSprite {
+public class Projectile implements GameSprite, Pool.Poolable {
     private static final AtomicInteger idCounter = new AtomicInteger(); //Highest id
     private boolean local;
     private int id;
@@ -24,6 +26,14 @@ public class Projectile implements GameSprite {
     private Rectangle bounds;
     private Sprite sprite;
     private Body body;
+    private boolean alive;
+
+    public Projectile() {
+        this.alive = false;
+        sprite = new Sprite(new Texture("bullet.png"));
+        sprite.setPosition(-10, -10);
+        sprite.setOriginCenter();
+    }
 
     public Projectile(World world, float x, float y, Vector2 force) {
         id = idCounter.incrementAndGet();
@@ -49,6 +59,12 @@ public class Projectile implements GameSprite {
         sprite.setOriginCenter();
         generateProjectile(world, new Vector2(sprite.getX(), sprite.getY()));
         body.setLinearVelocity(linVel);
+    }
+
+    public void init(World world, Vector2 pos, Vector2 velocity) {
+        generateProjectile(world, new Vector2(pos.x, pos.y));
+        body.setLinearVelocity(velocity);
+        alive = true;
     }
 
     private void generateProjectile(World world, Vector2 pos) {
@@ -80,18 +96,42 @@ public class Projectile implements GameSprite {
         shape.dispose();
     }
 
+    public boolean outOfBounds() {
+        boolean insideX = (sprite.getX() - 10 < TankGame.WIDTH && sprite.getX() + 10 > 0);
+        boolean insideY = (sprite.getY() - 10 < TankGame.HEIGHT && sprite.getY() + 10 > 0);
+        return !(insideX && insideY);
+    }
+
+    public boolean inactiveBody() {
+        return !(body.isAwake() && body.isActive());
+    }
+
     @Override
     public void update(){
         sprite.setPosition(body.getPosition().x - sprite.getWidth()/2, body.getPosition().y - sprite.getHeight()/2);
+
+        // set alive false if projectile out of bounds or hit
+        if(outOfBounds() || inactiveBody()) {
+            alive = false;
+        }
     }
 
     public void setVelocity(Vector3 velocity) {
         this.velocity = velocity;
     }
 
+    public boolean isAlive() {
+        return alive;
+    }
+
     @Override
     public Vector2 getPosition() {
         return new Vector2(sprite.getX(), sprite.getY());
+    }
+
+    @Override
+    public Sprite getSprite() {
+        return sprite;
     }
 
     @Override
@@ -132,5 +172,13 @@ public class Projectile implements GameSprite {
     @Override
     public void draw(SpriteBatch batch) {
         sprite.draw(batch);
+    }
+
+    @Override
+    public void reset() {
+        body.setTransform(new Vector2(-50,-50), 0);
+        body.setLinearVelocity(0, 0);
+        body.setActive(false);
+        alive = false;
     }
 }
