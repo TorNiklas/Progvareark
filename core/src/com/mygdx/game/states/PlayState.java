@@ -141,16 +141,20 @@ public class PlayState extends State {
                 float vectorX = (float)cos(Math.toRadians(deg));
                 //fire(vectorX,vectorY);
 
-                // object pooling test
-                Vector2 pos = gameSprites.get(0).getPosition();
+                // use object pooling
+                // start pos
+                Vector2 pos = ((Tank)gameSprites.get(0)).getBarrelPosition();
+
                 // prevent clipping
-                pos.x += gameSprites.get(0).getSprite().getWidth()/2;
-                pos.y += gameSprites.get(0).getSprite().getHeight();
-                Vector2 force = new Vector2(vectorX * 1000f, vectorY * 1000f);
+                //pos.x += gameSprites.get(0).getSprite().getWidth();
+                //pos.y += gameSprites.get(0).getSprite().getHeight();
+
+                // exit velocity
+                Vector2 velocity = new Vector2(vectorX * 1000f, vectorY * 1000f);
 
                 System.out.println(pos.x + " - " + pos.y);
-                System.out.println(force.x + " - " + force.y);
-                fireFromPool(pos, force);
+                System.out.println(velocity.x + " - " + velocity.y);
+                fireFromPool(pos, velocity);
 
                 // Integer[] send = { x, y };
                 // TankGame.getBluetooth().writeObject(send);
@@ -230,7 +234,6 @@ public class PlayState extends State {
     public void fireFromPool(Vector2 pos, Vector2 force) {
         System.out.println("FIRING " + pos.x + " - " + pos.y);
         System.out.println("FORCE " + force.x + " - " + force.y);
-        //gameSprites.add(((Tank)gameSprites.get(0)).fireProjectile(world, x, y));
         Projectile p = projectilePool.obtain();
         p.init(world, pos, force);
         activeProjectiles.add(p);

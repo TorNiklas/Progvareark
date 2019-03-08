@@ -82,8 +82,8 @@ public class Projectile implements GameSprite, Pool.Poolable {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 0.5f;
-        fixtureDef.friction = 0.4f;
-        fixtureDef.restitution = 0.3f;
+        fixtureDef.friction = 0.7f;
+        fixtureDef.restitution = 0.1f;
 
         // add body to world
         body = world.createBody(bodyDef);

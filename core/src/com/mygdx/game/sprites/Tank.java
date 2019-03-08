@@ -51,9 +51,6 @@ public class Tank implements GameSprite {
         PolygonShape tankShape = new PolygonShape();
         tankShape.setAsBox(tankSprite.getWidth()/2, tankSprite.getHeight()/2);
 
-        PolygonShape barrelShape = new PolygonShape();
-        barrelShape.setAsBox(barrelSprite.getWidth()/2, barrelSprite.getHeight()/4, new Vector2(8f, 4f), 0f);
-
         // create fixtures
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.density = 2.5f;
@@ -63,16 +60,12 @@ public class Tank implements GameSprite {
         // add body to world
         body = world.createBody(bodyDef);
 
-        // attach fixtures
+        // attach fixture
         fixtureDef.shape = tankShape;
-        body.createFixture(fixtureDef);
-
-        fixtureDef.shape = barrelShape;
         body.createFixture(fixtureDef);
 
         // clean up
         tankShape.dispose();
-        barrelShape.dispose();
     }
 
     @Override
@@ -93,6 +86,13 @@ public class Tank implements GameSprite {
     @Override
     public Vector2 getPosition() {
         return new Vector2(tankSprite.getX(), tankSprite.getY());
+    }
+
+    public Vector2 getBarrelPosition() {
+        float[] vertices = barrelSprite.getVertices();
+        float barrelX = (vertices[SpriteBatch.X3] + vertices[SpriteBatch.X4])/2;
+        float barrelY = (vertices[SpriteBatch.Y3] + vertices[SpriteBatch.Y4])/2;
+        return new Vector2(barrelX, barrelY);
     }
 
     @Override
