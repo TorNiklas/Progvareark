@@ -5,15 +5,19 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.mygdx.game.TankGame;
 
-public class MenuState extends State {
+import javax.swing.text.View;
+
+public class MenuState extends State{
     private Texture bg;
     private Texture playBtn;
+    private Texture optionBtn;
 
     public MenuState(GameStateManager gsm) {
         super(gsm);
         cam.setToOrtho(false, TankGame.WIDTH, TankGame.HEIGHT);
         bg = new Texture("bg.png");
         playBtn = new Texture("play.png");
+        optionBtn = new Texture("option.png");
     }
 
     @Override
@@ -29,14 +33,16 @@ public class MenuState extends State {
                 TankGame.getBluetooth().startClient();
             }
             else {
-                gsm.set(new PlayState(gsm));
+                //gsm.set(new PlayState(gsm));
+                gsm.set(new OptionState(gsm));
             }
         }
     }
 
     public static void onConnected(boolean isHost) {
         System.out.println("Connected!");
-        gsm.set(new PlayState(gsm));
+        //gsm.set(new PlayState(gsm));
+        gsm.set(new OptionState(gsm));
     }
 
     public static void onDisconnect() {
@@ -54,6 +60,7 @@ public class MenuState extends State {
         sb.begin();
         sb.draw(bg, 0,0, 1280, 720);
         sb.draw(playBtn, cam.position.x - playBtn.getWidth()/2, cam.position.y - playBtn.getHeight()/2);
+        sb.draw(optionBtn, cam.position.x+100, cam.position.y);
         sb.end();
     }
 

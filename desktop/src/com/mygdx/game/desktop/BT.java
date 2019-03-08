@@ -4,6 +4,7 @@ import com.mygdx.game.BTInterface;
 import com.mygdx.game.sprites.GameSprite;
 import com.mygdx.game.states.MenuState;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class BT implements BTInterface {
@@ -15,6 +16,11 @@ public class BT implements BTInterface {
     @Override
     public void startClient() {
         MenuState.onConnected(false);
+    }
+
+    @Override
+    public void writeObject(Serializable object) {
+
     }
 
     @Override
