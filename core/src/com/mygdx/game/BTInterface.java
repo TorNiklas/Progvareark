@@ -7,13 +7,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public interface BTInterface {
-    public void startHost();
+    public void startHost(String code, Runnable onConnected, Runnable onDisconnect);
 
-    public void startClient();
+    public void startClient(String code, Runnable onConnected, Runnable onDisconnect);
 
     public void writeObject(Serializable object);
-
-    public void writeSprites(ArrayList<GameSprite> sprites);
 
     public void disconnect();
 

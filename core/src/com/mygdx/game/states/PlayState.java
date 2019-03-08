@@ -27,6 +27,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.mygdx.game.TankGame;
 import com.mygdx.game.network.SpriteSerialize;
 import com.mygdx.game.sprites.GameSprite;
@@ -92,7 +93,7 @@ public class PlayState extends State {
         decreaseElevation.setSize(100,100);
         decreaseElevation.setPosition(0, 200);
 
-        stage = new Stage(new ScreenViewport());
+        stage = new Stage(new StretchViewport(TankGame.WIDTH, TankGame.HEIGHT));
         stage.addActor(leftBtn);
         stage.addActor(rightBtn);
         stage.addActor(fireButton);

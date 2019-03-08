@@ -31,6 +31,7 @@ import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import com.mygdx.game.network.SpriteSerialize;
 import com.mygdx.game.sprites.GameSprite;
+import com.mygdx.game.states.GameSetupState;
 import com.mygdx.game.states.MenuState;
 import com.mygdx.game.states.PlayState;
 
@@ -49,7 +50,9 @@ public class AndroidLauncher extends AndroidApplication implements BTInterface {
 	private static final UUID uuid = UUID.fromString("20a85f51-908e-451f-ba1e-395ced9acdf0");
 	private String oName = BluetoothAdapter.getDefaultAdapter().getName();
 	private static ConnectedThread connThread;
-	private final String code = "JKFD";
+	private String code;
+	Runnable onConnected;
+	Runnable onDisconnect;
 
 	@Override
 	protected void onCreate (Bundle savedInstanceState) {
@@ -67,62 +70,65 @@ public class AndroidLauncher extends AndroidApplication implements BTInterface {
 	}
 
 	@Override
-	public void startHost() {
-		showToast("Starting host connection...");
+	public void startHost(String codeIn, Runnable onConnected, Runnable onDisconnect) {
+	    this.code = codeIn;
+	    this.onConnected = onConnected;
+	    this.onDisconnect = onDisconnect;
 
-		BluetoothAdapter.getDefaultAdapter().enable();
-		while(!BluetoothAdapter.getDefaultAdapter().isEnabled()) {}
-		showToast("BT Enabled");
+	    new Thread(new Runnable() {
+			@Override
+			public void run() {
+				showToast("Starting host connection...");
 
-		String newName = uuid.toString() + code;
-		BluetoothAdapter.getDefaultAdapter().setName(newName);
-		while(!BluetoothAdapter.getDefaultAdapter().getName().equals(newName)) {}
-		showToast("Name changed");
+				BluetoothAdapter.getDefaultAdapter().enable();
+				while(!BluetoothAdapter.getDefaultAdapter().isEnabled()) {}
+				showToast("BT Enabled");
 
-		//currentMode = BTMode.GAME_HOST;
-		//HOST
-		//Makes device discoverable
-		Intent discoverableIntent =
-				new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-		discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 60);
-		startActivityForResult(discoverableIntent, 0);
+				String newName = uuid.toString() + code;
+				BluetoothAdapter.getDefaultAdapter().setName(newName);
+				while(!BluetoothAdapter.getDefaultAdapter().getName().equals(newName)) {}
+				showToast("Name changed");
+
+				//currentMode = BTMode.GAME_HOST;
+				//HOST
+				//Makes device discoverable
+				Intent discoverableIntent =
+						new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+				discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 60);
+				startActivityForResult(discoverableIntent, 0);
+			}
+		}).start();
+
 	}
 
 	@Override
-	public void startClient() {
-		showToast("Starting client connection...");
-		//currentMode = BTMode.GAME_CLIENT;
-		BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+	public void startClient(String codeIn, Runnable onConnected, Runnable onDisconnect) {
+	    this.code = codeIn;
+		this.onConnected = onConnected;
+		this.onDisconnect = onDisconnect;
 
-		if (adapter == null) {
-			// Device doesn't support Bluetooth
-		}
-		else {
-			Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-			if (!adapter.isEnabled()) {
-				startActivityForResult(enableBtIntent, 1);
-			}
-			else {
-				onActivityResult(1, RESULT_OK, enableBtIntent);
-			}
-		}
-	}
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				showToast("Starting client connection...");
+				//currentMode = BTMode.GAME_CLIENT;
+				BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
 
-	@Override
-	public void writeSprites(ArrayList<GameSprite> sprites) {
-		/*if (connThread != null) {
-			for (GameSprite gs : sprites) {
-				*//*System.out.println("Sending...");
-				System.out.println(gs.getType());
-				System.out.println(gs.getPosition());*//*
-				connThread.write(gs.getType());
-				connThread.write(gs.getPosition());
+				if (adapter == null) {
+					// Device doesn't support Bluetooth
+				}
+				else {
+					Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+					if (!adapter.isEnabled()) {
+						startActivityForResult(enableBtIntent, 1);
+					}
+					else {
+						onActivityResult(1, RESULT_OK, enableBtIntent);
+					}
+				}
 			}
-			//connThread.write(sprites);
-		}
-		else {
-			System.out.println("NOT CONNECTED!!!!");
-		}*/
+		}).start();
+
 	}
 
 	@Override
@@ -165,7 +171,6 @@ public class AndroidLauncher extends AndroidApplication implements BTInterface {
 						socket.connect();
 						connThread = new ConnectedThread(socket, false, AndroidLauncher.this);
 						connThread.start();
-						MenuState.onConnected(false);
 					} catch (IOException e) {
 						e.printStackTrace();
 						//Ikke riktig device?
@@ -195,7 +200,6 @@ public class AndroidLauncher extends AndroidApplication implements BTInterface {
 							serverSocket.close();
 							connThread = new ConnectedThread(socket, true, AndroidLauncher.this);
 							connThread.start();
-							MenuState.onConnected(true);
 						}
 						catch (Exception e) {
 							//TODO: Error handling

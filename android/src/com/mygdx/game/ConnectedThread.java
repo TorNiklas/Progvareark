@@ -93,6 +93,7 @@ class ConnectedThread extends Thread {
 
     public void run() {
         System.out.println("ConnThread running...");
+        act.onConnected.run();
 
         //Send sprites to other player every x millis
         System.out.println("Starting send");
@@ -122,6 +123,7 @@ class ConnectedThread extends Thread {
                     System.out.println(e.toString());
                     if (e.toString().contains("bt socket closed")) {
                         System.out.println("Disconnected");
+                        act.onDisconnect.run();
                         break;
                     }
                 }

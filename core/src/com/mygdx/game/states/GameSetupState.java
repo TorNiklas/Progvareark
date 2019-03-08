@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.mygdx.game.TankGame;
 
 import java.util.Random;
@@ -27,6 +28,24 @@ public class GameSetupState extends State {
     private String gameCodeString;
     private Stage stage;
 
+    private static PlayState selectedState;
+
+    private Runnable onConnect = new Runnable() {
+        @Override
+        public void run() {
+            System.out.println("Connected!");
+            while (selectedState == null) {}
+            GameStateManager.getGsm().set(selectedState);
+        }
+    };
+
+    private Runnable onDisconnect = new Runnable() {
+        @Override
+        public void run() {
+            System.out.println("Disconnected :(");
+        }
+    };
+
     public GameSetupState() {
         super();
         cam.setToOrtho(false, TankGame.WIDTH, TankGame.HEIGHT);
@@ -35,6 +54,9 @@ public class GameSetupState extends State {
         // init game code text
         gameCode = new BitmapFont();
         gameCodeString = generateGameCode();
+
+        TankGame.getBluetooth().startHost(gameCodeString, onConnect, onDisconnect);
+
 
         // TODO: fix better scaling without pixelating the text
         //gameCode.getData().setScale(3f, 3f);
@@ -53,7 +75,7 @@ public class GameSetupState extends State {
         backBtn.setPosition(center, 50);
 
         // create stage and add maps as actors
-        stage = new Stage(new ScreenViewport());
+        stage = new Stage(new StretchViewport(TankGame.WIDTH, TankGame.HEIGHT));
         stage.addActor(forestMapBtn);
         stage.addActor(snowMapBtn);
         stage.addActor(desertMapBtn);
@@ -64,7 +86,8 @@ public class GameSetupState extends State {
         forestMapBtn.addListener(new InputListener() {
                 public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
                     System.out.println("forest selected");
-                    GameStateManager.getGsm().set(new PlayState(1));
+                    //GameStateManager.getGsm().set(new PlayState(1));
+                    selectedState = new PlayState(1);
                     return true;
             }
         });
@@ -72,7 +95,8 @@ public class GameSetupState extends State {
         snowMapBtn.addListener(new InputListener() {
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
                 System.out.println("snow selected");
-                GameStateManager.getGsm().set(new PlayState(2));
+                //GameStateManager.getGsm().set(new PlayState(2));
+                selectedState = new PlayState(2);
                 return true;
             }
         });
@@ -80,7 +104,8 @@ public class GameSetupState extends State {
         desertMapBtn.addListener(new InputListener() {
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
                 System.out.println("desert selected");
-                GameStateManager.getGsm().set(new PlayState(3));
+                //GameStateManager.getGsm().set(new PlayState(3));
+                selectedState = new PlayState(3);
                 return true;
             }
         });
@@ -102,11 +127,6 @@ public class GameSetupState extends State {
     @Override
     public void handleInput() {
 
-    }
-
-    public static void onConnected(boolean isHost) {
-        System.out.println("Connected!");
-        //GameStateManager.getGsm().set(new PlayState(/*gsm*/));
     }
 
     public static void onDisconnect() {
