@@ -33,10 +33,6 @@ public class PlayState extends State {
     private Box2DDebugRenderer debugRenderer;
     private Ground ground;
 
-    private Texture buttons;
-
-    private Drawable leftBtnDrawable;
-    private Drawable rightBtnDrawable;
     private Stage stage;
     private ImageButton leftBtn;
     private ImageButton rightBtn;
@@ -46,9 +42,9 @@ public class PlayState extends State {
         cam.setToOrtho(false, TankGame.WIDTH, TankGame.HEIGHT);
         bg = new Texture("bg.png");
 
-        buttons = new Texture("buttons.png");
-        rightBtnDrawable = new TextureRegionDrawable(new TextureRegion(buttons, 100,0,100,100));
-        leftBtnDrawable = new TextureRegionDrawable(new TextureRegion(buttons, 0,0,100,100));
+        Texture buttons = new Texture("buttons.png");
+        Drawable rightBtnDrawable = new TextureRegionDrawable(new TextureRegion(buttons, 100,0,100,100));
+        Drawable leftBtnDrawable = new TextureRegionDrawable(new TextureRegion(buttons, 0,0,100,100));
         leftBtn = new ImageButton(leftBtnDrawable);
         rightBtn = new ImageButton(rightBtnDrawable);
         rightBtn.setPosition(150, 0);
@@ -56,6 +52,7 @@ public class PlayState extends State {
         stage.addActor(leftBtn);
         stage.addActor(rightBtn);
         Gdx.input.setInputProcessor(stage);
+        //Button event handlers, should probably not be here
         leftBtn.addListener(new EventListener() {
             @Override
             public boolean handle(Event event) {
@@ -147,6 +144,7 @@ public class PlayState extends State {
         }*/
         sb.end();
 
+        //stage for buttons
         stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();
         // box-2d
