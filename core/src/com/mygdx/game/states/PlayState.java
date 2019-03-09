@@ -102,21 +102,44 @@ public class PlayState extends State {
         Gdx.input.setInputProcessor(stage);
 
         //Button event handlers, should probably not be here
-        leftBtn.addListener(new EventListener() {
-            @Override
+        leftBtn.addListener(new ClickListener() {
+            /*@Override
             public boolean handle(Event event) {
                 System.out.println("Pressed left button");
-                ((Tank)gameSprites.get(0)).drive(new Vector2(-50f, -5f));
+                //((Tank)gameSprites.get(0)).drive(new Vector2(-50f, -5f));
+                return true;
+            }*/
+
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("touch down - left");
+                ((Tank)gameSprites.get(0)).setMoveLeft(true);
                 return true;
             }
+
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("touch up - left");
+                ((Tank)gameSprites.get(0)).setMoveLeft(false);
+            }
+
         });
 
-        rightBtn.addListener(new EventListener() {
-            @Override
+        rightBtn.addListener(new ClickListener() {
+            /*@Override
             public boolean handle(Event event) {
                 System.out.println("Pressed right button");
                 ((Tank)gameSprites.get(0)).drive(new Vector2(50f, -5f));
                 return true;
+            }*/
+
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("touch down - right");
+                ((Tank)gameSprites.get(0)).setMoveRight(true);
+                return true;
+            }
+
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("touch up - right");
+                ((Tank)gameSprites.get(0)).setMoveRight(false);
             }
         });
 

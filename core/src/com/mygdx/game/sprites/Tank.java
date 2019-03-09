@@ -23,6 +23,8 @@ public class Tank implements GameSprite {
     private Sprite tankSprite;
     private Sprite barrelSprite;
     private Body body;
+    private boolean moveLeft;
+    private boolean moveRight;
     //private static final AtomicInteger idCounter = new AtomicInteger();
 
     public Tank(World world, int x, int y) {
@@ -39,6 +41,10 @@ public class Tank implements GameSprite {
 
         // create box2d tank
         generateTank(world, new Vector2(tankSprite.getX(), tankSprite.getY()));
+
+        // movement
+        moveLeft = false;
+        moveRight = false;
     }
 
     private void generateTank(World world, Vector2 pos) {
@@ -57,8 +63,8 @@ public class Tank implements GameSprite {
         // create fixtures
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.density = 2.5f;
-        fixtureDef.friction = 0.7f;
-        fixtureDef.restitution = 0.05f;
+        fixtureDef.friction = 0.75f;
+        fixtureDef.restitution = 0f;
 
         // add body to world
         body = world.createBody(bodyDef);
@@ -82,6 +88,9 @@ public class Tank implements GameSprite {
 
     @Override
     public void update(){
+        // handle movement
+        move();
+
         // tank
         tankSprite.setPosition(body.getPosition().x - tankSprite.getWidth()/2, body.getPosition().y - tankSprite.getHeight()/2);
         tankSprite.setRotation(body.getAngle() * MathUtils.radiansToDegrees);
@@ -141,6 +150,25 @@ public class Tank implements GameSprite {
 
     public void drive(Vector2 force) {
         body.setLinearVelocity(force);
+    }
+
+    public void move() {
+        if(moveLeft) {
+            body.setLinearVelocity(new Vector2(-50f, -5f));
+        } else if(moveRight) {
+            //body.setLinearVelocity(new Vector2(50f, -5f));
+            body.setLinearVelocity(new Vector2(50f, -5f));
+        } else {
+            body.setLinearVelocity(new Vector2(0f, -50f));
+        }
+    }
+
+    public void setMoveLeft(boolean moveLeft) {
+        this.moveLeft = moveLeft;
+    }
+
+    public void setMoveRight(boolean moveRight) {
+        this.moveRight = moveRight;
     }
 
     @Override
