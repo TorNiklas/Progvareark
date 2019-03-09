@@ -10,9 +10,12 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.joints.WheelJoint;
+import com.badlogic.gdx.physics.box2d.joints.WheelJointDef;
 import com.mygdx.game.TankGame;
 import com.mygdx.game.network.SpriteSerialize;
 
@@ -57,13 +60,10 @@ public class Tank implements GameSprite {
         PolygonShape tankShape = new PolygonShape();
         tankShape.setAsBox(tankSprite.getWidth()/2, tankSprite.getHeight()/2);
 
-        PolygonShape barrelShape = new PolygonShape();
-        barrelShape.setAsBox(barrelSprite.getWidth()/2, barrelSprite.getHeight()/4, new Vector2(8f, 4f), 0f);
-
         // create fixtures
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.density = 2.5f;
-        fixtureDef.friction = 0.75f;
+        fixtureDef.friction = 0.7f;
         fixtureDef.restitution = 0f;
 
         // add body to world
@@ -73,12 +73,10 @@ public class Tank implements GameSprite {
         fixtureDef.shape = tankShape;
         body.createFixture(fixtureDef);
 
-        fixtureDef.shape = barrelShape;
-        body.createFixture(fixtureDef);
+        body.setAngularDamping(2f);
 
         // clean up
         tankShape.dispose();
-        barrelShape.dispose();
     }
 
     @Override
@@ -154,12 +152,12 @@ public class Tank implements GameSprite {
 
     public void move() {
         if(moveLeft) {
-            body.setLinearVelocity(new Vector2(-50f, -5f));
+            body.setLinearVelocity(new Vector2(-30f, body.getLinearVelocity().y));
         } else if(moveRight) {
-            //body.setLinearVelocity(new Vector2(50f, -5f));
-            body.setLinearVelocity(new Vector2(50f, -5f));
+            body.setLinearVelocity(new Vector2(30f, body.getLinearVelocity().y));
+            //body.applyForceToCenter(new Vector2(5000f, body.getLinearVelocity().y), true);
         } else {
-            body.setLinearVelocity(new Vector2(0f, -50f));
+            body.setLinearVelocity(new Vector2(0f, body.getLinearVelocity().y));
         }
     }
 
