@@ -28,6 +28,7 @@ public class Tank implements GameSprite {
     private Body body;
     private boolean moveLeft;
     private boolean moveRight;
+    private float energy;
     //private static final AtomicInteger idCounter = new AtomicInteger();
 
     public Tank(World world, int x, int y) {
@@ -48,6 +49,9 @@ public class Tank implements GameSprite {
         // movement
         moveLeft = false;
         moveRight = false;
+
+        // energy
+        energy = 100.0f;
     }
 
     private void generateTank(World world, Vector2 pos) {
@@ -151,9 +155,11 @@ public class Tank implements GameSprite {
     }
 
     public void move() {
-        if(moveLeft) {
+        if(moveLeft && energy > 0) {
+            energy -= 0.25;
             body.setLinearVelocity(new Vector2(-30f, body.getLinearVelocity().y));
-        } else if(moveRight) {
+        } else if(moveRight && energy > 0) {
+            energy -= 0.25;
             body.setLinearVelocity(new Vector2(30f, body.getLinearVelocity().y));
             //body.applyForceToCenter(new Vector2(5000f, body.getLinearVelocity().y), true);
         } else {
@@ -167,6 +173,10 @@ public class Tank implements GameSprite {
 
     public void setMoveRight(boolean moveRight) {
         this.moveRight = moveRight;
+    }
+
+    public float getEnergy() {
+        return energy;
     }
 
     @Override
