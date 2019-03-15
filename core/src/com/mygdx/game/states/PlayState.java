@@ -20,6 +20,7 @@ import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -69,6 +70,11 @@ public class PlayState extends State {
     private int aimRate = 5;
     private boolean isIncreasing;
     private boolean isDecreasing;
+
+    private Image volumeOn;
+    private Image volumeOff;
+    private Image surrender;
+
 
     // active projectiles
     private final Array<Projectile> activeProjectiles = new Array<Projectile>();
@@ -124,6 +130,26 @@ public class PlayState extends State {
         stage.addActor(decreaseElevation);
         stage.addActor(energyBar);
         stage.addActor(healthBar);
+
+        //create options menu button
+        volumeOn = new Image(new Texture("volumeOnBtn.png"));
+        volumeOn.setSize(volumeOn.getWidth(), volumeOn.getHeight());
+        volumeOn.setPosition(TankGame.WIDTH - volumeOn.getWidth()*2, TankGame.HEIGHT - volumeOn.getHeight()*2);
+        stage.addActor(volumeOn);
+        //Volume is on by default
+        volumeOn.setVisible(true);
+
+        volumeOff = new Image(new Texture("volumeOffBtn.png"));
+        volumeOff.setSize(volumeOff.getWidth(), volumeOff.getHeight());
+        volumeOff.setPosition(TankGame.WIDTH - volumeOff.getWidth()*2, TankGame.HEIGHT - volumeOff.getHeight()*2);
+        stage.addActor(volumeOff);
+        //Volume is on by default, so the mute icon is not visible
+        volumeOff.setVisible(false);
+
+        surrender = new Image(new Texture("surrenderBtn.png"));
+        surrender.setSize(surrender.getWidth(), surrender.getHeight());
+        surrender.setPosition(TankGame.WIDTH - surrender.getWidth()*2, TankGame.HEIGHT - surrender.getHeight()*3.5f);
+        stage.addActor(surrender);
 
         Gdx.input.setInputProcessor(stage);
 
@@ -207,6 +233,33 @@ public class PlayState extends State {
             }
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
                 isDecreasing = false;
+            }
+        });
+
+        volumeOn.addListener(new InputListener(){
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("Mute");
+                volumeOn.setVisible(false);
+                volumeOff.setVisible(true);
+
+                return false;
+            }
+        });
+
+        volumeOff.addListener(new InputListener(){
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("Unmute");
+                volumeOn.setVisible(true);
+                volumeOff.setVisible(false);
+
+                return false;
+            }
+        });
+
+        surrender.addListener(new InputListener() {
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("Surrender");
+                return false;
             }
         });
 

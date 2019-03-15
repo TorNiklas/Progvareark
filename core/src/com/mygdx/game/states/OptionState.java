@@ -81,11 +81,13 @@ public class OptionState extends State {
                 }
             });
         }
-        if(!fromMenuState){
+        /*if(!fromMenuState){
             returnToGameBtn.addListener(new InputListener() {
                 public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                    System.out.println("Home");
-                    GameStateManager.getGsm().set(new MenuState());
+                    System.out.println("Return to game");
+                    State prevState = GameStateManager.getGsm().peek();
+
+                    GameStateManager.getGsm().push(prevState); //set(new MenuState());
                     return true;
                 }
             });
@@ -95,7 +97,7 @@ public class OptionState extends State {
                     return false;
                 }
             });
-        }
+        }*/
 
     }
 
@@ -114,7 +116,7 @@ public class OptionState extends State {
         sb.setProjectionMatrix(cam.combined);
         sb.begin();
         sb.draw(bg, 0,0, 1280, 720);
-        sb.draw(optionTitle, cam.position.x - optionTitle.getWidth()/2, cam.position.y + optionTitle.getHeight()*1.5f);
+        sb.draw(optionTitle, cam.position.x - optionTitle.getWidth()/2, 500+optionTitle.getHeight()/4);
         sb.end();
 
         // draw stage actors
