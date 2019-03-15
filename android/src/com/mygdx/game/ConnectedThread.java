@@ -95,7 +95,7 @@ class ConnectedThread extends Thread {
                     /*int x = oInput.readInt();
                     int y = oInput.readInt();*/
                     System.out.println(Arrays.toString(xy));
-                    PlayState.fire(xy[0], xy[1]);
+                    PlayState.fire(xy[0], xy[1], 1000);
                     act.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {

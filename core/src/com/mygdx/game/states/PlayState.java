@@ -57,7 +57,8 @@ public class PlayState extends State {
     private boolean isIncreasing;
     private boolean isDecreasing;
 
-    public PlayState(/*GameStateManager gsm*/) {
+
+	public PlayState(/*GameStateManager gsm*/) {
         super(/*gsm*/);
         cam.setToOrtho(false, TankGame.WIDTH, TankGame.HEIGHT);
         bg = new Texture("bg.png");
@@ -95,13 +96,21 @@ public class PlayState extends State {
             }
         });
 
+
         fireButton.addListener(new ClickListener() {
             public void clicked(InputEvent e, float x, float y) {
-                System.out.println("Firebutton has been pressed!");
+            	if(!((Tank)gameSprites.get(0)).powerUp()) {
+					int power = ((Tank)gameSprites.get(0)).power;
+            		float vectorY = (float)sin(Math.toRadians(deg));
+					float vectorX = (float)cos(Math.toRadians(deg));
+					fire(vectorX,vectorY, power);
+					System.out.println("Firebutton has been pressed!");
+					System.out.println(power);
 
-                float vectorY = (float)sin(Math.toRadians(deg));
-                float vectorX = (float)cos(Math.toRadians(deg));
-                fire(vectorX,vectorY);
+					((Tank)gameSprites.get(0)).power = 1;
+				}
+
+
                 // Integer[] send = { x, y };
                 // TankGame.getBluetooth().writeObject(send);
             }
@@ -136,9 +145,9 @@ public class PlayState extends State {
         ground = new Ground(world);
     }
 
-    public static void fire(float x, float y) {
+    public static void fire(float x, float y, int power) {
         System.out.println("FIRING " + x + " - " + y);
-        gameSprites.add(((Tank)gameSprites.get(0)).fireProjectile(world, x, y));
+        gameSprites.add(((Tank)gameSprites.get(0)).fireProjectile(world, x, y, power));
     }
 
     @Override
@@ -167,6 +176,7 @@ public class PlayState extends State {
     @Override
     public void update(float dt) {
         handleInput();
+
         /*for (GameSprite gs : gameSprites) {
             gs.update();
         }*/
@@ -189,6 +199,7 @@ public class PlayState extends State {
 
     @Override
     public void render(SpriteBatch sb) {
+		((Tank)gameSprites.get(0)).powerTick();
         sb.setProjectionMatrix(cam.combined);
         sb.begin();
         //sb.draw(bg, 0,0, 1280, 720);

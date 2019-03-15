@@ -33,6 +33,7 @@ public class Projectile implements GameSprite {
         generateProjectile(world, new Vector2(sprite.getX(), sprite.getY()));
         Vector2 impulse = new Vector2(force.x*2, force.y*2);
         body.applyLinearImpulse(impulse, new Vector2(x, y), true);
+
     }
 
     private void generateProjectile(World world, Vector2 pos) {
@@ -66,7 +67,9 @@ public class Projectile implements GameSprite {
 
     @Override
     public void update(){
-        sprite.setPosition(body.getPosition().x - sprite.getWidth()/2, body.getPosition().y - sprite.getHeight()/2);
+        sprite.setPosition(body.getPosition().x - sprite.getWidth()/2,body.getPosition().y - sprite.getHeight()/2);
+
+		body.applyForce(0, 200, body.getPosition().x, body.getPosition().y, true);
     }
 
     public void setVelocity(Vector3 velocity) {

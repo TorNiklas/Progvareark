@@ -1,9 +1,11 @@
 package com.mygdx.game.sprites;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -24,7 +26,12 @@ public class Tank implements GameSprite {
     private Sprite barrelSprite;
     private Body body;
 
+	private ShapeRenderer shapeRenderer;
+	static private boolean projectionMatrixSet;
+
     public Tank(World world, int x, int y) {
+		shapeRenderer = new ShapeRenderer();
+		projectionMatrixSet = false;
         // tank sprite
         tankSprite = new Sprite(new Texture("tank.png"));
         tankSprite.setPosition(x, y);
@@ -97,13 +104,30 @@ public class Tank implements GameSprite {
 
 
     }
-
-    public GameSprite fireProjectile(World world, float pointerX, float pointerY) {
+	boolean poweringUp = false;
+	public int power = 1;
+	int maxPower = 1000;
+	public boolean powerUp() {
+    	if(poweringUp) {
+			poweringUp = !poweringUp;
+			return false;
+		} else {
+    		poweringUp = !poweringUp;
+    		return true;
+		}
+	}
+	public void powerTick() {
+		if(poweringUp) { power += 10; }// (int)Math.ceil(power*1.5); }
+		if(power > maxPower) { power = maxPower; }
+	}
+    public GameSprite fireProjectile(World world, float pointerX, float pointerY, int force) {
         //float forceX = pointerX - body.getPosition().x;
         //float forceY = -(pointerY - TankGame.HEIGHT) - body.getPosition().y;
 
-        float forceX = pointerX * 1000;
-        float forceY = pointerY * 1000;
+//		force = 1000;
+//		force = 100000;
+        float forceX = pointerX * force;
+        float forceY = pointerY * force;
 
         return new Projectile(world, body.getPosition().x, body.getPosition().y + tankSprite.getHeight()/2, new Vector2(forceX, forceY));
     }
@@ -121,5 +145,27 @@ public class Tank implements GameSprite {
     public void draw(SpriteBatch batch) {
         barrelSprite.draw(batch);
         tankSprite.draw(batch);
+
+		batch.end();
+		if(!projectionMatrixSet){
+			shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
+		}
+		float x = body.getPosition().x-50;
+		float y = body.getPosition().y+25;
+		float length = 100;
+		float height = 20;
+		if(poweringUp) {
+			shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+			shapeRenderer.setColor(Color.WHITE);
+			shapeRenderer.rect(x, y, length, height);
+
+			shapeRenderer.setColor(Color.BLACK);
+			shapeRenderer.rect(x + 5, y + 5, length - 10, height - 10);
+
+			shapeRenderer.setColor(Color.RED);
+			shapeRenderer.rect(x + 5, y + 5, ((float)(power)/(float)(maxPower))*(length-10), height - 10);
+			shapeRenderer.end();
+		}
+		batch.begin();
     }
 }
