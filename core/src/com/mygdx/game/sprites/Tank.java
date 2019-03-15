@@ -10,9 +10,12 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.joints.WheelJoint;
+import com.badlogic.gdx.physics.box2d.joints.WheelJointDef;
 import com.mygdx.game.TankGame;
 import com.mygdx.game.network.SpriteSerialize;
 
@@ -23,6 +26,9 @@ public class Tank implements GameSprite {
     private Sprite tankSprite;
     private Sprite barrelSprite;
     private Body body;
+    private boolean moveLeft;
+    private boolean moveRight;
+    private float energy;
     //private static final AtomicInteger idCounter = new AtomicInteger();
 
     public Tank(World world, int x, int y) {
@@ -39,6 +45,13 @@ public class Tank implements GameSprite {
 
         // create box2d tank
         generateTank(world, new Vector2(tankSprite.getX(), tankSprite.getY()));
+
+        // movement
+        moveLeft = false;
+        moveRight = false;
+
+        // energy
+        energy = 100.0f;
     }
 
     private void generateTank(World world, Vector2 pos) {
@@ -51,28 +64,23 @@ public class Tank implements GameSprite {
         PolygonShape tankShape = new PolygonShape();
         tankShape.setAsBox(tankSprite.getWidth()/2, tankSprite.getHeight()/2);
 
-        PolygonShape barrelShape = new PolygonShape();
-        barrelShape.setAsBox(barrelSprite.getWidth()/2, barrelSprite.getHeight()/4, new Vector2(8f, 4f), 0f);
-
         // create fixtures
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.density = 2.5f;
         fixtureDef.friction = 0.7f;
-        fixtureDef.restitution = 0.05f;
+        fixtureDef.restitution = 0f;
 
         // add body to world
         body = world.createBody(bodyDef);
 
-        // attach fixtures
+        // attach fixture
         fixtureDef.shape = tankShape;
         body.createFixture(fixtureDef);
-
-        fixtureDef.shape = barrelShape;
-        body.createFixture(fixtureDef);
+        
+        body.setAngularDamping(2f);
 
         // clean up
         tankShape.dispose();
-        barrelShape.dispose();
     }
 
     @Override
@@ -82,6 +90,9 @@ public class Tank implements GameSprite {
 
     @Override
     public void update(){
+        // handle movement
+        move();
+
         // tank
         tankSprite.setPosition(body.getPosition().x - tankSprite.getWidth()/2, body.getPosition().y - tankSprite.getHeight()/2);
         tankSprite.setRotation(body.getAngle() * MathUtils.radiansToDegrees);
@@ -93,6 +104,13 @@ public class Tank implements GameSprite {
     @Override
     public Vector2 getPosition() {
         return new Vector2(tankSprite.getX(), tankSprite.getY());
+    }
+
+    public Vector2 getBarrelPosition() {
+        float[] vertices = barrelSprite.getVertices();
+        float barrelX = (vertices[SpriteBatch.X3] + vertices[SpriteBatch.X4])/2;
+        float barrelY = (vertices[SpriteBatch.Y3] + vertices[SpriteBatch.Y4])/2;
+        return new Vector2(barrelX, barrelY);
     }
 
     @Override
@@ -136,11 +154,44 @@ public class Tank implements GameSprite {
         float forceX = pointerX * 1000;
         float forceY = pointerY * 1000;
 
+        System.out.println(forceX);
+        System.out.println(forceY);
+
         return new Projectile(world, body.getPosition().x, body.getPosition().y + tankSprite.getHeight()/2, new Vector2(forceX, forceY));
     }
 
     public void drive(Vector2 force) {
         body.setLinearVelocity(force);
+    }
+
+    public void move() {
+        if(moveLeft && energy > 0) {
+            energy -= 0.25;
+            body.setLinearVelocity(new Vector2(-30f, body.getLinearVelocity().y));
+        } else if(moveRight && energy > 0) {
+            energy -= 0.25;
+            body.setLinearVelocity(new Vector2(30f, body.getLinearVelocity().y));
+            //body.applyForceToCenter(new Vector2(5000f, body.getLinearVelocity().y), true);
+        } else {
+            body.setLinearVelocity(new Vector2(0f, body.getLinearVelocity().y));
+        }
+    }
+
+    public void setMoveLeft(boolean moveLeft) {
+        this.moveLeft = moveLeft;
+    }
+
+    public void setMoveRight(boolean moveRight) {
+        this.moveRight = moveRight;
+    }
+
+    public float getEnergy() {
+        return energy;
+    }
+
+    @Override
+    public Sprite getSprite() {
+        return tankSprite;
     }
 
     @Override
