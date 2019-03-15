@@ -9,6 +9,8 @@ import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.EarClippingTriangulator;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.RandomXS128;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -28,11 +30,11 @@ public class Ground {
     private Body body;
     private PolygonSprite polygonSprite;
 
-    public Ground(World world, int xoff, int yMin, int yMax, int smoothing, Color color) {
+    public Ground(World world, long seed, int xoff, int yMin, int yMax, int smoothing, Color color) {
         position = new Vector3(0,0, 0);
 
         // generate random points
-        Vector2[] points = generatePoints(xoff, yMin, yMax);
+        Vector2[] points = generatePoints(seed, xoff, yMin, yMax);
         smoothPoints(smoothing, points);
         float[] floatPoints = v2ToFloat(points);
 
@@ -79,11 +81,12 @@ public class Ground {
         shape.dispose();
     }
 
-    private Vector2[] generatePoints(int xoff, int yMin, int yMax) {
+    private Vector2[] generatePoints(long seed, int xoff, int yMin, int yMax) {
         ArrayList<Vector2> v = new ArrayList<Vector2>();
+        RandomXS128 r = new RandomXS128(seed);
         for(int i = 0; i < TankGame.WIDTH+xoff; i+=xoff) {
             int x = i;
-            int y = random(yMin, yMax);
+            int y = r.nextInt(yMax-yMin)+yMin;//random(yMin, yMax);
             v.add(new Vector2(x, y));
         }
         return v.toArray(new Vector2[0]);

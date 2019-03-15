@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -218,29 +219,32 @@ public class PlayState extends State {
         gameSprites = new ArrayList<GameSprite>();
         int spawnHeight = 100;
 
+        // send this to client
+        int seed = MathUtils.random(1000);
+
         // eeh way to do this, but
         switch (level) {
             // forest level
             case 1:
                 spawnHeight = 100;
-                ground = new Ground(world, 10, 30, 100, 10, Color.FOREST);
+                ground = new Ground(world, seed,10, 30, 100, 10, Color.FOREST);
                 break;
 
             // snow level
             case 2:
                 spawnHeight = 200;
-                ground = new Ground(world, 10, 30, 200, 10, Color.WHITE);
+                ground = new Ground(world, seed, 10, 30, 200, 10, Color.WHITE);
                 break;
 
             // desert level
             case 3:
                 spawnHeight = 70;
-                ground = new Ground(world, 10, 30, 70, 10, Color.GOLDENROD);
+                ground = new Ground(world, seed, 10, 30, 70, 10, Color.GOLDENROD);
                 break;
 
             // default to forest
             default:
-                ground = new Ground(world, 10, 30, 100, 10, Color.FOREST);
+                ground = new Ground(world, seed, 10, 30, 100, 10, Color.FOREST);
         }
 
         gameSprites.add(new Tank(world, 500, spawnHeight));
