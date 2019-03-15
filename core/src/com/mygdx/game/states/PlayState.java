@@ -128,9 +128,9 @@ public class PlayState extends State {
 
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/arial.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 20;
-        font = generator.generateFont(parameter); // font size 12 pixels
-        generator.dispose(); // don't forget to dispose to avoid memory leaks!
+        parameter.size = 40;
+        font = generator.generateFont(parameter);
+        generator.dispose();
 
         stage = new Stage(new StretchViewport(1280, 720, cam));
         stage.addActor(leftBtn);
@@ -462,7 +462,7 @@ public class PlayState extends State {
         }
 
 
-        font.draw(sb, "Time: " + getTime(), 1200, 700);
+        font.draw(sb, "Time: " + getTime(), TankGame.WIDTH - 175, 700);
         sb.end();
 
         // ground terrain
