@@ -1,6 +1,7 @@
 package com.mygdx.game.desktop;
 
 import com.mygdx.game.BTInterface;
+import com.mygdx.game.network.SpriteSerialize;
 import com.mygdx.game.sprites.GameSprite;
 import com.mygdx.game.states.MenuState;
 
@@ -20,7 +21,7 @@ public class BT implements BTInterface {
 
     @Override
     public void writeObject(Serializable object) {
-        
+
     }
 
     @Override
@@ -31,5 +32,10 @@ public class BT implements BTInterface {
     @Override
     public void disconnect() {
 
+    }
+
+    @Override
+    public ArrayList<SpriteSerialize> getSprites() {
+        return null;
     }
 }

@@ -5,8 +5,10 @@ import android.bluetooth.BluetoothSocket;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.mygdx.game.network.SpriteSerialize;
 import com.mygdx.game.sprites.GameSprite;
 import com.mygdx.game.states.PlayState;
 
@@ -19,6 +21,9 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 class ConnectedThread extends Thread {
     private final BluetoothSocket mmSocket;
@@ -26,9 +31,9 @@ class ConnectedThread extends Thread {
     private final OutputStream mmOutStream;*/
     private final ObjectInputStream oInput;
     private final ObjectOutputStream oOutput;
-    private Activity act;
+    private AndroidLauncher act;
 
-    public ConnectedThread(BluetoothSocket socket, boolean host, Activity act) {
+    public ConnectedThread(BluetoothSocket socket, boolean host, AndroidLauncher act) {
         this.act = act;
         System.out.println("Creating ConnThread");
         mmSocket = socket;
@@ -82,28 +87,44 @@ class ConnectedThread extends Thread {
         //mmOutStream = tmpOut;
     }
 
+    private void writeSprites() {
+        write(PlayState.getNetSprites());
+    }
+
     public void run() {
         System.out.println("ConnThread running...");
 
+        //Send sprites to other player every x millis
+        System.out.println("Starting send");
+        Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                writeSprites();
+            }
+        }, 100, 100, TimeUnit.MILLISECONDS);
+
         // Keep listening to the InputStream until an exception occurs.
+        System.out.println("Starting listen");
         while (true) {
             try {
                 // Read from the InputStream.
                 try {
-                    //final String inn = (String) oInput.readObject();
-                    final Integer[] xy = (Integer[]) oInput.readObject();
-                    /*int x = oInput.readInt();
-                    int y = oInput.readInt();*/
-                    System.out.println(Arrays.toString(xy));
-                    PlayState.fire(xy[0], xy[1]);
-                    act.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(act, Arrays.toString(xy), Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                    ArrayList<SpriteSerialize> sprites = (ArrayList<SpriteSerialize>) oInput.readObject();
+                    if (sprites != null) {
+                        act.setSprites(sprites);
+                    }
+                    else {
+                        System.out.println("Nothing received");
+                    }
                 }
                 catch (EOFException e) {}
+                catch (IOException e) {
+                    System.out.println(e.toString());
+                    if (e.toString().contains("bt socket closed")) {
+                        System.out.println("Disconnected");
+                        break;
+                    }
+                }
                 catch (Exception e) {
                     System.out.println("Error in object read");
                     e.printStackTrace();

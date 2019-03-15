@@ -16,7 +16,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcel;
 import android.os.ParcelUuid;
+import android.os.Parcelable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.text.Html;
@@ -27,6 +29,7 @@ import android.widget.Toast;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
+import com.mygdx.game.network.SpriteSerialize;
 import com.mygdx.game.sprites.GameSprite;
 import com.mygdx.game.states.MenuState;
 import com.mygdx.game.states.PlayState;
@@ -38,11 +41,15 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Stack;
 import java.util.UUID;
 
 public class AndroidLauncher extends AndroidApplication implements BTInterface {
+	private ArrayList<SpriteSerialize> sprites = new ArrayList<>(); //Most recent sprites received over network
 	private static final UUID uuid = UUID.fromString("20a85f51-908e-451f-ba1e-395ced9acdf0");
+	private String oName = BluetoothAdapter.getDefaultAdapter().getName();
 	private static ConnectedThread connThread;
+	private final String code = "JKFD";
 
 	@Override
 	protected void onCreate (Bundle savedInstanceState) {
@@ -52,14 +59,28 @@ public class AndroidLauncher extends AndroidApplication implements BTInterface {
 		registerReceiver(receiver, filter);
 		IntentFilter filter2 = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
 		registerReceiver(receiver, filter2);
+		IntentFilter filter3 = new IntentFilter((BluetoothDevice.ACTION_UUID));
+		registerReceiver(receiver, filter3);
 
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
+		config.useAccelerometer = false;
+		config.useCompass = false;
 		initialize(new TankGame(this), config);
 	}
 
 	@Override
 	public void startHost() {
-		System.out.println("Starting host connection...");
+		showToast("Starting host connection...");
+
+		BluetoothAdapter.getDefaultAdapter().enable();
+		while(!BluetoothAdapter.getDefaultAdapter().isEnabled()) {}
+		showToast("BT Enabled");
+
+		String newName = uuid.toString() + code;
+		BluetoothAdapter.getDefaultAdapter().setName(newName);
+		while(!BluetoothAdapter.getDefaultAdapter().getName().equals(newName)) {}
+		showToast("Name changed");
+
 		//currentMode = BTMode.GAME_HOST;
 		//HOST
 		//Makes device discoverable
@@ -71,7 +92,7 @@ public class AndroidLauncher extends AndroidApplication implements BTInterface {
 
 	@Override
 	public void startClient() {
-		System.out.println("Starting client connection...");
+		showToast("Starting client connection...");
 		//currentMode = BTMode.GAME_CLIENT;
 		BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
 
@@ -123,30 +144,38 @@ public class AndroidLauncher extends AndroidApplication implements BTInterface {
 		}
 	}
 
+
+
 	// Create a BroadcastReceiver for ACTION_FOUND.
 	private final BroadcastReceiver receiver = new BroadcastReceiver() {
+		//ArrayList<BluetoothDevice> devices = new ArrayList<>();
+
 		public void onReceive(Context context, Intent intent) {
 			String action = intent.getAction();
 			if (BluetoothDevice.ACTION_FOUND.equals(action)) {
 				// Discovery has found a device. Get the BluetoothDevice
 				// object and its info from the Intent.
-				System.out.println("BT unit found");
 				BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-				BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
-				try {
-					BluetoothSocket socket = device.createInsecureRfcommSocketToServiceRecord(uuid);
-					socket.connect();
-					connThread = new ConnectedThread(socket, false, AndroidLauncher.this);
-					connThread.start();
-					MenuState.onConnected(false);
-				}
-				catch (IOException e) {
-					e.printStackTrace();
-					//Ikke riktig device?
+				System.out.println("BT unit found: " + device.getName());
+				String name = device.getName();
+				if (name != null && name.equals(uuid.toString() + code)) {
+					showToast("Found host");
+					BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
+
+					try {
+						BluetoothSocket socket = device.createInsecureRfcommSocketToServiceRecord(uuid);
+						socket.connect();
+						connThread = new ConnectedThread(socket, false, AndroidLauncher.this);
+						connThread.start();
+						MenuState.onConnected(false);
+					} catch (IOException e) {
+						e.printStackTrace();
+						//Ikke riktig device?
+					}
 				}
 			}
 			else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
-				System.out.println("DISCOVERY FINISHED");
+				showToast("Discovery finished");
 			}
 		}
 	};
@@ -159,12 +188,12 @@ public class AndroidLauncher extends AndroidApplication implements BTInterface {
 				if (requestCode == 0) {
 					//Host
 					if (resultCode == 60) {
-                        System.out.println("Host req accepted...");
+                        showToast("Host req accepted, starting server...");
 						try {
 							BluetoothServerSocket serverSocket = BluetoothAdapter.getDefaultAdapter().listenUsingInsecureRfcommWithServiceRecord("TANKS", uuid);
 							BluetoothSocket socket = serverSocket.accept();
 							//Connected
-							System.out.println("Connected, stopping server socket");
+							showToast("Connected, stopping server socket");
 							serverSocket.close();
 							connThread = new ConnectedThread(socket, true, AndroidLauncher.this);
 							connThread.start();
@@ -177,7 +206,7 @@ public class AndroidLauncher extends AndroidApplication implements BTInterface {
 						}
 					}
 					else {
-                        System.out.println("Host req failed?");
+                        showToast("Host req failed?");
                         System.out.println(resultCode);
                     }
 
@@ -231,6 +260,7 @@ public class AndroidLauncher extends AndroidApplication implements BTInterface {
 	@Override
 	protected void onStop() {
 		super.onStop();
+		BluetoothAdapter.getDefaultAdapter().setName(oName);
 		BluetoothAdapter.getDefaultAdapter().disable();
 	}
 
@@ -238,5 +268,24 @@ public class AndroidLauncher extends AndroidApplication implements BTInterface {
 	protected void onDestroy() {
 		super.onDestroy();
 		unregisterReceiver(receiver);
+	}
+
+	private void showToast(final String text) {
+		System.out.println(text);
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				Toast.makeText(AndroidLauncher.this, text, Toast.LENGTH_SHORT).show();
+			}
+		});
+	}
+
+	@Override
+	public ArrayList<SpriteSerialize> getSprites() {
+		return sprites;
+	}
+
+	public void setSprites(ArrayList<SpriteSerialize> sprites) {
+		this.sprites = sprites;
 	}
 }
