@@ -125,14 +125,14 @@ public class Tank implements GameSprite {
 
     @Override
     public void readSerialize(SpriteSerialize sprite) {
-        if (id == sprite.getId()) {
+        /*if (id == sprite.getId()) {
             this.tankSprite.setX(sprite.getPos().x);
             this.tankSprite.setY(sprite.getPos().y);
             body.setLinearVelocity(sprite.getLinVel());
         }
         else {
             System.out.println("Wrong ID!");
-        }
+        }*/
     }
 
     public void updateBarrel(int deg){

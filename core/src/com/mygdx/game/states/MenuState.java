@@ -26,6 +26,7 @@ public class MenuState extends State{
         @Override
         public void run() {
             System.out.println("Connected!");
+
             GameStateManager.getGsm().set(new PlayState(1));
         }
     };

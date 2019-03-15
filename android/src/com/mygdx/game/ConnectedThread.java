@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothSocket;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -93,14 +94,20 @@ class ConnectedThread extends Thread {
 
     public void run() {
         System.out.println("ConnThread running...");
-        act.onConnected.run();
+        //act.onConnected.run();
+        Gdx.app.postRunnable(act.onConnected);
 
         //Send sprites to other player every x millis
         System.out.println("Starting send");
         Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
-                writeSprites();
+                try {
+                    writeSprites();
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }, 100, 100, TimeUnit.MILLISECONDS);
 
@@ -123,7 +130,8 @@ class ConnectedThread extends Thread {
                     System.out.println(e.toString());
                     if (e.toString().contains("bt socket closed")) {
                         System.out.println("Disconnected");
-                        act.onDisconnect.run();
+                        //act.onDisconnect.run();
+                        Gdx.app.postRunnable(act.onDisconnect);
                         break;
                     }
                 }

@@ -43,11 +43,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.Math.cos;
 import static java.lang.StrictMath.sin;
 
 public class PlayState extends State {
+    private static final AtomicInteger idCounter = new AtomicInteger(); //Highest id
+
     private Texture bg;
     private static ArrayList<GameSprite> gameSprites;
     private static World world;
@@ -117,7 +120,7 @@ public class PlayState extends State {
         healthBar = generateProgressBar(450, 20, 100, 20, Color.FIREBRICK, Color.GREEN);
         healthBar.setValue(75f);
 
-        stage = new Stage(new ScreenViewport());
+        //stage = new Stage(new ScreenViewport());
         stage = new Stage(new StretchViewport(TankGame.WIDTH, TankGame.HEIGHT));
         stage.addActor(leftBtn);
         stage.addActor(rightBtn);
@@ -246,14 +249,6 @@ public class PlayState extends State {
         }
 
         gameSprites.add(new Tank(world, 500, spawnHeight));
-
-
-        /*Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run() {
-                readNetSprites();
-            }
-        }, 100, 100, TimeUnit.MILLISECONDS);*/
     }
 
     private ProgressBar generateProgressBar(int x, int y, int width, int height, Color bgColor, Color barColor) {
@@ -301,13 +296,19 @@ public class PlayState extends State {
         gameSprites.add(((Tank)gameSprites.get(0)).fireProjectile(world, x, y));
     }
 
-    public void fireFromPool(Vector2 pos, Vector2 force) {
+    public void fireFromPool(Vector2 pos, Vector2 force, boolean local) {
         System.out.println("FIRING " + pos.x + " - " + pos.y);
         System.out.println("FORCE " + force.x + " - " + force.y);
         Projectile p = projectilePool.obtain();
+        p.setId(idCounter.getAndIncrement());
+        p.setLocal(local);
         p.init(world, pos, force);
         activeProjectiles.add(p);
         gameSprites.add(p);
+    }
+
+    public void fireFromPool(Vector2 pos, Vector2 force) {
+        fireFromPool(pos, force, true);
     }
 
     public static World getWorld() {
@@ -316,20 +317,20 @@ public class PlayState extends State {
 
     @Override
     protected void handleInput() {
-        if(Gdx.input.justTouched()) {
+        /*if(Gdx.input.justTouched()) {
             //System.out.println("FIRE!");
             //gameSprites.add(((Tank)gameSprites.get(0)).fireProjectile(world, Gdx.input.getX(), Gdx.input.getY()));
 
             int x = Gdx.input.getX();
             int y = Gdx.input.getY();
             //fire(x,y);
-            /*Integer[] send = { x, y };
-            TankGame.getBluetooth().writeObject(send);*/
+            *//*Integer[] send = { x, y };
+            TankGame.getBluetooth().writeObject(send);*//*
             //TankGame.getBluetooth().writeObject("FIRE");
         }
         // for testing purposes
         if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-            GameStateManager.getGsm().push(new MenuState(/*gsm*/));
+            GameStateManager.getGsm().push(new MenuState(*//*gsm*//*));
         }
 
         if(Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
@@ -338,7 +339,7 @@ public class PlayState extends State {
 
         if(Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
             ((Tank)gameSprites.get(0)).drive(new Vector2(50f, -5f));
-        }
+        }*/
 
     }
 
@@ -352,6 +353,8 @@ public class PlayState extends State {
         return spriteSerializes;
     }
 
+    //Projectils fired locally need new unique id
+    //Proj from network need to set id to received one and increment idCounter to same
     private void readNetSprites() {
         ArrayList<SpriteSerialize> sprites = TankGame.getBluetooth().getSprites();
         //System.out.println(sprites);
@@ -364,7 +367,9 @@ public class PlayState extends State {
                 }
             }
             if (!exists && s.getType() == SpriteSerialize.Type.PROJECTILE) {
-                gameSprites.add(new Projectile(world, s.getId(), s.getPos().x, s.getPos().y, s.getLinVel()));
+                idCounter.set(s.getId());
+                fireFromPool(s.getPos(), s.getLinVel(), false);
+                //gameSprites.add(new Projectile(world, s.getId(), s.getPos().x, s.getPos().y, s.getLinVel()));
             }
         }
     }

@@ -18,7 +18,6 @@ import com.mygdx.game.network.SpriteSerialize;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Projectile implements GameSprite, Pool.Poolable {
-    private static final AtomicInteger idCounter = new AtomicInteger(); //Highest id
     private boolean local;
     private int id;
     private Vector3 position;
@@ -36,7 +35,7 @@ public class Projectile implements GameSprite, Pool.Poolable {
     }
 
     public Projectile(World world, float x, float y, Vector2 force) {
-        id = idCounter.incrementAndGet();
+        //id = idCounter.incrementAndGet();
         local = true;
         System.out.println("New projectile local: " + id);
         sprite = new Sprite(new Texture("bullet.png"));
@@ -51,7 +50,7 @@ public class Projectile implements GameSprite, Pool.Poolable {
     public Projectile(World world, int id, float x, float y, Vector2 linVel) {
         System.out.println("New projectile from network: " + id);
         local = false;
-        idCounter.set(id);
+        //idCounter.set(id);
         this.id = id;
 
         sprite = new Sprite(new Texture("bullet.png"));
@@ -139,9 +138,17 @@ public class Projectile implements GameSprite, Pool.Poolable {
         return id;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     @Override
     public boolean isLocal() {
         return local;
+    }
+
+    public void setLocal(boolean local) {
+        this.local = local;
     }
 
     @Override

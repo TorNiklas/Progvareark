@@ -17,6 +17,8 @@ import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.mygdx.game.TankGame;
 
 import java.util.Random;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class GameSetupState extends State {
     private Texture bg;
@@ -29,13 +31,17 @@ public class GameSetupState extends State {
     private Stage stage;
 
     private static PlayState selectedState;
+    private boolean connected = false;
 
     private Runnable onConnect = new Runnable() {
         @Override
         public void run() {
             System.out.println("Connected!");
-            while (selectedState == null) {}
-            GameStateManager.getGsm().set(selectedState);
+            //while (selectedState == null) {}
+            connected = true;
+            if (selectedState != null) {
+                GameStateManager.getGsm().set(selectedState);
+            }
         }
     };
 
@@ -88,6 +94,9 @@ public class GameSetupState extends State {
                     System.out.println("forest selected");
                     //GameStateManager.getGsm().set(new PlayState(1));
                     selectedState = new PlayState(1);
+                    if (connected) {
+                        GameStateManager.getGsm().set(selectedState);
+                    }
                     return true;
             }
         });
@@ -97,6 +106,9 @@ public class GameSetupState extends State {
                 System.out.println("snow selected");
                 //GameStateManager.getGsm().set(new PlayState(2));
                 selectedState = new PlayState(2);
+                if (connected) {
+                    GameStateManager.getGsm().set(selectedState);
+                }
                 return true;
             }
         });
@@ -106,6 +118,9 @@ public class GameSetupState extends State {
                 System.out.println("desert selected");
                 //GameStateManager.getGsm().set(new PlayState(3));
                 selectedState = new PlayState(3);
+                if (connected) {
+                    GameStateManager.getGsm().set(selectedState);
+                }
                 return true;
             }
         });
