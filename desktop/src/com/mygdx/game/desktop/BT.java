@@ -10,22 +10,17 @@ import java.util.ArrayList;
 
 public class BT implements BTInterface {
     @Override
-    public void startHost() {
-        MenuState.onConnected(true);
-    }
-
-    @Override
-    public void startClient() {
-        MenuState.onConnected(false);
-    }
-
-    @Override
-    public void writeObject(Serializable object) {
+    public void startHostConnection(String code, Runnable onConnected, Runnable onDisconnect) {
 
     }
 
     @Override
-    public void writeSprites(ArrayList<GameSprite> sprites) {
+    public void startHostGame(int level, int seed) {
+
+    }
+
+    @Override
+    public void startClientConnection(String code, Runnable onConnected, Runnable onDisconnect) {
 
     }
 

@@ -1,5 +1,6 @@
 package com.mygdx.game.states;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -65,10 +66,6 @@ public class GameSetupState extends State {
 
         TankGame.getBluetooth().startHostConnection(gameCodeString, onConnect, onDisconnect);
 
-
-        // TODO: fix better scaling without pixelating the text
-        //gameCode.getData().setScale(3f, 3f);
-
         // init buttons
         forestMapBtn = new Image(new Texture("forest_level.png"));
         snowMapBtn = new Image(new Texture("snow_level.png"));
@@ -94,7 +91,11 @@ public class GameSetupState extends State {
         forestMapBtn.addListener(new InputListener() {
                 public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
                     System.out.println("forest selected");
-                    //GameStateManager.getGsm().set(new PlayState(1));
+                    // desktop, for testing
+                    if(Gdx.app.getType() == Application.ApplicationType.Desktop) {
+                        GameStateManager.getGsm().set(new PlayState(1, seed));
+                        return true;
+                    }
                     TankGame.getBluetooth().startHostGame(1, seed);
                     selectedState = new PlayState(1, seed);
                     if (connected) {
@@ -107,7 +108,11 @@ public class GameSetupState extends State {
         snowMapBtn.addListener(new InputListener() {
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
                 System.out.println("snow selected");
-                //GameStateManager.getGsm().set(new PlayState(2));
+                // desktop, for testing
+                if(Gdx.app.getType() == Application.ApplicationType.Desktop) {
+                    GameStateManager.getGsm().set(new PlayState(2, seed));
+                    return true;
+                }
                 TankGame.getBluetooth().startHostGame(2, seed);
                 selectedState = new PlayState(2, seed);
                 if (connected) {
@@ -120,7 +125,11 @@ public class GameSetupState extends State {
         desertMapBtn.addListener(new InputListener() {
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
                 System.out.println("desert selected");
-                //GameStateManager.getGsm().set(new PlayState(3));
+                // desktop, for testing
+                if(Gdx.app.getType() == Application.ApplicationType.Desktop) {
+                    GameStateManager.getGsm().set(new PlayState(3, seed));
+                    return true;
+                }
                 TankGame.getBluetooth().startHostGame(3, seed);
                 selectedState = new PlayState(3, seed);
                 if (connected) {
