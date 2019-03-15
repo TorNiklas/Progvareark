@@ -10,6 +10,8 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -27,6 +29,7 @@ import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.mygdx.game.TankGame;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.mygdx.game.states.PlayState;
 import com.mygdx.game.states.GameStateManager;
 import com.mygdx.game.states.MenuState;
 
@@ -36,7 +39,9 @@ public class GUI {
 
     // buttons
     private Stage stage;
+    private PlayState state;
     private Tank tank;
+    private Tank enemyTank;
 
     Skin skin;
     private TextButton fireButton;
@@ -47,6 +52,9 @@ public class GUI {
     private TextButton rightBtn;
 
     private ProgressBar healthBar;
+    private ProgressBar tankHealthBar;
+    private ProgressBar tankFirePower;
+    //private ProgressBar tankHealthBar;
     private ProgressBar energyBar;
     private Image volumeOn;
     private Image volumeOff;
@@ -55,7 +63,8 @@ public class GUI {
     private long timer;
     private BitmapFont font;
 
-    public GUI(Tank tank, OrthographicCamera cam, int height) {
+    public GUI(PlayState state, int height) {
+        this.state = state;
         statusBar = new Image(new Texture("statusBar.png"));
         statusBar.setSize(TankGame.WIDTH, height);
 
@@ -91,27 +100,37 @@ public class GUI {
         decreaseElevation.setPosition(fireButton.getX()-fireButton.getWidth()/2-10, 10);
 
         // create energy bar
-        energyBar = generateProgressBar(20, height-58, 390, 30, Color.DARK_GRAY, Color.GOLD);
+        energyBar = generateProgressBar(20, height-58, 390, 30, 100f, 100f, Color.DARK_GRAY, Color.GOLD);
 
         // create health bar
-        healthBar = generateProgressBar(855, height-58, 390, 30, Color.FIREBRICK, Color.GREEN);
-        healthBar.setValue(75f);
+        healthBar = generateProgressBar(855, height-58, 390, 30, 100f, 100f, Color.FIREBRICK, Color.GREEN);
+
+        // create tank health bar
+        tankHealthBar = generateProgressBar(0, 0, 35, 5, 100f, 100f, Color.FIREBRICK, Color.GREEN);
+        //tankHealthBar = generateProgressBar(0, 0, 35, 5, Color.FIREBRICK, Color.GREEN);
+
+        // create tank fire power bar
+        tankFirePower = generateProgressBar(0, 0, 60, 10, 0f, 150f, Color.BLACK, Color.RED);
+        tankFirePower.setVisible(false);
 
         timer = System.currentTimeMillis();
         //create options menu button
         volumeOn = new Image(new Texture("volumeOnBtn.png"));
+        volumeOn.setName("volumeOn");
         volumeOn.setSize(volumeOn.getWidth(), volumeOn.getHeight());
-        volumeOn.setPosition(TankGame.WIDTH - volumeOn.getWidth()*2, TankGame.HEIGHT - volumeOn.getHeight()*2);
+        volumeOn.setPosition(TankGame.WIDTH - volumeOn.getWidth()*2, TankGame.HEIGHT - volumeOn.getHeight()*2.25f);
 
         volumeOff = new Image(new Texture("volumeOffBtn.png"));
+        volumeOff.setName("volumeOff");
         volumeOff.setSize(volumeOff.getWidth(), volumeOff.getHeight());
-        volumeOff.setPosition(TankGame.WIDTH - volumeOff.getWidth()*2, TankGame.HEIGHT - volumeOff.getHeight()*2);
+        volumeOff.setPosition(TankGame.WIDTH - volumeOff.getWidth()*2, TankGame.HEIGHT - volumeOff.getHeight()*2.25f);
 
         surrender = new Image(new Texture("surrenderBtn.png"));
+        surrender.setName("surrender");
         surrender.setSize(surrender.getWidth(), surrender.getHeight());
         surrender.setPosition(TankGame.WIDTH - surrender.getWidth()*2, TankGame.HEIGHT - surrender.getHeight()*3.5f);
 
-        stage = new Stage(new StretchViewport(1280, 720, cam));
+        stage = new Stage(new StretchViewport(1280, 720, state.getCamera()));
         stage.addActor(statusBar);
         stage.addActor(leftBtn);
         stage.addActor(rightBtn);
@@ -120,6 +139,8 @@ public class GUI {
         stage.addActor(decreaseElevation);
         stage.addActor(energyBar);
         stage.addActor(healthBar);
+        stage.addActor(tankHealthBar);
+        stage.addActor(tankFirePower);
         stage.addActor(volumeOn);
         stage.addActor(volumeOff);
         stage.addActor(surrender);
@@ -135,10 +156,10 @@ public class GUI {
             volumeOff.setVisible(true);
         }
 
-
         Gdx.input.setInputProcessor(stage);
 
-        this.tank = tank;
+        tank = (Tank)state.getGameSprites().get(0);
+        enemyTank = (Tank)state.getGameSprites().get(1);
         handleInput();
     }
 
@@ -167,13 +188,6 @@ public class GUI {
         });
 
         rightBtn.addListener(new ClickListener() {
-            /*@Override
-            public boolean handle(Event event) {
-                System.out.println("Pressed right button");
-                ((Tank)gameSprites.get(0)).drive(new Vector2(50f, -5f));
-                return true;
-            }*/
-
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 System.out.println("touch down - right");
                 tank.setMoveRight(true);
@@ -187,11 +201,18 @@ public class GUI {
         });
 
         fireButton.addListener(new ClickListener() {
-            public void clicked(InputEvent e, float x, float y) {
-                tank.fireProjectile();//fireFromPool(pos, velocity);
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("power up");
+                tankFirePower.setVisible(true);
+                tank.setPoweringUp(true);
+                return true;
+            }
 
-                // Integer[] send = { x, y };
-                // TankGame.getBluetooth().writeObject(send);
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("fire");
+                tankFirePower.setVisible(false);
+                tank.setPoweringUp(false);
+                tank.fireProjectile();
             }
         });
 
@@ -261,7 +282,7 @@ public class GUI {
         });
     }
 
-    private ProgressBar generateProgressBar(int x, int y, int width, int height, Color bgColor, Color barColor) {
+    private ProgressBar generateProgressBar(int x, int y, int width, int height, float startValue, float max, Color bgColor, Color barColor) {
         // background bar pixmap
         Pixmap bgPixmap = new Pixmap(width, height, Pixmap.Format.RGBA8888);
         bgPixmap.setColor(bgColor);
@@ -292,8 +313,8 @@ public class GUI {
         progressBarStyle.knob = emptyDrawable;
 
         // create energy bar
-        ProgressBar progressBar = new ProgressBar(0.0f, 100.0f, 0.1f, false, progressBarStyle);
-        progressBar.setValue(100f);
+        ProgressBar progressBar = new ProgressBar(0.0f, max, 0.1f, false, progressBarStyle);
+        progressBar.setValue(startValue);
         progressBar.setAnimateDuration(0.05f);
         progressBar.setBounds(x, y, width, height);
 
@@ -310,14 +331,15 @@ public class GUI {
 
     private void setPlayable(Boolean bool){
         Array<Actor> stageActors = stage.getActors();
-        if(bool){
-            for (Actor a: stageActors
-            ) {
-                a.setTouchable(Touchable.enabled);
+        for (Actor a: stageActors) {
+            if(a.getName() != null) {
+                if ((a.getName().equals("surrender") || a.getName().equals("volumeOn") || a.getName().equals("volumeOff"))) {
+                    return;
+                }
             }
-        } else {
-            for (Actor a: stageActors
-            ) {
+            if(bool) {
+                a.setTouchable(Touchable.enabled);
+            } else {
                 a.setTouchable(Touchable.disabled);
             }
         }
@@ -325,6 +347,18 @@ public class GUI {
 
     public void update() {
         energyBar.setValue(tank.getEnergy());
+        healthBar.setValue(tank.getHealth());
+
+        Vector2 enemyTankPos = enemyTank.getPosition();
+        tankHealthBar.setPosition(enemyTankPos.x - tankHealthBar.getWidth()/2 + enemyTank.getSprite().getWidth()/2, enemyTankPos.y + 20);
+        tankHealthBar.setValue(enemyTank.getHealth());
+        // TODO: fix rotation?
+        //tankHealthBar.setRotation(tank.getSprite().getRotation());
+
+        Vector2 tankPos = tank.getPosition();
+        tankFirePower.setPosition(tankPos.x - tankFirePower.getWidth()/2 + tank.getSprite().getWidth()/2, tankPos.y + 30);
+        tankFirePower.setValue(tank.getFirePower());
+
 
         if(getTime() == 0) {
             setPlayable(false);
@@ -338,7 +372,6 @@ public class GUI {
         batch.begin();
         font.draw(batch, "Time: " + getTime(), TankGame.WIDTH - 175, 700);
         batch.end();
-
     }
 
     public void dispose() {
