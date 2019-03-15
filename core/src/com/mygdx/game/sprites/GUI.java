@@ -110,12 +110,12 @@ public class GUI {
         volumeOn = new Image(new Texture("volumeOnBtn.png"));
         volumeOn.setName("volumeOn");
         volumeOn.setSize(volumeOn.getWidth(), volumeOn.getHeight());
-        volumeOn.setPosition(TankGame.WIDTH - volumeOn.getWidth()*2, TankGame.HEIGHT - volumeOn.getHeight()*2);
+        volumeOn.setPosition(TankGame.WIDTH - volumeOn.getWidth()*2, TankGame.HEIGHT - volumeOn.getHeight()*2.25f);
 
         volumeOff = new Image(new Texture("volumeOffBtn.png"));
         volumeOff.setName("volumeOff");
         volumeOff.setSize(volumeOff.getWidth(), volumeOff.getHeight());
-        volumeOff.setPosition(TankGame.WIDTH - volumeOff.getWidth()*2, TankGame.HEIGHT - volumeOff.getHeight()*2);
+        volumeOff.setPosition(TankGame.WIDTH - volumeOff.getWidth()*2, TankGame.HEIGHT - volumeOff.getHeight()*2.25f);
 
         surrender = new Image(new Texture("surrenderBtn.png"));
         surrender.setName("surrender");

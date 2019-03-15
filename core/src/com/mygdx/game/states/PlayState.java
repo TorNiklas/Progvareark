@@ -72,8 +72,6 @@ public class PlayState extends State {
     private GUI gui;
 
 
-
-
     // active projectiles
     private final Array<Projectile> activeProjectiles = new Array<Projectile>();
 
@@ -112,9 +110,11 @@ public class PlayState extends State {
 
                 if(bodyB.isBullet() && bodyA == (gameSprites.get(1)).getBody() && (gameSprites.get(1)) instanceof Tank){
                     System.out.println("Tank hit!" + bodyB.getPosition());
-                    System.out.println("Tank health: " + ((Tank)gameSprites.get(1)).getHealth());
+                    System.out.println("Tank health was: " + ((Tank)gameSprites.get(1)).getHealth());
 
                     ((Tank)gameSprites.get(1)).setHealth(((Tank)gameSprites.get(1)).getHealth()-25f);
+
+                    System.out.println("Tank health now: " + ((Tank)gameSprites.get(1)).getHealth());
 
                     // delete bullet
                     bodyB.setAwake(false);
