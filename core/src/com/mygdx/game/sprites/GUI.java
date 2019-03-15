@@ -1,12 +1,14 @@
 package com.mygdx.game.sprites;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.loaders.SkinLoader;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -20,6 +22,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.mygdx.game.TankGame;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
@@ -49,6 +52,15 @@ public class GUI {
     public GUI(Tank tank, OrthographicCamera cam, int height) {
         statusBar = new Image(new Texture("statusBar.png"));
         statusBar.setSize(TankGame.WIDTH, height);
+
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/arial.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameter.size = 40;
+        parameter.shadowColor = Color.BLACK;
+        parameter.shadowOffsetX = 3;
+        parameter.shadowOffsetY = 3;
+        font = generator.generateFont(parameter);
+        generator.dispose();
 
         skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
 
@@ -80,12 +92,6 @@ public class GUI {
         healthBar.setValue(75f);
 
         timer = System.currentTimeMillis();
-
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/arial.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 40;
-        font = generator.generateFont(parameter);
-        generator.dispose();
 
         stage = new Stage(new StretchViewport(1280, 720, cam));
         stage.addActor(statusBar);
@@ -229,12 +235,12 @@ public class GUI {
         if(bool){
             for (Actor a: stageActors
             ) {
-                a.setTouchable(Touchable.disabled);
+                a.setTouchable(Touchable.enabled);
             }
         } else {
             for (Actor a: stageActors
             ) {
-                a.setTouchable(Touchable.enabled);
+                a.setTouchable(Touchable.disabled);
             }
         }
     }
@@ -243,7 +249,7 @@ public class GUI {
         energyBar.setValue(tank.getEnergy());
 
         if(getTime() == 0) {
-            setPlayable(true);
+            setPlayable(false);
         }
     }
 
