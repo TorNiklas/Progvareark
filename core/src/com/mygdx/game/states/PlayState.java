@@ -179,8 +179,22 @@ public class PlayState extends State {
                 ground = new Ground(world, seed, 10, 30 + 250, 100 + guiHeight, 10, Color.FOREST);
         }
 
-        gameSprites.add(new Tank(world, this, 500, spawnHeight));
-        gameSprites.add(new Tank(world, this, 600, spawnHeight));
+//        int pos = 600;
+
+        //Left tank has ID -1, right tank has id -2
+        //Host is on the left
+        //First added tank is local player
+        if (TankGame.host) {
+            gameSprites.add(new Tank(world, this, 500, spawnHeight, true, -1));
+            gameSprites.add(new Tank(world, this, 600, spawnHeight, false, -2));
+        }
+        else {
+            gameSprites.add(new Tank(world, this, 600, spawnHeight, true, -2));
+            gameSprites.add(new Tank(world, this, 500, spawnHeight, false, -1));
+        }
+/*
+        gameSprites.add(new Tank(world, this, pos, spawnHeight));
+        gameSprites.add(new Tank(world, this, 600, spawnHeight));*/
 
         // test simple gui
         gui = new GUI(this, guiHeight);
@@ -206,29 +220,6 @@ public class PlayState extends State {
 
     public void fireFromPool(Vector2 pos, Vector2 force) {
         fireFromPool(pos, force, true);
-    }
-
-    private long getTime(){
-        long diff = 45 - ((System.currentTimeMillis()-timer)/1000);
-        if(diff > 0) {
-            return diff;
-        }
-        return 0;
-    }
-
-    private void setPlayable(Boolean bool){
-        Array<Actor> stageActors = stage.getActors();
-        if(bool){
-            for (Actor a: stageActors
-            ) {
-                a.setTouchable(Touchable.disabled);
-            }
-        } else {
-            for (Actor a: stageActors
-            ) {
-                a.setTouchable(Touchable.enabled);
-            }
-        }
     }
 
     public static World getWorld() {
@@ -290,10 +281,11 @@ public class PlayState extends State {
                     exists = true;
                 }
             }
-            if (!exists && s.getType() == SpriteSerialize.Type.PROJECTILE) {
+            if (!exists) {
                 idCounter.set(s.getId());
-                fireFromPool(s.getPos(), s.getLinVel(), false);
-                //gameSprites.add(new Projectile(world, s.getId(), s.getPos().x, s.getPos().y, s.getLinVel()));
+                if (s.getType() == SpriteSerialize.Type.PROJECTILE) {
+                    fireFromPool(s.getPos(), s.getLinVel(), false);
+                }
             }
         }
     }

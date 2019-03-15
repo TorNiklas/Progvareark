@@ -52,6 +52,15 @@ public class Tank implements GameSprite {
     PlayState state;
     //private static final AtomicInteger idCounter = new AtomicInteger();
 
+	private ShapeRenderer shapeRenderer;
+	static private boolean projectionMatrixSet;
+
+	public Tank(World world, PlayState state, int x, int y, boolean local, int id) {
+	    this(world, state, x, y);
+	    this.local = local;
+	    this.id = id;
+    }
+
     public Tank(World world, PlayState state, int x, int y) {
         // tank sprite
         tankSprite = new Sprite(new Texture("tank.png"));
@@ -146,6 +155,7 @@ public class Tank implements GameSprite {
     @Override
     public Vector2 getPosition() {
         return new Vector2(tankSprite.getX(), tankSprite.getY());
+//        return body.getWorldCenter();
     }
 
     public Vector2 getBarrelPosition() {
@@ -162,19 +172,23 @@ public class Tank implements GameSprite {
 
     @Override
     public SpriteSerialize getSerialize() {
-        return new SpriteSerialize(id, SpriteSerialize.Type.TANK, getPosition(), body.getLinearVelocity());
+	    Vector2 pos = getPosition();
+	    pos.x += tankSprite.getWidth() / 2;
+	    pos.y += tankSprite.getHeight() / 2;
+        return new SpriteSerialize(id, SpriteSerialize.Type.TANK, pos, body.getLinearVelocity());
     }
 
     @Override
     public void readSerialize(SpriteSerialize sprite) {
-        /*if (id == sprite.getId()) {
-            this.tankSprite.setX(sprite.getPos().x);
-            this.tankSprite.setY(sprite.getPos().y);
+        if (id == sprite.getId()) {
+            /*this.tankSprite.setX(sprite.getPos().x);
+            this.tankSprite.setY(sprite.getPos().y);*/
+            body.setTransform(sprite.getPos(), 0);
             body.setLinearVelocity(sprite.getLinVel());
         }
         else {
             System.out.println("Wrong ID!");
-        }*/
+        }
     }
 
     public int getFirePower() {

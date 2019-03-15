@@ -62,6 +62,7 @@ public class MenuState extends State{
         // event handlers, should probably not be here
         hostBtn.addListener(new InputListener() {
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                TankGame.host = true;
                 System.out.println("host selected");
                 GameStateManager.getGsm().set(new GameSetupState());
                 return true;

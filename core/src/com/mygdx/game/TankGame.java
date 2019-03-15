@@ -21,6 +21,8 @@ public class TankGame extends ApplicationAdapter {
 	private static PolygonSpriteBatch psb;
 	private static BTInterface bluetooth;
 
+	public static boolean host = false;
+
 	public TankGame(BTInterface bluetoothCon) {
 		bluetooth = bluetoothCon;
 	}

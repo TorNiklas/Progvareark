@@ -128,6 +128,7 @@ public class Projectile implements GameSprite, Pool.Poolable {
     @Override
     public Vector2 getPosition() {
         return new Vector2(sprite.getX(), sprite.getY());
+//        return body.getWorldCenter();
     }
 
     @Override
