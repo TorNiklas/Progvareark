@@ -17,6 +17,10 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.ContactListener;
+import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
@@ -83,6 +87,25 @@ public class PlayState extends State {
         // init box2d world
         Box2D.init();
         world = new World(new Vector2(0, -50f), true);
+        world.setContactListener(new ContactListener() {
+            @Override
+            public void beginContact(Contact contact) {
+                
+            }
+
+            @Override
+            public void endContact(Contact contact) {
+
+            }
+
+            @Override
+            public void preSolve(Contact contact, Manifold oldManifold) {
+            }
+
+            @Override
+            public void postSolve(Contact contact, ContactImpulse impulse) {
+            }
+        });
         debugRenderer = new Box2DDebugRenderer();
 
         gameSprites = new ArrayList<GameSprite>();
@@ -120,6 +143,7 @@ public class PlayState extends State {
         }
 
         gameSprites.add(new Tank(world, this, 500, spawnHeight));
+        gameSprites.add(new Tank(world, this, 600, spawnHeight));
 
         // test simple gui
         gui = new GUI((Tank)gameSprites.get(0), cam, guiHeight);
@@ -204,6 +228,10 @@ public class PlayState extends State {
                 gameSprites.add(new Projectile(world, s.getId(), s.getPos().x, s.getPos().y, s.getLinVel()));
             }
         }
+    }
+
+    public void handleDamage() {
+
     }
 
     @Override

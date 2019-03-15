@@ -40,6 +40,7 @@ public class Tank implements GameSprite {
     private int aimRate;
 
     private float energy;
+    private float health;
 
     PlayState state;
     //private static final AtomicInteger idCounter = new AtomicInteger();
@@ -70,10 +71,11 @@ public class Tank implements GameSprite {
 
         // barrel rotation settings
         barrelDeg = 0;
-        aimRate = 5;
+        aimRate = 2;
 
-        // energy
+        // stats
         energy = 100.0f;
+        health = 100.0f;
     }
 
     private void generateTank(World world, Vector2 pos) {
@@ -220,6 +222,18 @@ public class Tank implements GameSprite {
 
     public float getEnergy() {
         return energy;
+    }
+
+    public float getHealth() {
+        return health;
+    }
+
+    public void setEnergy(float energy) {
+        this.energy = energy;
+    }
+
+    public void setHealth(float health) {
+        this.health = health;
     }
 
     public int getBarrelDeg() {

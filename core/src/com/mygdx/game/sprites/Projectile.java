@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
@@ -104,6 +105,10 @@ public class Projectile implements GameSprite, Pool.Poolable {
 
     public boolean inactiveBody() {
         return !(body.isAwake() && body.getLinearVelocity().len() > 0.05f);
+    }
+
+    public boolean hasCollided() {
+        return false;
     }
 
     @Override

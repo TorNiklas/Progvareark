@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -41,6 +42,7 @@ public class GUI {
     private TextButton rightBtn;
 
     private ProgressBar healthBar;
+    private ProgressBar tankHealthBar;
     private ProgressBar energyBar;
 
     private long timer;
@@ -77,7 +79,9 @@ public class GUI {
 
         // create health bar
         healthBar = generateProgressBar(855, height-58, 390, 30, Color.FIREBRICK, Color.GREEN);
-        healthBar.setValue(75f);
+
+        // create tank health bar
+        tankHealthBar = generateProgressBar(0, 0, 35, 5, Color.FIREBRICK, Color.GREEN);
 
         timer = System.currentTimeMillis();
 
@@ -96,6 +100,7 @@ public class GUI {
         stage.addActor(decreaseElevation);
         stage.addActor(energyBar);
         stage.addActor(healthBar);
+        stage.addActor(tankHealthBar);
 
         Gdx.input.setInputProcessor(stage);
 
@@ -241,9 +246,19 @@ public class GUI {
 
     public void update() {
         energyBar.setValue(tank.getEnergy());
+        healthBar.setValue(tank.getHealth());
+
+        // update tank health bar
+        Vector2 tankPos = tank.getPosition();
+        tankHealthBar.setPosition(tankPos.x - tankHealthBar.getWidth()/2 + tank.getSprite().getWidth()/2, tankPos.y + 20);
+        tankHealthBar.setValue(tank.getHealth());
+
+        // TODO: fix rotation?
+        //tankHealthBar.setRotation(tank.getSprite().getRotation());
+
 
         if(getTime() == 0) {
-            setPlayable(true);
+            //setPlayable(true);
         }
     }
 
