@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.mygdx.game.TankGame;
 
 import java.util.Random;
@@ -53,7 +54,7 @@ public class GameSetupState extends State {
         backBtn.setPosition(center, 50);
 
         // create stage and add maps as actors
-        stage = new Stage(new ScreenViewport());
+        stage = new Stage(new StretchViewport(1280, 720, cam));
         stage.addActor(forestMapBtn);
         stage.addActor(snowMapBtn);
         stage.addActor(desertMapBtn);

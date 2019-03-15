@@ -31,6 +31,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.mygdx.game.TankGame;
 import com.mygdx.game.network.SpriteSerialize;
 import com.mygdx.game.sprites.GameSprite;
@@ -116,7 +117,7 @@ public class PlayState extends State {
         healthBar = generateProgressBar(450, 20, 100, 20, Color.FIREBRICK, Color.GREEN);
         healthBar.setValue(75f);
 
-        stage = new Stage(new ScreenViewport());
+        stage = new Stage(new StretchViewport(1280, 720, cam));
         stage.addActor(leftBtn);
         stage.addActor(rightBtn);
         stage.addActor(fireButton);
@@ -417,6 +418,7 @@ public class PlayState extends State {
         sb.end();
 
         // ground terrain
+        psb.setProjectionMatrix(cam.combined);
         psb.begin();
         ground.draw(psb);
         psb.end();

@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.mygdx.game.TankGame;
 
 import javax.swing.text.View;
@@ -37,7 +38,7 @@ public class MenuState extends State{
         optionBtn.setPosition(center, 200);
 
         // create stage and add maps as actors
-        stage = new Stage(new ScreenViewport());
+        stage = new Stage(new StretchViewport(1280, 720, cam));
         stage.addActor(hostBtn);
         stage.addActor(connectBtn);
         stage.addActor(optionBtn);
