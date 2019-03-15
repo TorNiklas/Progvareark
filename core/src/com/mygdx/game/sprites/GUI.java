@@ -24,6 +24,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.mygdx.game.TankGame;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.mygdx.game.states.PlayState;
 
 public class GUI {
     // sprites
@@ -31,7 +32,9 @@ public class GUI {
 
     // buttons
     private Stage stage;
+    private PlayState state;
     private Tank tank;
+    private Tank enemyTank;
 
     Skin skin;
     private TextButton fireButton;
@@ -43,12 +46,14 @@ public class GUI {
 
     private ProgressBar healthBar;
     private ProgressBar tankHealthBar;
+    //private ProgressBar tankHealthBar;
     private ProgressBar energyBar;
 
     private long timer;
     private BitmapFont font;
 
-    public GUI(Tank tank, OrthographicCamera cam, int height) {
+    public GUI(PlayState state, int height) {
+        this.state = state;
         statusBar = new Image(new Texture("statusBar.png"));
         statusBar.setSize(TankGame.WIDTH, height);
 
@@ -82,6 +87,7 @@ public class GUI {
 
         // create tank health bar
         tankHealthBar = generateProgressBar(0, 0, 35, 5, Color.FIREBRICK, Color.GREEN);
+        //tankHealthBar = generateProgressBar(0, 0, 35, 5, Color.FIREBRICK, Color.GREEN);
 
         timer = System.currentTimeMillis();
 
@@ -91,7 +97,7 @@ public class GUI {
         font = generator.generateFont(parameter);
         generator.dispose();
 
-        stage = new Stage(new StretchViewport(1280, 720, cam));
+        stage = new Stage(new StretchViewport(1280, 720, state.getCamera()));
         stage.addActor(statusBar);
         stage.addActor(leftBtn);
         stage.addActor(rightBtn);
@@ -101,10 +107,12 @@ public class GUI {
         stage.addActor(energyBar);
         stage.addActor(healthBar);
         stage.addActor(tankHealthBar);
+        //stage.addActor(tankHealthBar2);
 
         Gdx.input.setInputProcessor(stage);
 
-        this.tank = tank;
+        tank = (Tank)state.getGameSprites().get(0);
+        enemyTank = (Tank)state.getGameSprites().get(1);
         handleInput();
     }
 
@@ -248,10 +256,10 @@ public class GUI {
         energyBar.setValue(tank.getEnergy());
         healthBar.setValue(tank.getHealth());
 
-        // update tank health bar
-        Vector2 tankPos = tank.getPosition();
-        tankHealthBar.setPosition(tankPos.x - tankHealthBar.getWidth()/2 + tank.getSprite().getWidth()/2, tankPos.y + 20);
-        tankHealthBar.setValue(tank.getHealth());
+        Vector2 tankPos = enemyTank.getPosition();
+        tankHealthBar.setPosition(tankPos.x - tankHealthBar.getWidth()/2 + enemyTank.getSprite().getWidth()/2, tankPos.y + 20);
+        tankHealthBar.setValue(enemyTank.getHealth());
+
 
         // TODO: fix rotation?
         //tankHealthBar.setRotation(tank.getSprite().getRotation());

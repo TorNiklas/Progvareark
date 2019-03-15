@@ -1,9 +1,11 @@
 package com.mygdx.game.sprites;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -45,10 +47,12 @@ public class Tank implements GameSprite {
     PlayState state;
     //private static final AtomicInteger idCounter = new AtomicInteger();
 
+	private ShapeRenderer shapeRenderer;
+	static private boolean projectionMatrixSet;
     public Tank(World world, PlayState state, int x, int y) {
-        //id = idCounter.incrementAndGet();
-        this.state = state;
 
+		shapeRenderer = new ShapeRenderer();
+		//projectionMatrixSet = false;
         // tank sprite
         tankSprite = new Sprite(new Texture("tank.png"));
         tankSprite.setPosition(x, y);
@@ -76,6 +80,8 @@ public class Tank implements GameSprite {
         // stats
         energy = 100.0f;
         health = 100.0f;
+
+        this.state = state;
     }
 
     private void generateTank(World world, Vector2 pos) {
@@ -162,19 +168,39 @@ public class Tank implements GameSprite {
         }
     }
 
+	boolean poweringUp = false;
+	public int power = 1;
+	int maxPower = 150;
+	public boolean powerUp() {
+		if(poweringUp) {
+			poweringUp = !poweringUp;
+			return false;
+		} else {
+			poweringUp = !poweringUp;
+			return true;
+		}
+	}
+	public void powerTick() {
+		if(poweringUp) { power += 1; }// (int)Math.ceil(power*1.5); }
+		if(power > maxPower) { power = maxPower; }
+	}
+	public void resetPower() {
+		power = 1;
+	}
     public void fireProjectile() {
-        float vectorY = (float)sin(Math.toRadians(barrelDeg));
-        float vectorX = (float)cos(Math.toRadians(barrelDeg));
+		if(!this.powerUp()) {
+			float vectorY = (float) sin(Math.toRadians(barrelDeg));
+			float vectorX = (float) cos(Math.toRadians(barrelDeg));
 
-        // start pos
-        Vector2 pos = getBarrelPosition();
-
-        // exit velocity
-        Vector2 velocity = new Vector2(vectorX * 1000f, vectorY * 1000f);
-
-        // use object pooling
-        state.fireFromPool(pos, velocity);
-    }
+			// start pos
+			Vector2 pos = getBarrelPosition();
+			// exit velocity
+			Vector2 velocity = new Vector2(vectorX * power, vectorY * power);
+			// use object pooling
+			state.fireFromPool(pos, velocity);
+			this.resetPower();
+		}
+	}
 
     public void drive(Vector2 force) {
         body.setLinearVelocity(force);
@@ -188,7 +214,6 @@ public class Tank implements GameSprite {
         } else if(moveRight && energy > 0) {
             energy -= 0.25;
             body.setLinearVelocity(new Vector2(30f, body.getLinearVelocity().y));
-            //body.applyForceToCenter(new Vector2(5000f, body.getLinearVelocity().y), true);
         } else {
             body.setLinearVelocity(new Vector2(0f, body.getLinearVelocity().y));
         }
@@ -241,6 +266,11 @@ public class Tank implements GameSprite {
     }
 
     @Override
+    public Body getBody() {
+        return body;
+    }
+
+    @Override
     public Sprite getSprite() {
         return tankSprite;
     }
@@ -255,5 +285,27 @@ public class Tank implements GameSprite {
     public void draw(SpriteBatch batch) {
         barrelSprite.draw(batch);
         tankSprite.draw(batch);
+
+		batch.end();
+		if(!projectionMatrixSet){
+			shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
+		}
+		float x = body.getPosition().x-50;
+		float y = body.getPosition().y+25;
+		float length = 100;
+		float height = 20;
+		if(poweringUp) {
+			shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+			shapeRenderer.setColor(Color.WHITE);
+			shapeRenderer.rect(x, y, length, height);
+
+			shapeRenderer.setColor(Color.BLACK);
+			shapeRenderer.rect(x + 5, y + 5, length - 10, height - 10);
+
+			shapeRenderer.setColor(Color.RED);
+			shapeRenderer.rect(x + 5, y + 5, ((float)(power)/(float)(maxPower))*(length-10), height - 10);
+			shapeRenderer.end();
+		}
+		batch.begin();
     }
 }

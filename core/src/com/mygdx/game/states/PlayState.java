@@ -15,11 +15,14 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -89,6 +92,46 @@ public class PlayState extends State {
         world = new World(new Vector2(0, -50f), true);
         debugRenderer = new Box2DDebugRenderer();
 
+        // Hit detection listener
+        world.setContactListener(new ContactListener() {
+            @Override
+            public void beginContact(Contact contact) {
+                Body bodyA = contact.getFixtureA().getBody();
+                Body bodyB = contact.getFixtureB().getBody();
+                if(bodyB.isBullet() && bodyA.getType() == BodyDef.BodyType.StaticBody ){
+                    //System.out.println("Bullet hit ground at" + bodyB.getPosition());
+                    //Bullet hit ground, should explode?
+
+                    // delete bullet
+                    bodyB.setAwake(false);
+                }
+
+                if(bodyB.isBullet() && bodyA == (gameSprites.get(1)).getBody() && (gameSprites.get(1)) instanceof Tank){
+                    System.out.println("Tank hit!" + bodyB.getPosition());
+                    System.out.println("Tank health: " + ((Tank)gameSprites.get(1)).getHealth());
+
+                    ((Tank)gameSprites.get(1)).setHealth(((Tank)gameSprites.get(1)).getHealth()-25f);
+
+                    // delete bullet
+                    bodyB.setAwake(false);
+                }
+            }
+
+            @Override
+            public void endContact(Contact contact) {
+            }
+
+            @Override
+            public void preSolve(Contact contact, Manifold oldManifold) {
+
+            }
+
+            @Override
+            public void postSolve(Contact contact, ContactImpulse impulse) {
+
+            }
+        });
+
         gameSprites = new ArrayList<GameSprite>();
 
         int guiHeight = 225;
@@ -127,8 +170,7 @@ public class PlayState extends State {
         gameSprites.add(new Tank(world, this, 600, spawnHeight));
 
         // test simple gui
-        gui = new GUI((Tank)gameSprites.get(0), cam, guiHeight);
-
+        gui = new GUI(this, guiHeight);
 
         /*Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new Runnable() {
             @Override
@@ -136,11 +178,6 @@ public class PlayState extends State {
                 readNetSprites();
             }
         }, 100, 100, TimeUnit.MILLISECONDS);*/
-    }
-
-    public static void fire(float x, float y) {
-        System.out.println("FIRING " + x + " - " + y);
-        //gameSprites.add(((Tank)gameSprites.get(0)).fireProjectile(world, x, y));
     }
 
     public void fireFromPool(Vector2 pos, Vector2 force) {
@@ -211,8 +248,8 @@ public class PlayState extends State {
         }
     }
 
-    public void handleDamage() {
-
+    public OrthographicCamera getCamera() {
+        return cam;
     }
 
     @Override
@@ -226,6 +263,7 @@ public class PlayState extends State {
             readNetSprites();
         }
         for (GameSprite gs : gameSprites) {
+
             gs.update();
         }
 
@@ -243,6 +281,7 @@ public class PlayState extends State {
 
     @Override
     public void render(SpriteBatch sb, PolygonSpriteBatch psb) {
+		((Tank)gameSprites.get(0)).powerTick();
         sb.setProjectionMatrix(cam.combined);
         sb.begin();
         //gui.draw(sb);
@@ -286,7 +325,6 @@ public class PlayState extends State {
             it.next().dispose();
         }
     }
-
     public static ArrayList<GameSprite> getGameSprites() {
         return gameSprites;
     }
