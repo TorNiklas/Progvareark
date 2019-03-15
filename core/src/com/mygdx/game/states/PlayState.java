@@ -137,7 +137,6 @@ public class PlayState extends State {
         volumeOn.setPosition(TankGame.WIDTH - volumeOn.getWidth()*2, TankGame.HEIGHT - volumeOn.getHeight()*2);
         stage.addActor(volumeOn);
 
-
         volumeOff = new Image(new Texture("volumeOffBtn.png"));
         volumeOff.setSize(volumeOff.getWidth(), volumeOff.getHeight());
         volumeOff.setPosition(TankGame.WIDTH - volumeOff.getWidth()*2, TankGame.HEIGHT - volumeOff.getHeight()*2);
@@ -261,7 +260,6 @@ public class PlayState extends State {
                 volumeOn.setVisible(true);
                 volumeOff.setVisible(false);
                 TankGame.music_level1.setVolume(1f);
-
                 return false;
             }
         });
