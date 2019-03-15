@@ -42,15 +42,25 @@ public class OptionState extends State {
         volumeOn.setSize(volumeOn.getWidth(), volumeOn.getHeight());
         volumeOn.setPosition(cam.position.x - volumeOn.getWidth()/2, 400);
         stage.addActor(volumeOn);
-        //Volume is on by default
-        volumeOn.setVisible(true);
+
+
 
         volumeOff = new Image(new Texture("volumeOffTextBtn.png"));
         volumeOff.setSize(volumeOff.getWidth(), volumeOff.getHeight());
         volumeOff.setPosition(cam.position.x - volumeOff.getWidth()/2, 400);
         stage.addActor(volumeOff);
-        //Volume is on by default, so the mute icon is not visible
-        volumeOff.setVisible(false);
+
+        //Volume is on by default
+        if(TankGame.music_level1.getVolume() == 1f){
+            volumeOn.setVisible(true);
+            volumeOff.setVisible(false);
+        }
+        //Volume is on by default
+        if(TankGame.music_level1.getVolume() == 0f){
+            volumeOn.setVisible(false);
+            volumeOff.setVisible(true);
+        }
+
 
 
         if(fromMenuState){

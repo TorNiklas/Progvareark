@@ -136,15 +136,23 @@ public class PlayState extends State {
         volumeOn.setSize(volumeOn.getWidth(), volumeOn.getHeight());
         volumeOn.setPosition(TankGame.WIDTH - volumeOn.getWidth()*2, TankGame.HEIGHT - volumeOn.getHeight()*2);
         stage.addActor(volumeOn);
-        //Volume is on by default
-        volumeOn.setVisible(true);
+
 
         volumeOff = new Image(new Texture("volumeOffBtn.png"));
         volumeOff.setSize(volumeOff.getWidth(), volumeOff.getHeight());
         volumeOff.setPosition(TankGame.WIDTH - volumeOff.getWidth()*2, TankGame.HEIGHT - volumeOff.getHeight()*2);
         stage.addActor(volumeOff);
-        //Volume is on by default, so the mute icon is not visible
-        volumeOff.setVisible(false);
+
+        //Volume is on by default
+        if(TankGame.music_level1.getVolume() == 1f){
+            volumeOn.setVisible(true);
+            volumeOff.setVisible(false);
+        }
+        //Volume is on by default
+        if(TankGame.music_level1.getVolume() == 0f){
+            volumeOn.setVisible(false);
+            volumeOff.setVisible(true);
+        }
 
         surrender = new Image(new Texture("surrenderBtn.png"));
         surrender.setSize(surrender.getWidth(), surrender.getHeight());
