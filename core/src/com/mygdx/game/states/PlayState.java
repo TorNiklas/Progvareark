@@ -220,7 +220,7 @@ public class PlayState extends State {
         int spawnHeight = 100;
 
         // send this to client
-        int seed = MathUtils.random(1000);
+        long seed = MathUtils.random(1000);
 
         // eeh way to do this, but
         switch (level) {
