@@ -20,6 +20,10 @@ import com.badlogic.gdx.physics.box2d.joints.WheelJoint;
 import com.badlogic.gdx.physics.box2d.joints.WheelJointDef;
 import com.mygdx.game.TankGame;
 import com.mygdx.game.network.SpriteSerialize;
+import com.mygdx.game.states.PlayState;
+
+import static java.lang.Math.cos;
+import static java.lang.StrictMath.sin;
 
 public class Tank implements GameSprite {
     private int id = -1;
@@ -28,15 +32,25 @@ public class Tank implements GameSprite {
     private Sprite tankSprite;
     private Sprite barrelSprite;
     private Body body;
+
     private boolean moveLeft;
     private boolean moveRight;
+    private boolean increase;
+    private boolean decrease;
+
+    private int barrelDeg;
+    private int aimRate;
+
     private float energy;
+
+    PlayState state;
     //private static final AtomicInteger idCounter = new AtomicInteger();
 
 	private ShapeRenderer shapeRenderer;
 	static private boolean projectionMatrixSet;
+    public Tank(World world, PlayState state, int x, int y) {
 
-    public Tank(World world, int x, int y) {
+//    public Tank(World world, int x, int y) {
 		shapeRenderer = new ShapeRenderer();
 		projectionMatrixSet = false;
         // tank sprite
@@ -55,8 +69,18 @@ public class Tank implements GameSprite {
         moveLeft = false;
         moveRight = false;
 
+        // barrel angle
+        decrease = false;
+        increase = false;
+
+        // barrel rotation settings
+        barrelDeg = 0;
+        aimRate = 5;
+
         // energy
         energy = 100.0f;
+
+        this.state = state;
     }
 
     private void generateTank(World world, Vector2 pos) {
@@ -97,6 +121,9 @@ public class Tank implements GameSprite {
     public void update(){
         // handle movement
         move();
+
+        // handle barrel rotation
+        updateBarrel();
 
         // tank
         tankSprite.setPosition(body.getPosition().x - tankSprite.getWidth()/2, body.getPosition().y - tankSprite.getHeight()/2);
@@ -140,27 +167,16 @@ public class Tank implements GameSprite {
         }
     }
 
-    public void updateBarrel(int deg){
-        //int pointerX = x;
-        //int pointerY = -(y - TankGame.HEIGHT);
-        //float deg = (float) Math.atan2(pointerY - body.getPosition().y, pointerX - body.getPosition().x) * MathUtils.radiansToDegrees;
-        barrelSprite.setRotation(deg);
-    }
-
-    private void rotateBarrel() {
-
-
-    }
 	boolean poweringUp = false;
 	public int power = 1;
 	int maxPower = 150;
 	public boolean powerUp() {
-    	if(poweringUp) {
+		if(poweringUp) {
 			poweringUp = !poweringUp;
 			return false;
 		} else {
-    		poweringUp = !poweringUp;
-    		return true;
+			poweringUp = !poweringUp;
+			return true;
 		}
 	}
 	public void powerTick() {
@@ -170,24 +186,25 @@ public class Tank implements GameSprite {
 	public void resetPower() {
 		power = 1;
 	}
-    public GameSprite fireProjectile(World world, float pointerX, float pointerY, int force) {
-        //float forceX = pointerX - body.getPosition().x;
-        //float forceY = -(pointerY - TankGame.HEIGHT) - body.getPosition().y;
+    public void fireProjectile() {
+		if(!this.powerUp()) {
+			float vectorY = (float) sin(Math.toRadians(barrelDeg));
+			float vectorX = (float) cos(Math.toRadians(barrelDeg));
 
-//		force = 1000;
-//		force = 100000;
-        float forceX = pointerX * force;
-        float forceY = pointerY * force;
-
-        System.out.println(forceX);
-        System.out.println(forceY);
-
-        return new Projectile(world, body.getPosition().x, body.getPosition().y + tankSprite.getHeight()/2, new Vector2(forceX, forceY));
-    }
+			// start pos
+			Vector2 pos = getBarrelPosition();
+			// exit velocity
+			Vector2 velocity = new Vector2(vectorX * power, vectorY * power);
+			// use object pooling
+			state.fireFromPool(pos, velocity);
+			this.resetPower();
+		}
+	}
 
     public void drive(Vector2 force) {
         body.setLinearVelocity(force);
     }
+
 
     public void move() {
         if(moveLeft && energy > 0) {
@@ -202,6 +219,16 @@ public class Tank implements GameSprite {
         }
     }
 
+    public void updateBarrel() {
+        if(increase) {
+            barrelDeg -= aimRate;
+        }
+        if(decrease) {
+            barrelDeg += aimRate;
+        }
+        barrelSprite.setRotation(barrelDeg);
+    }
+
     public void setMoveLeft(boolean moveLeft) {
         this.moveLeft = moveLeft;
     }
@@ -210,8 +237,20 @@ public class Tank implements GameSprite {
         this.moveRight = moveRight;
     }
 
+    public void setIncrease(boolean increase) {
+        this.increase = increase;
+    }
+
+    public void setDecrease(boolean decrease) {
+        this.decrease = decrease;
+    }
+
     public float getEnergy() {
         return energy;
+    }
+
+    public int getBarrelDeg() {
+        return barrelDeg;
     }
 
     @Override
