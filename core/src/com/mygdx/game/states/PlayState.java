@@ -108,7 +108,7 @@ public class PlayState extends State {
                     System.out.println("Tank energy: " + ((Tank)gameSprites.get(1)) .getEnergy());
 
                     //Just for testing
-                    healthBar.setValue(healthBar.getValue() - 10f);
+                    //healthBar.setValue(healthBar.getValue() - 10f);
                 }
             }
 
@@ -162,7 +162,7 @@ public class PlayState extends State {
         }
 
         gameSprites.add(new Tank(world, this, 500, spawnHeight));
-        gameSprites.add(new Tank(world, 800, 100));
+        //gameSprites.add(new Tank(world, 800, 100));
         // test simple gui
         gui = new GUI((Tank)gameSprites.get(0), cam, guiHeight);
 
