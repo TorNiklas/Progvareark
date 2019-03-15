@@ -15,8 +15,15 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.ContactListener;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
@@ -85,6 +92,41 @@ public class PlayState extends State {
         world = new World(new Vector2(0, -50f), true);
         debugRenderer = new Box2DDebugRenderer();
 
+        // Hit detection listener
+        world.setContactListener(new ContactListener() {
+            @Override
+            public void beginContact(Contact contact) {
+                Body bodyA = contact.getFixtureA().getBody();
+                Body bodyB = contact.getFixtureB().getBody();
+                if(bodyB.isBullet() && bodyA.getType() == BodyDef.BodyType.StaticBody ){
+                    //System.out.println("Bullet hit ground at" + bodyB.getPosition());
+                    //Bullet hit ground, should explode?
+                }
+
+                if(bodyB.isBullet() && bodyA == (gameSprites.get(1)).getBody() && (gameSprites.get(1)) instanceof Tank){
+                    System.out.println("tank hit!" + bodyB.getPosition());
+                    System.out.println("Tank energy: " + ((Tank)gameSprites.get(1)) .getEnergy());
+
+                    //Just for testing
+                    //healthBar.setValue(healthBar.getValue() - 10f);
+                }
+            }
+
+            @Override
+            public void endContact(Contact contact) {
+            }
+
+            @Override
+            public void preSolve(Contact contact, Manifold oldManifold) {
+
+            }
+
+            @Override
+            public void postSolve(Contact contact, ContactImpulse impulse) {
+
+            }
+        });
+
         gameSprites = new ArrayList<GameSprite>();
 
         int guiHeight = 225;
@@ -120,10 +162,9 @@ public class PlayState extends State {
         }
 
         gameSprites.add(new Tank(world, this, 500, spawnHeight));
-
+        //gameSprites.add(new Tank(world, 800, 100));
         // test simple gui
         gui = new GUI((Tank)gameSprites.get(0), cam, guiHeight);
-
 
         /*Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new Runnable() {
             @Override

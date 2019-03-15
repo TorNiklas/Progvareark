@@ -167,6 +167,11 @@ public class Projectile implements GameSprite, Pool.Poolable {
     }
 
     @Override
+    public Body getBody() {
+        return body;
+    }
+
+    @Override
     public void dispose(){
         sprite.getTexture().dispose();
     }

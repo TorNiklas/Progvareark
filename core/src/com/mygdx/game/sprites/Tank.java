@@ -254,6 +254,11 @@ public class Tank implements GameSprite {
     }
 
     @Override
+    public Body getBody() {
+        return body;
+    }
+
+    @Override
     public Sprite getSprite() {
         return tankSprite;
     }
