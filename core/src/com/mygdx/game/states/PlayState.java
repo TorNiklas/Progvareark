@@ -12,8 +12,14 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.ContactListener;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
@@ -217,6 +223,35 @@ public class PlayState extends State {
         world = new World(new Vector2(0, -50f), true);
         debugRenderer = new Box2DDebugRenderer();
 
+        // Hit detection listener
+        world.setContactListener(new ContactListener() {
+            @Override
+            public void beginContact(Contact contact) {
+                Fixture fixtureA = contact.getFixtureA();
+                Fixture fixtureB = contact.getFixtureB();
+                if(fixtureB.getBody().isBullet() && fixtureA.getBody().getType() == BodyDef.BodyType.StaticBody ){
+                    System.out.println("Bullet hit ground at" + fixtureB.getBody().getPosition());
+                }
+                if(fixtureB.getBody().isBullet() && fixtureA.getBody() == (gameSprites.get(1)).getBody()){
+                    System.out.println("tank hit!" + fixtureB.getBody().getPosition());
+                }
+            }
+
+            @Override
+            public void endContact(Contact contact) {
+            }
+
+            @Override
+            public void preSolve(Contact contact, Manifold oldManifold) {
+
+            }
+
+            @Override
+            public void postSolve(Contact contact, ContactImpulse impulse) {
+
+            }
+        });
+
         gameSprites = new ArrayList<GameSprite>();
         int spawnHeight = 100;
 
@@ -249,7 +284,7 @@ public class PlayState extends State {
         }
 
         gameSprites.add(new Tank(world, 500, spawnHeight));
-
+        //gameSprites.add(new Tank(world, 800, 100));
 
         /*Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new Runnable() {
             @Override
