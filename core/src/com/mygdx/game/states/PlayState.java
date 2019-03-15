@@ -71,7 +71,6 @@ public class PlayState extends State {
     private static World world;
     private Box2DDebugRenderer debugRenderer;
     private Ground ground;
-    private BTInterface btInterface;
     private GUI gui;
 
 
@@ -89,8 +88,16 @@ public class PlayState extends State {
     };
 
 
-    public PlayState(int level) {
+    private int seed;
+
+    private int level;
+
+    public PlayState(int level, int seed) {
         super();
+        this.level = level;
+        this.seed = seed;
+        System.out.println("Level: " + level);
+        System.out.println("Seed: " + seed);
         cam.setToOrtho(false, TankGame.WIDTH, TankGame.HEIGHT);
         bg = new Texture("bg.png");
 
@@ -146,7 +153,7 @@ public class PlayState extends State {
         int spawnHeight = 100 + guiHeight;
 
         // send this to client
-        long seed = MathUtils.random(1000);
+        //long seed = MathUtils.random(1000);
 
         // eeh way to do this, but
         switch (level) {
@@ -187,7 +194,7 @@ public class PlayState extends State {
         }, 100, 100, TimeUnit.MILLISECONDS);*/
     }
 
-    public void fireFromPool(Vector2 pos, Vector2 force) {
+    public void fireFromPool(Vector2 pos, Vector2 force, boolean local) {
         System.out.println("FIRING " + pos.x + " - " + pos.y);
         System.out.println("FORCE " + force.x + " - " + force.y);
         Projectile p = projectilePool.obtain();
@@ -227,6 +234,10 @@ public class PlayState extends State {
 
     public static World getWorld() {
         return world;
+    }
+
+    public int getLevel() {
+        return level;
     }
 
     @Override
@@ -350,6 +361,18 @@ public class PlayState extends State {
         // box-2d
         debugRenderer.render(world, cam.combined);
         world.step(1/60f, 6, 2);
+    }
+
+    public int getSeed() {
+        return seed;
+    }
+
+    public void setSeed(int seed) {
+        this.seed = seed;
+    }
+
+    public static int getNewSeed() {
+        return MathUtils.random(1000);
     }
 
     @Override

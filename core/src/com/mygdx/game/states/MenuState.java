@@ -26,8 +26,6 @@ public class MenuState extends State{
         @Override
         public void run() {
             System.out.println("Connected!");
-
-            GameStateManager.getGsm().set(new PlayState(1));
         }
     };
 
@@ -79,7 +77,8 @@ public class MenuState extends State{
                     public void input(String text) {
                         // handle input
                         System.out.println(text);
-                        TankGame.getBluetooth().startClient(text, onConnected, onDisconnect);
+                        TankGame.getBluetooth().startClientConnection(text, onConnected, onDisconnect);
+
                     }
 
                     @Override

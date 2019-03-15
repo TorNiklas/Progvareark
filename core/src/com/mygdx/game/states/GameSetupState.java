@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -31,6 +32,7 @@ public class GameSetupState extends State {
     private Stage stage;
 
     private static PlayState selectedState;
+
     private boolean connected = false;
 
     private Runnable onConnect = new Runnable() {
@@ -59,8 +61,9 @@ public class GameSetupState extends State {
 
         // init game code text
         gameCodeString = generateGameCode();
+        final int seed = PlayState.getNewSeed();
 
-        TankGame.getBluetooth().startHost(gameCodeString, onConnect, onDisconnect);
+        TankGame.getBluetooth().startHostConnection(gameCodeString, onConnect, onDisconnect);
 
 
         // TODO: fix better scaling without pixelating the text
@@ -92,7 +95,8 @@ public class GameSetupState extends State {
                 public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
                     System.out.println("forest selected");
                     //GameStateManager.getGsm().set(new PlayState(1));
-                    selectedState = new PlayState(1);
+                    TankGame.getBluetooth().startHostGame(1, seed);
+                    selectedState = new PlayState(1, seed);
                     if (connected) {
                         GameStateManager.getGsm().set(selectedState);
                     }
@@ -104,7 +108,8 @@ public class GameSetupState extends State {
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
                 System.out.println("snow selected");
                 //GameStateManager.getGsm().set(new PlayState(2));
-                selectedState = new PlayState(2);
+                TankGame.getBluetooth().startHostGame(2, seed);
+                selectedState = new PlayState(2, seed);
                 if (connected) {
                     GameStateManager.getGsm().set(selectedState);
                 }
@@ -116,7 +121,8 @@ public class GameSetupState extends State {
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
                 System.out.println("desert selected");
                 //GameStateManager.getGsm().set(new PlayState(3));
-                selectedState = new PlayState(3);
+                TankGame.getBluetooth().startHostGame(3, seed);
+                selectedState = new PlayState(3, seed);
                 if (connected) {
                     GameStateManager.getGsm().set(selectedState);
                 }
@@ -142,6 +148,15 @@ public class GameSetupState extends State {
         gameCode = generator.generateFont(parameter);
         generator.dispose();
 
+    }
+
+    /*public static void setSelectedState(int level) {
+        System.out.println("Selected level: " + level);
+        selectedState = new PlayState(level);
+    }*/
+
+    public static PlayState getSelectedState() {
+        return selectedState;
     }
 
     private String generateGameCode() {

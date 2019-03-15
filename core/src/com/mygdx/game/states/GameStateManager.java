@@ -36,6 +36,14 @@ public class GameStateManager {
         states.peek().update(dt);
     }
 
+    public State peek() {
+        return states.peek();
+    }
+
+    public void setPlayState(int level, int seed) {
+        set(new PlayState(level, seed));
+    }
+
     public void render(SpriteBatch sb, PolygonSpriteBatch psb){
         states.peek().render(sb, psb);
     }
