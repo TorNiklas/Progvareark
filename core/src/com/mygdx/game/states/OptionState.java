@@ -22,7 +22,8 @@ import com.mygdx.game.sprites.Tank;
 public class OptionState extends State {
     private Texture bg;
     private Texture optionTitle;
-    private Image soundBtn;
+    private Image volumeOn;
+    private Image volumeOff;
     private Image surrenderBtn;
     private Image homeBtn;
     private Image returnToGameBtn;
@@ -32,15 +33,25 @@ public class OptionState extends State {
         super();
         cam.setToOrtho(false, TankGame.WIDTH, TankGame.HEIGHT);
         bg = new Texture("bg.png");
+//        soundBtn.setPosition(cam.position.x - soundBtn.getWidth()/2, 400);
 
         optionTitle = new Texture("optionTitle.png");
-
-        soundBtn = new Image(new Texture("volumeBtn.png"));
-        soundBtn.setPosition(cam.position.x - soundBtn.getWidth()/2, 400);
-
-
         stage = new Stage(new ScreenViewport());
-        stage.addActor(soundBtn);
+
+        volumeOn = new Image(new Texture("volumeOnTextBtn.png"));
+        volumeOn.setSize(volumeOn.getWidth(), volumeOn.getHeight());
+        volumeOn.setPosition(cam.position.x - volumeOn.getWidth()/2, 400);
+        stage.addActor(volumeOn);
+        //Volume is on by default
+        volumeOn.setVisible(true);
+
+        volumeOff = new Image(new Texture("volumeOffTextBtn.png"));
+        volumeOff.setSize(volumeOff.getWidth(), volumeOff.getHeight());
+        volumeOff.setPosition(cam.position.x - volumeOff.getWidth()/2, 400);
+        stage.addActor(volumeOff);
+        //Volume is on by default, so the mute icon is not visible
+        volumeOff.setVisible(false);
+
 
         if(fromMenuState){
             homeBtn = new Image(new Texture("homeBtn.png"));
@@ -62,14 +73,26 @@ public class OptionState extends State {
 
         Gdx.input.setInputProcessor(stage);
 
-
-        soundBtn.addListener(new InputListener(){
+        volumeOn.addListener(new InputListener(){
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Volume changed");
+                System.out.println("Mute");
+                volumeOn.setVisible(false);
+                volumeOff.setVisible(true);
+                TankGame.music_level1.setVolume(0f);
+
                 return false;
             }
+        });
 
+        volumeOff.addListener(new InputListener(){
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("Unmute");
+                volumeOn.setVisible(true);
+                volumeOff.setVisible(false);
+                TankGame.music_level1.setVolume(1f);
 
+                return false;
+            }
         });
 
         if(fromMenuState){
