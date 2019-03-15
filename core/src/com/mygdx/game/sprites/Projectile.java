@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
@@ -45,6 +46,7 @@ public class Projectile implements GameSprite, Pool.Poolable {
         generateProjectile(world, new Vector2(sprite.getX(), sprite.getY()));
         Vector2 impulse = new Vector2(force.x*2, force.y*2);
         body.applyLinearImpulse(impulse, new Vector2(x, y), true);
+
     }
 
     public Projectile(World world, int id, float x, float y, Vector2 linVel) {
@@ -169,6 +171,11 @@ public class Projectile implements GameSprite, Pool.Poolable {
 
     public Rectangle getBounds() {
         return bounds;
+    }
+
+    @Override
+    public Body getBody() {
+        return body;
     }
 
     @Override

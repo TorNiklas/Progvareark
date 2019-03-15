@@ -2,6 +2,7 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -13,6 +14,8 @@ public class TankGame extends ApplicationAdapter {
 	public static final int WIDTH = 1280;
 	public static final int HEIGHT = 720;
 	public static final String TITLE = "Panzerwagen";
+
+	public static Music music_level1;
 
 	private static SpriteBatch sb;
 	private static PolygonSpriteBatch psb;
@@ -28,6 +31,10 @@ public class TankGame extends ApplicationAdapter {
 
 	@Override
 	public void create () {
+		music_level1 = Gdx.audio.newMusic(Gdx.files.internal("level1.ogg"));
+		music_level1.setLooping(true);
+		music_level1.play();
+
 		sb = new SpriteBatch();
 		psb = new PolygonSpriteBatch();
 		Gdx.gl.glClearColor(0, 0, 0, 1);
