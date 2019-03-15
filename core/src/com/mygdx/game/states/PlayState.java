@@ -105,14 +105,19 @@ public class PlayState extends State {
                 if(bodyB.isBullet() && bodyA.getType() == BodyDef.BodyType.StaticBody ){
                     //System.out.println("Bullet hit ground at" + bodyB.getPosition());
                     //Bullet hit ground, should explode?
+
+                    // delete bullet
+                    bodyB.setAwake(false);
                 }
 
                 if(bodyB.isBullet() && bodyA == (gameSprites.get(1)).getBody() && (gameSprites.get(1)) instanceof Tank){
-                    System.out.println("tank hit!" + bodyB.getPosition());
-                    System.out.println("Tank energy: " + ((Tank)gameSprites.get(1)) .getEnergy());
+                    System.out.println("Tank hit!" + bodyB.getPosition());
+                    System.out.println("Tank health: " + ((Tank)gameSprites.get(1)).getHealth());
 
-                    //Just for testing
-                    //healthBar.setValue(healthBar.getValue() - 10f);
+                    ((Tank)gameSprites.get(1)).setHealth(((Tank)gameSprites.get(1)).getHealth()-25f);
+
+                    // delete bullet
+                    bodyB.setAwake(false);
                 }
             }
 
@@ -166,9 +171,10 @@ public class PlayState extends State {
         }
 
         gameSprites.add(new Tank(world, this, 500, spawnHeight));
-        //gameSprites.add(new Tank(world, 800, 100));
+        gameSprites.add(new Tank(world, this, 600, spawnHeight));
+
         // test simple gui
-        gui = new GUI((Tank)gameSprites.get(0), cam, guiHeight);
+        gui = new GUI(this, guiHeight);
 
         /*Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new Runnable() {
             @Override
@@ -177,51 +183,6 @@ public class PlayState extends State {
             }
         }, 100, 100, TimeUnit.MILLISECONDS);*/
     }
-
-    private ProgressBar generateProgressBar(int x, int y, int width, int height, Color bgColor, Color barColor) {
-        // energy background bar pixmap
-        Pixmap bgPixmap = new Pixmap(width, height, Pixmap.Format.RGBA8888);
-        bgPixmap.setColor(bgColor);
-        bgPixmap.fill();
-
-        // full bar pixmap
-        Pixmap fullPixmap = new Pixmap(width, height, Pixmap.Format.RGBA8888);
-        fullPixmap.setColor(barColor);
-        fullPixmap.fill();
-
-        // empty pixmap
-        Pixmap emptyPixmap = new Pixmap(0, height, Pixmap.Format.RGBA8888);
-        emptyPixmap.setColor(barColor);
-        emptyPixmap.fill();
-
-        // texture region drawables
-        TextureRegionDrawable bgDrawable = new TextureRegionDrawable(new TextureRegion(new Texture(bgPixmap)));
-        TextureRegionDrawable fullDrawable = new TextureRegionDrawable(new TextureRegion(new Texture(fullPixmap)));
-        TextureRegionDrawable emptyDrawable = new TextureRegionDrawable(new TextureRegion(new Texture(emptyPixmap)));
-        bgPixmap.dispose();
-        fullPixmap.dispose();
-        emptyPixmap.dispose();
-
-        // set up style
-        ProgressBar.ProgressBarStyle progressBarStyle = new ProgressBar.ProgressBarStyle();
-        progressBarStyle.background = bgDrawable;
-        progressBarStyle.knobBefore = fullDrawable;
-        progressBarStyle.knob = emptyDrawable;
-
-        // create energy bar
-        ProgressBar progressBar = new ProgressBar(0.0f, 100.0f, 0.1f, false, progressBarStyle);
-        progressBar.setValue(100f);
-        progressBar.setAnimateDuration(0.05f);
-        progressBar.setBounds(x, y, width, height);
-
-        return progressBar;
-    }
-
-
-//    public static void fire(float x, float y) {
-//        System.out.println("FIRING " + x + " - " + y);
-//        gameSprites.add(((Tank)gameSprites.get(0)).fireProjectile(world, x, y, power));
-//    }
 
     public void fireFromPool(Vector2 pos, Vector2 force) {
         System.out.println("FIRING " + pos.x + " - " + pos.y);
@@ -289,6 +250,10 @@ public class PlayState extends State {
                 gameSprites.add(new Projectile(world, s.getId(), s.getPos().x, s.getPos().y, s.getLinVel()));
             }
         }
+    }
+
+    public OrthographicCamera getCamera() {
+        return cam;
     }
 
     @Override
@@ -364,7 +329,6 @@ public class PlayState extends State {
             it.next().dispose();
         }
     }
-
     public static ArrayList<GameSprite> getGameSprites() {
         return gameSprites;
     }

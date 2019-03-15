@@ -42,6 +42,7 @@ public class Tank implements GameSprite {
     private int aimRate;
 
     private float energy;
+    private float health;
 
     PlayState state;
     //private static final AtomicInteger idCounter = new AtomicInteger();
@@ -50,9 +51,8 @@ public class Tank implements GameSprite {
 	static private boolean projectionMatrixSet;
     public Tank(World world, PlayState state, int x, int y) {
 
-//    public Tank(World world, int x, int y) {
 		shapeRenderer = new ShapeRenderer();
-		projectionMatrixSet = false;
+		//projectionMatrixSet = false;
         // tank sprite
         tankSprite = new Sprite(new Texture("tank.png"));
         tankSprite.setPosition(x, y);
@@ -75,10 +75,11 @@ public class Tank implements GameSprite {
 
         // barrel rotation settings
         barrelDeg = 0;
-        aimRate = 5;
+        aimRate = 2;
 
-        // energy
+        // stats
         energy = 100.0f;
+        health = 100.0f;
 
         this.state = state;
     }
@@ -213,7 +214,6 @@ public class Tank implements GameSprite {
         } else if(moveRight && energy > 0) {
             energy -= 0.25;
             body.setLinearVelocity(new Vector2(30f, body.getLinearVelocity().y));
-            //body.applyForceToCenter(new Vector2(5000f, body.getLinearVelocity().y), true);
         } else {
             body.setLinearVelocity(new Vector2(0f, body.getLinearVelocity().y));
         }
@@ -247,6 +247,18 @@ public class Tank implements GameSprite {
 
     public float getEnergy() {
         return energy;
+    }
+
+    public float getHealth() {
+        return health;
+    }
+
+    public void setEnergy(float energy) {
+        this.energy = energy;
+    }
+
+    public void setHealth(float health) {
+        this.health = health;
     }
 
     public int getBarrelDeg() {

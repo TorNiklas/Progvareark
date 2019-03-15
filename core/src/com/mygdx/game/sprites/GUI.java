@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -26,6 +27,7 @@ import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.mygdx.game.TankGame;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.mygdx.game.states.PlayState;
 
 public class GUI {
     // sprites
@@ -33,7 +35,9 @@ public class GUI {
 
     // buttons
     private Stage stage;
+    private PlayState state;
     private Tank tank;
+    private Tank enemyTank;
 
     Skin skin;
     private TextButton fireButton;
@@ -44,6 +48,8 @@ public class GUI {
     private TextButton rightBtn;
 
     private ProgressBar healthBar;
+    private ProgressBar tankHealthBar;
+    //private ProgressBar tankHealthBar;
     private ProgressBar energyBar;
     private Image volumeOn;
     private Image volumeOff;
@@ -52,7 +58,8 @@ public class GUI {
     private long timer;
     private BitmapFont font;
 
-    public GUI(Tank tank, OrthographicCamera cam, int height) {
+    public GUI(PlayState state, int height) {
+        this.state = state;
         statusBar = new Image(new Texture("statusBar.png"));
         statusBar.setSize(TankGame.WIDTH, height);
 
@@ -92,7 +99,10 @@ public class GUI {
 
         // create health bar
         healthBar = generateProgressBar(855, height-58, 390, 30, Color.FIREBRICK, Color.GREEN);
-        healthBar.setValue(75f);
+
+        // create tank health bar
+        tankHealthBar = generateProgressBar(0, 0, 35, 5, Color.FIREBRICK, Color.GREEN);
+        //tankHealthBar = generateProgressBar(0, 0, 35, 5, Color.FIREBRICK, Color.GREEN);
 
         timer = System.currentTimeMillis();
 
@@ -109,7 +119,7 @@ public class GUI {
         surrender.setSize(surrender.getWidth(), surrender.getHeight());
         surrender.setPosition(TankGame.WIDTH - surrender.getWidth()*2, TankGame.HEIGHT - surrender.getHeight()*3.5f);
 
-        stage = new Stage(new StretchViewport(1280, 720, cam));
+        stage = new Stage(new StretchViewport(1280, 720, state.getCamera()));
         stage.addActor(statusBar);
         stage.addActor(leftBtn);
         stage.addActor(rightBtn);
@@ -118,6 +128,7 @@ public class GUI {
         stage.addActor(decreaseElevation);
         stage.addActor(energyBar);
         stage.addActor(healthBar);
+        stage.addActor(tankHealthBar);
         stage.addActor(volumeOn);
         stage.addActor(volumeOff);
         stage.addActor(surrender);
@@ -133,10 +144,10 @@ public class GUI {
             volumeOff.setVisible(true);
         }
 
-
         Gdx.input.setInputProcessor(stage);
 
-        this.tank = tank;
+        tank = (Tank)state.getGameSprites().get(0);
+        enemyTank = (Tank)state.getGameSprites().get(1);
         handleInput();
     }
 
@@ -306,6 +317,16 @@ public class GUI {
 
     public void update() {
         energyBar.setValue(tank.getEnergy());
+        healthBar.setValue(tank.getHealth());
+
+        Vector2 tankPos = enemyTank.getPosition();
+        tankHealthBar.setPosition(tankPos.x - tankHealthBar.getWidth()/2 + enemyTank.getSprite().getWidth()/2, tankPos.y + 20);
+        tankHealthBar.setValue(enemyTank.getHealth());
+
+
+        // TODO: fix rotation?
+        //tankHealthBar.setRotation(tank.getSprite().getRotation());
+
 
         if(getTime() == 0) {
             setPlayable(false);
