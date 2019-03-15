@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -13,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.mygdx.game.TankGame;
 
 import java.util.Random;
@@ -33,11 +35,7 @@ public class GameSetupState extends State {
         bg = new Texture("bg.png");
 
         // init game code text
-        gameCode = new BitmapFont();
         gameCodeString = generateGameCode();
-
-        // TODO: fix better scaling without pixelating the text
-        //gameCode.getData().setScale(3f, 3f);
 
         // init buttons
         forestMapBtn = new Image(new Texture("forest_level.png"));
@@ -53,7 +51,7 @@ public class GameSetupState extends State {
         backBtn.setPosition(center, 50);
 
         // create stage and add maps as actors
-        stage = new Stage(new ScreenViewport());
+        stage = new Stage(new StretchViewport(1280, 720, cam));
         stage.addActor(forestMapBtn);
         stage.addActor(snowMapBtn);
         stage.addActor(desertMapBtn);
@@ -93,6 +91,13 @@ public class GameSetupState extends State {
             }
         });
 
+        // Setup font generator
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/arial.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameter.size = 30;
+        gameCode = generator.generateFont(parameter);
+        generator.dispose();
+
     }
 
     private String generateGameCode() {
@@ -127,7 +132,7 @@ public class GameSetupState extends State {
         sb.draw(bg, 0,0, 1280, 720);
 
         // game code
-        gameCode.draw(sb, "Game Code: " + gameCodeString, TankGame.WIDTH/2 - gameCode.getRegion().getRegionWidth()/4, 500);
+        gameCode.draw(sb, "Game Code: " + gameCodeString, TankGame.WIDTH/2 - gameCode.getRegion().getRegionWidth()/8, 500);
 
         sb.end();
 

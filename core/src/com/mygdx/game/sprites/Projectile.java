@@ -46,6 +46,7 @@ public class Projectile implements GameSprite, Pool.Poolable {
         generateProjectile(world, new Vector2(sprite.getX(), sprite.getY()));
         Vector2 impulse = new Vector2(force.x*2, force.y*2);
         body.applyLinearImpulse(impulse, new Vector2(x, y), true);
+
     }
 
     public Projectile(World world, int id, float x, float y, Vector2 linVel) {
@@ -114,6 +115,7 @@ public class Projectile implements GameSprite, Pool.Poolable {
         if(outOfBounds() || inactiveBody()) {
             alive = false;
         }
+//		body.applyForce(0, 200, body.getPosition().x, body.getPosition().y, true);
     }
 
     public void setVelocity(Vector3 velocity) {
@@ -162,6 +164,11 @@ public class Projectile implements GameSprite, Pool.Poolable {
 
     public Rectangle getBounds() {
         return bounds;
+    }
+
+    @Override
+    public Body getBody() {
+        return body;
     }
 
     @Override

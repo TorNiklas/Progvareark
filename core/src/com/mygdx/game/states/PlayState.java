@@ -4,15 +4,26 @@ import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.ContactListener;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
@@ -20,6 +31,7 @@ import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
@@ -32,8 +44,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
+import com.mygdx.game.BTInterface;
 import com.mygdx.game.TankGame;
 import com.mygdx.game.network.SpriteSerialize;
+import com.mygdx.game.sprites.GUI;
 import com.mygdx.game.sprites.GameSprite;
 import com.mygdx.game.sprites.Ground;
 import com.mygdx.game.sprites.Projectile;
@@ -53,27 +68,10 @@ public class PlayState extends State {
     private static World world;
     private Box2DDebugRenderer debugRenderer;
     private Ground ground;
+    private BTInterface btInterface;
+    private GUI gui;
 
-    private Drawable drawable;
-    private Stage stage;
 
-    private ImageButton leftBtn;
-    private ImageButton rightBtn;
-
-    Skin skin;
-    private int aimedX;
-    private int aimedY;
-    private TextButton fireButton;
-    private TextButton increaseElevation;
-    private TextButton decreaseElevation;
-    private int deg = 0;
-    private int aimRate = 5;
-    private boolean isIncreasing;
-    private boolean isDecreasing;
-
-    private Image volumeOn;
-    private Image volumeOff;
-    private Image surrender;
 
 
     // active projectiles
@@ -86,226 +84,91 @@ public class PlayState extends State {
             return new Projectile();
         }
     };
-    private ProgressBar healthBar;
-    private ProgressBar energyBar;
+
 
     public PlayState(int level) {
         super();
         cam.setToOrtho(false, TankGame.WIDTH, TankGame.HEIGHT);
         bg = new Texture("bg.png");
 
-        Texture buttons = new Texture("buttons.png");
-        Drawable rightBtnDrawable = new TextureRegionDrawable(new TextureRegion(buttons, 100,0,100,100));
-        Drawable leftBtnDrawable = new TextureRegionDrawable(new TextureRegion(buttons, 0,0,100,100));
-        leftBtn = new ImageButton(leftBtnDrawable);
-        rightBtn = new ImageButton(rightBtnDrawable);
-        rightBtn.setPosition(150, 0);
-
-        skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
-
-        fireButton = new TextButton("Fire!", skin);
-        fireButton.setSize(200,100);
-        fireButton.setPosition(0, 300);
-
-        increaseElevation = new TextButton("+", skin);
-        increaseElevation.setSize(100,100);
-        increaseElevation.setPosition(100, 200);
-
-        decreaseElevation = new TextButton("-", skin);
-        decreaseElevation.setSize(100,100);
-        decreaseElevation.setPosition(0, 200);
-
-        // create energy bar
-        energyBar = generateProgressBar(300, 20, 100, 20, Color.DARK_GRAY, Color.GOLD);
-
-        // create health bar
-        healthBar = generateProgressBar(450, 20, 100, 20, Color.FIREBRICK, Color.GREEN);
-        healthBar.setValue(75f);
-
-        stage = new Stage(new ScreenViewport());
-        stage.addActor(leftBtn);
-        stage.addActor(rightBtn);
-        stage.addActor(fireButton);
-        stage.addActor(increaseElevation);
-        stage.addActor(decreaseElevation);
-        stage.addActor(energyBar);
-        stage.addActor(healthBar);
-
-        //create options menu button
-        volumeOn = new Image(new Texture("volumeOnBtn.png"));
-        volumeOn.setSize(volumeOn.getWidth(), volumeOn.getHeight());
-        volumeOn.setPosition(TankGame.WIDTH - volumeOn.getWidth()*2, TankGame.HEIGHT - volumeOn.getHeight()*2);
-        stage.addActor(volumeOn);
-
-        volumeOff = new Image(new Texture("volumeOffBtn.png"));
-        volumeOff.setSize(volumeOff.getWidth(), volumeOff.getHeight());
-        volumeOff.setPosition(TankGame.WIDTH - volumeOff.getWidth()*2, TankGame.HEIGHT - volumeOff.getHeight()*2);
-        stage.addActor(volumeOff);
-
-        //Volume is on by default
-        if(TankGame.music_level1.getVolume() == 1f){
-            volumeOn.setVisible(true);
-            volumeOff.setVisible(false);
-        }
-        //Volume is on by default
-        if(TankGame.music_level1.getVolume() == 0f){
-            volumeOn.setVisible(false);
-            volumeOff.setVisible(true);
-        }
-
-        surrender = new Image(new Texture("surrenderBtn.png"));
-        surrender.setSize(surrender.getWidth(), surrender.getHeight());
-        surrender.setPosition(TankGame.WIDTH - surrender.getWidth()*2, TankGame.HEIGHT - surrender.getHeight()*3.5f);
-        stage.addActor(surrender);
-
-        Gdx.input.setInputProcessor(stage);
-
-        //Button event handlers, should probably not be here
-        leftBtn.addListener(new ClickListener() {
-            /*@Override
-            public boolean handle(Event event) {
-                System.out.println("Pressed left button");
-                //((Tank)gameSprites.get(0)).drive(new Vector2(-50f, -5f));
-                return true;
-            }*/
-
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("touch down - left");
-                ((Tank)gameSprites.get(0)).setMoveLeft(true);
-                return true;
-            }
-
-            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("touch up - left");
-                ((Tank)gameSprites.get(0)).setMoveLeft(false);
-            }
-
-        });
-
-        rightBtn.addListener(new ClickListener() {
-            /*@Override
-            public boolean handle(Event event) {
-                System.out.println("Pressed right button");
-                ((Tank)gameSprites.get(0)).drive(new Vector2(50f, -5f));
-                return true;
-            }*/
-
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("touch down - right");
-                ((Tank)gameSprites.get(0)).setMoveRight(true);
-                return true;
-            }
-
-            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("touch up - right");
-                ((Tank)gameSprites.get(0)).setMoveRight(false);
-            }
-        });
-
-        fireButton.addListener(new ClickListener() {
-            public void clicked(InputEvent e, float x, float y) {
-                System.out.println("Firebutton has been pressed!");
-
-                float vectorY = (float)sin(Math.toRadians(deg));
-                float vectorX = (float)cos(Math.toRadians(deg));
-                //fire(vectorX,vectorY);
-
-                // use object pooling
-                // start pos
-                Vector2 pos = ((Tank)gameSprites.get(0)).getBarrelPosition();
-
-                // exit velocity
-                Vector2 velocity = new Vector2(vectorX * 1000f, vectorY * 1000f);
-                fireFromPool(pos, velocity);
-
-                // Integer[] send = { x, y };
-                // TankGame.getBluetooth().writeObject(send);
-            }
-        });
-
-        increaseElevation.addListener(new InputListener() {
-            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                isIncreasing = true;
-                return true;
-            }
-            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                isIncreasing = false;
-            }
-        });
-
-        decreaseElevation.addListener(new InputListener() {
-            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                isDecreasing = true;
-                return true;
-            }
-            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                isDecreasing = false;
-            }
-        });
-
-        volumeOn.addListener(new InputListener(){
-            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Mute");
-                volumeOn.setVisible(false);
-                volumeOff.setVisible(true);
-                TankGame.music_level1.setVolume(0f);
-
-                return false;
-            }
-        });
-
-        volumeOff.addListener(new InputListener(){
-            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Unmute");
-                volumeOn.setVisible(true);
-                volumeOff.setVisible(false);
-                TankGame.music_level1.setVolume(1f);
-                return false;
-            }
-        });
-
-        surrender.addListener(new InputListener() {
-            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Surrender");
-                return false;
-            }
-        });
-
         // init box2d world
         Box2D.init();
         world = new World(new Vector2(0, -50f), true);
         debugRenderer = new Box2DDebugRenderer();
 
+        // Hit detection listener
+        world.setContactListener(new ContactListener() {
+            @Override
+            public void beginContact(Contact contact) {
+                Body bodyA = contact.getFixtureA().getBody();
+                Body bodyB = contact.getFixtureB().getBody();
+                if(bodyB.isBullet() && bodyA.getType() == BodyDef.BodyType.StaticBody ){
+                    //System.out.println("Bullet hit ground at" + bodyB.getPosition());
+                    //Bullet hit ground, should explode?
+                }
+
+                if(bodyB.isBullet() && bodyA == (gameSprites.get(1)).getBody() && (gameSprites.get(1)) instanceof Tank){
+                    System.out.println("tank hit!" + bodyB.getPosition());
+                    System.out.println("Tank energy: " + ((Tank)gameSprites.get(1)) .getEnergy());
+
+                    //Just for testing
+                    //healthBar.setValue(healthBar.getValue() - 10f);
+                }
+            }
+
+            @Override
+            public void endContact(Contact contact) {
+            }
+
+            @Override
+            public void preSolve(Contact contact, Manifold oldManifold) {
+
+            }
+
+            @Override
+            public void postSolve(Contact contact, ContactImpulse impulse) {
+
+            }
+        });
+
         gameSprites = new ArrayList<GameSprite>();
-        int spawnHeight = 100;
+
+        int guiHeight = 225;
+
+        int spawnHeight = 100 + guiHeight;
+
+        // send this to client
+        long seed = MathUtils.random(1000);
 
         // eeh way to do this, but
         switch (level) {
             // forest level
             case 1:
-                spawnHeight = 100;
-                ground = new Ground(world, 10, 30, 100, 10, Color.FOREST);
+                spawnHeight = 100 + guiHeight;
+                ground = new Ground(world, seed,10, 30 + guiHeight, 100 + guiHeight, 10, Color.FOREST);
                 break;
 
             // snow level
             case 2:
-                spawnHeight = 200;
-                ground = new Ground(world, 10, 30, 200, 10, Color.WHITE);
+                spawnHeight = 200 + guiHeight;
+                ground = new Ground(world, seed, 10, 30 + guiHeight, 200 + guiHeight, 10, Color.WHITE);
                 break;
 
             // desert level
             case 3:
-                spawnHeight = 70;
-                ground = new Ground(world, 10, 30, 70, 10, Color.GOLDENROD);
+                spawnHeight = 70 + guiHeight;
+                ground = new Ground(world, seed, 10, 30 + guiHeight, 70 + guiHeight, 10, Color.GOLDENROD);
                 break;
 
             // default to forest
             default:
-                ground = new Ground(world, 10, 30, 100, 10, Color.FOREST);
+                ground = new Ground(world, seed, 10, 30 + 250, 100 + guiHeight, 10, Color.FOREST);
         }
 
-        gameSprites.add(new Tank(world, 500, spawnHeight));
-
+        gameSprites.add(new Tank(world, this, 500, spawnHeight));
+        //gameSprites.add(new Tank(world, 800, 100));
+        // test simple gui
+        gui = new GUI((Tank)gameSprites.get(0), cam, guiHeight);
 
         /*Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new Runnable() {
             @Override
@@ -355,10 +218,10 @@ public class PlayState extends State {
     }
 
 
-    public static void fire(float x, float y) {
-        System.out.println("FIRING " + x + " - " + y);
-        gameSprites.add(((Tank)gameSprites.get(0)).fireProjectile(world, x, y));
-    }
+//    public static void fire(float x, float y) {
+//        System.out.println("FIRING " + x + " - " + y);
+//        gameSprites.add(((Tank)gameSprites.get(0)).fireProjectile(world, x, y, power));
+//    }
 
     public void fireFromPool(Vector2 pos, Vector2 force) {
         System.out.println("FIRING " + pos.x + " - " + pos.y);
@@ -430,8 +293,8 @@ public class PlayState extends State {
 
     @Override
     public void update(float dt) {
-        // update energy
-        energyBar.setValue(((Tank)gameSprites.get(0)).getEnergy());
+        // update gui
+        gui.update();
 
         handleInput();
         // doesn't work on desktop
@@ -439,16 +302,8 @@ public class PlayState extends State {
             readNetSprites();
         }
         for (GameSprite gs : gameSprites) {
-            gs.update();
-        }
 
-        if(isIncreasing || isDecreasing) {
-            if (isIncreasing) {
-                deg -= aimRate;
-            } else {
-                deg += aimRate;
-            }
-            ((Tank) gameSprites.get(0)).updateBarrel(deg);
+            gs.update();
         }
 
         // free dead projectiles
@@ -465,8 +320,11 @@ public class PlayState extends State {
 
     @Override
     public void render(SpriteBatch sb, PolygonSpriteBatch psb) {
+		((Tank)gameSprites.get(0)).powerTick();
         sb.setProjectionMatrix(cam.combined);
         sb.begin();
+        //gui.draw(sb);
+        //sb.draw(bg, 0,0, 1280, 720);
         sb.draw(bg, 0,0, 1280, 720);
         /*for (Iterator<GameSprite> it = gameSprites.iterator(); it.hasNext();) {
             it.next().draw(sb);
@@ -478,13 +336,16 @@ public class PlayState extends State {
         sb.end();
 
         // ground terrain
+        psb.setProjectionMatrix(cam.combined);
         psb.begin();
         ground.draw(psb);
         psb.end();
 
+        gui.draw(sb);
+
         //stage for buttons
-        stage.act(Gdx.graphics.getDeltaTime());
-        stage.draw();
+        //stage.act(Gdx.graphics.getDeltaTime());
+        //stage.draw();
         // box-2d
         debugRenderer.render(world, cam.combined);
         world.step(1/60f, 6, 2);
@@ -494,6 +355,7 @@ public class PlayState extends State {
     public void dispose() {
         bg.dispose();
         world.dispose();
+        gui.dispose();
         debugRenderer.dispose();
         /*for (GameSprite gs : gameSprites) {
             gs.dispose();
