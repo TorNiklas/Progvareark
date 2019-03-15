@@ -2,10 +2,14 @@ package com.mygdx.game.sprites;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -13,41 +17,84 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.mygdx.game.MyInputListener;
 import com.mygdx.game.TankGame;
+import com.mygdx.game.states.PlayState;
+import com.mygdx.game.states.State;
+
+import static java.lang.Math.cos;
+import static java.lang.StrictMath.sin;
 
 public class GUI {
     // sprites
-    private Sprite statusBar;
+    private Image statusBar;
 
     // buttons
-    private Image moveLeft;
-    private Image moveRight;
-    private Image fire;
     private Stage stage;
     private Tank tank;
 
-    public GUI(Tank tank) {
-        statusBar = new Sprite(new Texture("statusBar.png"));
-        statusBar.setSize(TankGame.WIDTH, 75);
+    Skin skin;
+    private TextButton fireButton;
+    private TextButton increaseElevation;
+    private TextButton decreaseElevation;
 
-        // mby clean this up
-        moveLeft = new Image(new Texture("moveLeft.png"));
-        moveRight = new Image(new Texture("moveRight.png"));
-        fire = new Image(new Texture("fire.png"));
+    private TextButton leftBtn;
+    private TextButton rightBtn;
 
-        stage = new Stage();
+    private ProgressBar healthBar;
+    private ProgressBar energyBar;
+
+    public GUI(Tank tank, OrthographicCamera cam, int height) {
+        statusBar = new Image(new Texture("statusBar.png"));
+        statusBar.setSize(TankGame.WIDTH, height);
+
+        skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
+
+        leftBtn = new TextButton("<--", skin);
+        leftBtn.setSize(200, height - 75);
+        leftBtn.setPosition(10, 10);
+
+        rightBtn = new TextButton("-->", skin);
+        rightBtn.setSize(200, height - 75);
+        rightBtn.setPosition(leftBtn.getWidth() + 20, 10);
+
+        fireButton = new TextButton("Fire!", skin);
+        fireButton.setSize(200,height - 75);
+        fireButton.setPosition(950, 10);
+
+        increaseElevation = new TextButton("+", skin);
+        increaseElevation.setSize(100,height - 75);
+        increaseElevation.setPosition(fireButton.getX()+fireButton.getWidth()+10, 10);
+
+        decreaseElevation = new TextButton("-", skin);
+        decreaseElevation.setSize(100,height - 75);
+        decreaseElevation.setPosition(fireButton.getX()-fireButton.getWidth()/2-10, 10);
+
+        // create energy bar
+        energyBar = generateProgressBar(20, height-58, 390, 30, Color.DARK_GRAY, Color.GOLD);
+
+        // create health bar
+        healthBar = generateProgressBar(855, height-58, 390, 30, Color.FIREBRICK, Color.GREEN);
+        healthBar.setValue(75f);
+
+        stage = new Stage(new StretchViewport(1280, 720, cam));
+        stage.addActor(statusBar);
+        stage.addActor(leftBtn);
+        stage.addActor(rightBtn);
+        stage.addActor(fireButton);
+        stage.addActor(increaseElevation);
+        stage.addActor(decreaseElevation);
+        stage.addActor(energyBar);
+        stage.addActor(healthBar);
+
         Gdx.input.setInputProcessor(stage);
-        stage.addActor(moveLeft);
-        stage.addActor(moveRight);
-        stage.addActor(fire);
-
-        // set pos
-        moveLeft.setPosition(TankGame.WIDTH/2 - fire.getWidth()/2 - 200, 0);
-        moveRight.setPosition(TankGame.WIDTH/2 - fire.getWidth()/2 + 200, 0);
-        fire.setPosition(TankGame.WIDTH/2 - fire.getWidth()/2, 0);
 
         this.tank = tank;
         handleInput();
@@ -55,52 +102,126 @@ public class GUI {
 
     // move this elsewhere mby
     public void handleInput() {
-        moveLeft.addListener(new InputListener() {
-            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("move left");
-                tank.moveLeft();
+        //Button event handlers, should probably not be here
+        leftBtn.addListener(new ClickListener() {
+            /*@Override
+            public boolean handle(Event event) {
+                System.out.println("Pressed left button");
+                //((Tank)gameSprites.get(0)).drive(new Vector2(-50f, -5f));
+                return true;
+            }*/
+
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("touch down - left");
+                tank.setMoveLeft(true);
                 return true;
             }
 
-            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("stop");
-                tank.stop();
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("touch up - left");
+                tank.setMoveLeft(false);
             }
+
         });
 
-        moveRight.addListener(new InputListener() {
-            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("move right");
-                tank.moveRight();
+        rightBtn.addListener(new ClickListener() {
+            /*@Override
+            public boolean handle(Event event) {
+                System.out.println("Pressed right button");
+                ((Tank)gameSprites.get(0)).drive(new Vector2(50f, -5f));
+                return true;
+            }*/
+
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("touch down - right");
+                tank.setMoveRight(true);
                 return true;
             }
 
-            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("stop");
-                tank.stop();
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("touch up - right");
+                tank.setMoveRight(false);
             }
         });
 
-        fire.addListener(new InputListener() {
-            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Fire");
+        fireButton.addListener(new ClickListener() {
+            public void clicked(InputEvent e, float x, float y) {
+                tank.fireProjectile();//fireFromPool(pos, velocity);
 
+                // Integer[] send = { x, y };
+                // TankGame.getBluetooth().writeObject(send);
+            }
+        });
+
+        increaseElevation.addListener(new InputListener() {
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                tank.setIncrease(true);
                 return true;
             }
-
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+                tank.setIncrease(false);
             }
         });
+
+        decreaseElevation.addListener(new InputListener() {
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                tank.setDecrease(true);
+                return true;
+            }
+            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+                tank.setDecrease(false);
+            }
+        });
+    }
+
+    private ProgressBar generateProgressBar(int x, int y, int width, int height, Color bgColor, Color barColor) {
+        // background bar pixmap
+        Pixmap bgPixmap = new Pixmap(width, height, Pixmap.Format.RGBA8888);
+        bgPixmap.setColor(bgColor);
+        bgPixmap.fill();
+
+        // full bar pixmap
+        Pixmap fullPixmap = new Pixmap(width, height, Pixmap.Format.RGBA8888);
+        fullPixmap.setColor(barColor);
+        fullPixmap.fill();
+
+        // empty pixmap
+        Pixmap emptyPixmap = new Pixmap(0, height, Pixmap.Format.RGBA8888);
+        emptyPixmap.setColor(barColor);
+        emptyPixmap.fill();
+
+        // texture region drawables
+        TextureRegionDrawable bgDrawable = new TextureRegionDrawable(new TextureRegion(new Texture(bgPixmap)));
+        TextureRegionDrawable fullDrawable = new TextureRegionDrawable(new TextureRegion(new Texture(fullPixmap)));
+        TextureRegionDrawable emptyDrawable = new TextureRegionDrawable(new TextureRegion(new Texture(emptyPixmap)));
+        bgPixmap.dispose();
+        fullPixmap.dispose();
+        emptyPixmap.dispose();
+
+        // set up style
+        ProgressBar.ProgressBarStyle progressBarStyle = new ProgressBar.ProgressBarStyle();
+        progressBarStyle.background = bgDrawable;
+        progressBarStyle.knobBefore = fullDrawable;
+        progressBarStyle.knob = emptyDrawable;
+
+        // create energy bar
+        ProgressBar progressBar = new ProgressBar(0.0f, 100.0f, 0.1f, false, progressBarStyle);
+        progressBar.setValue(100f);
+        progressBar.setAnimateDuration(0.05f);
+        progressBar.setBounds(x, y, width, height);
+
+        return progressBar;
+    }
+
+    public void update() {
+        energyBar.setValue(tank.getEnergy());
     }
 
     public void draw(SpriteBatch batch) {
-        statusBar.draw(batch);
-        moveLeft.draw(batch, 1f);
-        moveRight.draw(batch, 1f);
-        fire.draw(batch, 1f);
+        stage.act();
+        stage.draw();
     }
 
     public void dispose() {
-        statusBar.getTexture().dispose();
     }
 }
