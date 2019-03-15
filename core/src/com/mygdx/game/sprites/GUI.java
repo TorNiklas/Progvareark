@@ -17,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -29,6 +30,8 @@ import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.mygdx.game.TankGame;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.mygdx.game.states.PlayState;
+import com.mygdx.game.states.GameStateManager;
+import com.mygdx.game.states.MenuState;
 
 public class GUI {
     // sprites
@@ -111,7 +114,6 @@ public class GUI {
         tankFirePower.setVisible(false);
 
         timer = System.currentTimeMillis();
-
         //create options menu button
         volumeOn = new Image(new Texture("volumeOnBtn.png"));
         volumeOn.setName("volumeOn");
@@ -255,9 +257,26 @@ public class GUI {
             }
         });
 
+        final Dialog dialog = new Dialog("Warning", skin, "dialog") {
+            public void result(Object obj) {
+                if(obj.equals(true)){
+                    GameStateManager.getGsm().set(new MenuState());
+
+                }
+                System.out.println("result "+obj);
+            }
+        };
+        dialog.getBackground().setMinHeight(200);
+        dialog.getBackground().setMinWidth(600);
+        dialog.text("Are you sure you want to surrender and quit the game?");
+        dialog.button("Yes", true); //sends "true" as the result
+        dialog.button("No tank u", false); //sends "false" as the result
+
         surrender.addListener(new InputListener() {
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
                 System.out.println("Surrender");
+                dialog.show(stage);
+
                 return false;
             }
         });
