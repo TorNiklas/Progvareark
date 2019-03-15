@@ -73,10 +73,10 @@ public class Tank implements GameSprite {
         // add body to world
         body = world.createBody(bodyDef);
 
-        // attach fixtures
+        // attach fixture
         fixtureDef.shape = tankShape;
         body.createFixture(fixtureDef);
-
+        
         body.setAngularDamping(2f);
 
         // clean up
@@ -104,6 +104,13 @@ public class Tank implements GameSprite {
     @Override
     public Vector2 getPosition() {
         return new Vector2(tankSprite.getX(), tankSprite.getY());
+    }
+
+    public Vector2 getBarrelPosition() {
+        float[] vertices = barrelSprite.getVertices();
+        float barrelX = (vertices[SpriteBatch.X3] + vertices[SpriteBatch.X4])/2;
+        float barrelY = (vertices[SpriteBatch.Y3] + vertices[SpriteBatch.Y4])/2;
+        return new Vector2(barrelX, barrelY);
     }
 
     @Override
@@ -147,6 +154,9 @@ public class Tank implements GameSprite {
         float forceX = pointerX * 1000;
         float forceY = pointerY * 1000;
 
+        System.out.println(forceX);
+        System.out.println(forceY);
+
         return new Projectile(world, body.getPosition().x, body.getPosition().y + tankSprite.getHeight()/2, new Vector2(forceX, forceY));
     }
 
@@ -177,6 +187,11 @@ public class Tank implements GameSprite {
 
     public float getEnergy() {
         return energy;
+    }
+
+    @Override
+    public Sprite getSprite() {
+        return tankSprite;
     }
 
     @Override

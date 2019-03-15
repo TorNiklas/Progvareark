@@ -28,6 +28,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.mygdx.game.TankGame;
 import com.mygdx.game.network.SpriteSerialize;
@@ -68,6 +70,16 @@ public class PlayState extends State {
     private boolean isIncreasing;
     private boolean isDecreasing;
 
+    // active projectiles
+    private final Array<Projectile> activeProjectiles = new Array<Projectile>();
+
+    // projectile pool
+    private final Pool<Projectile> projectilePool = new Pool<Projectile>() {
+        @Override
+        protected Projectile newObject() {
+            return new Projectile();
+        }
+    };
     private ProgressBar healthBar;
     private ProgressBar energyBar;
 
@@ -163,7 +175,16 @@ public class PlayState extends State {
 
                 float vectorY = (float)sin(Math.toRadians(deg));
                 float vectorX = (float)cos(Math.toRadians(deg));
-                fire(vectorX,vectorY);
+                //fire(vectorX,vectorY);
+
+                // use object pooling
+                // start pos
+                Vector2 pos = ((Tank)gameSprites.get(0)).getBarrelPosition();
+
+                // exit velocity
+                Vector2 velocity = new Vector2(vectorX * 1000f, vectorY * 1000f);
+                fireFromPool(pos, velocity);
+
                 // Integer[] send = { x, y };
                 // TankGame.getBluetooth().writeObject(send);
             }
@@ -278,6 +299,15 @@ public class PlayState extends State {
         gameSprites.add(((Tank)gameSprites.get(0)).fireProjectile(world, x, y));
     }
 
+    public void fireFromPool(Vector2 pos, Vector2 force) {
+        System.out.println("FIRING " + pos.x + " - " + pos.y);
+        System.out.println("FORCE " + force.x + " - " + force.y);
+        Projectile p = projectilePool.obtain();
+        p.init(world, pos, force);
+        activeProjectiles.add(p);
+        gameSprites.add(p);
+    }
+
     public static World getWorld() {
         return world;
     }
@@ -358,6 +388,17 @@ public class PlayState extends State {
                 deg += aimRate;
             }
             ((Tank) gameSprites.get(0)).updateBarrel(deg);
+        }
+
+        // free dead projectiles
+        Projectile p;
+        for(int i = activeProjectiles.size; --i >= 0;) {
+            p = activeProjectiles.get(i);
+            if(!p.isAlive()) {
+                activeProjectiles.removeIndex(i);
+                projectilePool.free(p);
+                gameSprites.remove(p);
+            }
         }
     }
 
