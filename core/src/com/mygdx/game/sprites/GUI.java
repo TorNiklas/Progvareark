@@ -6,15 +6,18 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
@@ -23,11 +26,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.mygdx.game.MyInputListener;
 import com.mygdx.game.TankGame;
 import com.mygdx.game.states.PlayState;
 import com.mygdx.game.states.State;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+
 
 import static java.lang.Math.cos;
 import static java.lang.StrictMath.sin;
@@ -50,6 +56,9 @@ public class GUI {
 
     private ProgressBar healthBar;
     private ProgressBar energyBar;
+
+    private long timer;
+    private BitmapFont font;
 
     public GUI(Tank tank, OrthographicCamera cam, int height) {
         statusBar = new Image(new Texture("statusBar.png"));
@@ -83,6 +92,14 @@ public class GUI {
         // create health bar
         healthBar = generateProgressBar(855, height-58, 390, 30, Color.FIREBRICK, Color.GREEN);
         healthBar.setValue(75f);
+
+        timer = System.currentTimeMillis();
+
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/arial.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameter.size = 40;
+        font = generator.generateFont(parameter);
+        generator.dispose();
 
         stage = new Stage(new StretchViewport(1280, 720, cam));
         stage.addActor(statusBar);
@@ -213,13 +230,45 @@ public class GUI {
         return progressBar;
     }
 
+    private long getTime(){
+        long diff = 45 - ((System.currentTimeMillis()-timer)/1000);
+        if(diff > 0) {
+            return diff;
+        }
+        return 0;
+    }
+
+    private void setPlayable(Boolean bool){
+        Array<Actor> stageActors = stage.getActors();
+        if(bool){
+            for (Actor a: stageActors
+            ) {
+                a.setTouchable(Touchable.disabled);
+            }
+        } else {
+            for (Actor a: stageActors
+            ) {
+                a.setTouchable(Touchable.enabled);
+            }
+        }
+    }
+
     public void update() {
         energyBar.setValue(tank.getEnergy());
+
+        if(getTime() == 0) {
+            setPlayable(true);
+        }
     }
 
     public void draw(SpriteBatch batch) {
         stage.act();
         stage.draw();
+
+        batch.begin();
+        font.draw(batch, "Time: " + getTime(), TankGame.WIDTH - 175, 700);
+        batch.end();
+
     }
 
     public void dispose() {
