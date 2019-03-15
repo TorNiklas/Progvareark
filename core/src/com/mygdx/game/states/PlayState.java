@@ -71,7 +71,6 @@ public class PlayState extends State {
     private BTInterface btInterface;
     private GUI gui;
 
-
     // active projectiles
     private final Array<Projectile> activeProjectiles = new Array<Projectile>();
 
@@ -214,15 +213,6 @@ public class PlayState extends State {
         if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             GameStateManager.getGsm().push(new MenuState(/*gsm*/));
         }
-
-        if(Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
-            ((Tank)gameSprites.get(0)).drive(new Vector2(-50f, -5f));
-        }
-
-        if(Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
-            ((Tank)gameSprites.get(0)).drive(new Vector2(50f, -5f));
-        }
-
     }
 
     public static ArrayList<SpriteSerialize> getNetSprites() {
@@ -285,7 +275,6 @@ public class PlayState extends State {
 
     @Override
     public void render(SpriteBatch sb, PolygonSpriteBatch psb) {
-		((Tank)gameSprites.get(0)).powerTick();
         sb.setProjectionMatrix(cam.combined);
         sb.begin();
         //gui.draw(sb);
@@ -311,6 +300,7 @@ public class PlayState extends State {
         //stage for buttons
         //stage.act(Gdx.graphics.getDeltaTime());
         //stage.draw();
+        
         // box-2d
         debugRenderer.render(world, cam.combined);
         world.step(1/60f, 6, 2);

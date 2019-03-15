@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -49,6 +50,7 @@ public class GUI {
 
     private ProgressBar healthBar;
     private ProgressBar tankHealthBar;
+    private ProgressBar tankFirePower;
     //private ProgressBar tankHealthBar;
     private ProgressBar energyBar;
     private Image volumeOn;
@@ -95,14 +97,18 @@ public class GUI {
         decreaseElevation.setPosition(fireButton.getX()-fireButton.getWidth()/2-10, 10);
 
         // create energy bar
-        energyBar = generateProgressBar(20, height-58, 390, 30, Color.DARK_GRAY, Color.GOLD);
+        energyBar = generateProgressBar(20, height-58, 390, 30, 100f, 100f, Color.DARK_GRAY, Color.GOLD);
 
         // create health bar
-        healthBar = generateProgressBar(855, height-58, 390, 30, Color.FIREBRICK, Color.GREEN);
+        healthBar = generateProgressBar(855, height-58, 390, 30, 100f, 100f, Color.FIREBRICK, Color.GREEN);
 
         // create tank health bar
-        tankHealthBar = generateProgressBar(0, 0, 35, 5, Color.FIREBRICK, Color.GREEN);
+        tankHealthBar = generateProgressBar(0, 0, 35, 5, 100f, 100f, Color.FIREBRICK, Color.GREEN);
         //tankHealthBar = generateProgressBar(0, 0, 35, 5, Color.FIREBRICK, Color.GREEN);
+
+        // create tank fire power bar
+        tankFirePower = generateProgressBar(0, 0, 60, 10, 0f, 150f, Color.BLACK, Color.RED);
+        tankFirePower.setVisible(false);
 
         timer = System.currentTimeMillis();
 
@@ -132,6 +138,7 @@ public class GUI {
         stage.addActor(energyBar);
         stage.addActor(healthBar);
         stage.addActor(tankHealthBar);
+        stage.addActor(tankFirePower);
         stage.addActor(volumeOn);
         stage.addActor(volumeOff);
         stage.addActor(surrender);
@@ -179,13 +186,6 @@ public class GUI {
         });
 
         rightBtn.addListener(new ClickListener() {
-            /*@Override
-            public boolean handle(Event event) {
-                System.out.println("Pressed right button");
-                ((Tank)gameSprites.get(0)).drive(new Vector2(50f, -5f));
-                return true;
-            }*/
-
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 System.out.println("touch down - right");
                 tank.setMoveRight(true);
@@ -199,11 +199,18 @@ public class GUI {
         });
 
         fireButton.addListener(new ClickListener() {
-            public void clicked(InputEvent e, float x, float y) {
-                tank.fireProjectile();//fireFromPool(pos, velocity);
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("power up");
+                tankFirePower.setVisible(true);
+                tank.setPoweringUp(true);
+                return true;
+            }
 
-                // Integer[] send = { x, y };
-                // TankGame.getBluetooth().writeObject(send);
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("fire");
+                tankFirePower.setVisible(false);
+                tank.setPoweringUp(false);
+                tank.fireProjectile();
             }
         });
 
@@ -256,7 +263,7 @@ public class GUI {
         });
     }
 
-    private ProgressBar generateProgressBar(int x, int y, int width, int height, Color bgColor, Color barColor) {
+    private ProgressBar generateProgressBar(int x, int y, int width, int height, float startValue, float max, Color bgColor, Color barColor) {
         // background bar pixmap
         Pixmap bgPixmap = new Pixmap(width, height, Pixmap.Format.RGBA8888);
         bgPixmap.setColor(bgColor);
@@ -287,8 +294,8 @@ public class GUI {
         progressBarStyle.knob = emptyDrawable;
 
         // create energy bar
-        ProgressBar progressBar = new ProgressBar(0.0f, 100.0f, 0.1f, false, progressBarStyle);
-        progressBar.setValue(100f);
+        ProgressBar progressBar = new ProgressBar(0.0f, max, 0.1f, false, progressBarStyle);
+        progressBar.setValue(startValue);
         progressBar.setAnimateDuration(0.05f);
         progressBar.setBounds(x, y, width, height);
 
@@ -323,13 +330,15 @@ public class GUI {
         energyBar.setValue(tank.getEnergy());
         healthBar.setValue(tank.getHealth());
 
-        Vector2 tankPos = enemyTank.getPosition();
-        tankHealthBar.setPosition(tankPos.x - tankHealthBar.getWidth()/2 + enemyTank.getSprite().getWidth()/2, tankPos.y + 20);
+        Vector2 enemyTankPos = enemyTank.getPosition();
+        tankHealthBar.setPosition(enemyTankPos.x - tankHealthBar.getWidth()/2 + enemyTank.getSprite().getWidth()/2, enemyTankPos.y + 20);
         tankHealthBar.setValue(enemyTank.getHealth());
-
-
         // TODO: fix rotation?
         //tankHealthBar.setRotation(tank.getSprite().getRotation());
+
+        Vector2 tankPos = tank.getPosition();
+        tankFirePower.setPosition(tankPos.x - tankFirePower.getWidth()/2 + tank.getSprite().getWidth()/2, tankPos.y + 30);
+        tankFirePower.setValue(tank.getFirePower());
 
 
         if(getTime() == 0) {
@@ -344,7 +353,6 @@ public class GUI {
         batch.begin();
         font.draw(batch, "Time: " + getTime(), TankGame.WIDTH - 175, 700);
         batch.end();
-
     }
 
     public void dispose() {
