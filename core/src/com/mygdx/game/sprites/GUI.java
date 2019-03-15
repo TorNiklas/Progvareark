@@ -1,12 +1,14 @@
 package com.mygdx.game.sprites;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.loaders.SkinLoader;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -21,6 +23,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.mygdx.game.TankGame;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
@@ -48,6 +51,9 @@ public class GUI {
     private ProgressBar tankHealthBar;
     //private ProgressBar tankHealthBar;
     private ProgressBar energyBar;
+    private Image volumeOn;
+    private Image volumeOff;
+    private Image surrender;
 
     private long timer;
     private BitmapFont font;
@@ -56,6 +62,15 @@ public class GUI {
         this.state = state;
         statusBar = new Image(new Texture("statusBar.png"));
         statusBar.setSize(TankGame.WIDTH, height);
+
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/arial.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameter.size = 40;
+        parameter.shadowColor = Color.BLACK;
+        parameter.shadowOffsetX = 3;
+        parameter.shadowOffsetY = 3;
+        font = generator.generateFont(parameter);
+        generator.dispose();
 
         skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
 
@@ -91,11 +106,18 @@ public class GUI {
 
         timer = System.currentTimeMillis();
 
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/arial.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 40;
-        font = generator.generateFont(parameter);
-        generator.dispose();
+        //create options menu button
+        volumeOn = new Image(new Texture("volumeOnBtn.png"));
+        volumeOn.setSize(volumeOn.getWidth(), volumeOn.getHeight());
+        volumeOn.setPosition(TankGame.WIDTH - volumeOn.getWidth()*2, TankGame.HEIGHT - volumeOn.getHeight()*2);
+
+        volumeOff = new Image(new Texture("volumeOffBtn.png"));
+        volumeOff.setSize(volumeOff.getWidth(), volumeOff.getHeight());
+        volumeOff.setPosition(TankGame.WIDTH - volumeOff.getWidth()*2, TankGame.HEIGHT - volumeOff.getHeight()*2);
+
+        surrender = new Image(new Texture("surrenderBtn.png"));
+        surrender.setSize(surrender.getWidth(), surrender.getHeight());
+        surrender.setPosition(TankGame.WIDTH - surrender.getWidth()*2, TankGame.HEIGHT - surrender.getHeight()*3.5f);
 
         stage = new Stage(new StretchViewport(1280, 720, state.getCamera()));
         stage.addActor(statusBar);
@@ -107,7 +129,20 @@ public class GUI {
         stage.addActor(energyBar);
         stage.addActor(healthBar);
         stage.addActor(tankHealthBar);
-        //stage.addActor(tankHealthBar2);
+        stage.addActor(volumeOn);
+        stage.addActor(volumeOff);
+        stage.addActor(surrender);
+
+        //Volume is on by default
+        if(TankGame.music_level1.getVolume() == 1f){
+            volumeOn.setVisible(true);
+            volumeOff.setVisible(false);
+        }
+        //Volume is on by default
+        if(TankGame.music_level1.getVolume() == 0f){
+            volumeOn.setVisible(false);
+            volumeOff.setVisible(true);
+        }
 
         Gdx.input.setInputProcessor(stage);
 
@@ -188,6 +223,34 @@ public class GUI {
                 tank.setDecrease(false);
             }
         });
+
+        volumeOn.addListener(new InputListener(){
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("Mute");
+                volumeOn.setVisible(false);
+                volumeOff.setVisible(true);
+                TankGame.music_level1.setVolume(0f);
+
+                return false;
+            }
+        });
+
+        volumeOff.addListener(new InputListener(){
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("Unmute");
+                volumeOn.setVisible(true);
+                volumeOff.setVisible(false);
+                TankGame.music_level1.setVolume(1f);
+                return false;
+            }
+        });
+
+        surrender.addListener(new InputListener() {
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("Surrender");
+                return false;
+            }
+        });
     }
 
     private ProgressBar generateProgressBar(int x, int y, int width, int height, Color bgColor, Color barColor) {
@@ -242,12 +305,12 @@ public class GUI {
         if(bool){
             for (Actor a: stageActors
             ) {
-                a.setTouchable(Touchable.disabled);
+                a.setTouchable(Touchable.enabled);
             }
         } else {
             for (Actor a: stageActors
             ) {
-                a.setTouchable(Touchable.enabled);
+                a.setTouchable(Touchable.disabled);
             }
         }
     }
@@ -266,7 +329,7 @@ public class GUI {
 
 
         if(getTime() == 0) {
-            //setPlayable(true);
+            setPlayable(false);
         }
     }
 
