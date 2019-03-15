@@ -37,6 +37,11 @@ public class Tank implements GameSprite {
     private boolean moveRight;
     private boolean increase;
     private boolean decrease;
+    private boolean isPoweringUp;
+    private boolean gainPower;
+
+    private int firePower;
+    private int maxFirePower;
 
     private int barrelDeg;
     private int aimRate;
@@ -47,12 +52,7 @@ public class Tank implements GameSprite {
     PlayState state;
     //private static final AtomicInteger idCounter = new AtomicInteger();
 
-	private ShapeRenderer shapeRenderer;
-	static private boolean projectionMatrixSet;
     public Tank(World world, PlayState state, int x, int y) {
-
-		shapeRenderer = new ShapeRenderer();
-		//projectionMatrixSet = false;
         // tank sprite
         tankSprite = new Sprite(new Texture("tank.png"));
         tankSprite.setPosition(x, y);
@@ -76,6 +76,12 @@ public class Tank implements GameSprite {
         // barrel rotation settings
         barrelDeg = 0;
         aimRate = 2;
+
+        // fire power
+        isPoweringUp = false;
+        gainPower = true;
+        firePower = 1;
+        maxFirePower = 150;
 
         // stats
         energy = 100.0f;
@@ -126,6 +132,9 @@ public class Tank implements GameSprite {
         // handle barrel rotation
         updateBarrel();
 
+        // handle fire power
+        powerUp();
+
         // tank
         tankSprite.setPosition(body.getPosition().x - tankSprite.getWidth()/2, body.getPosition().y - tankSprite.getHeight()/2);
         tankSprite.setRotation(body.getAngle() * MathUtils.radiansToDegrees);
@@ -168,44 +177,42 @@ public class Tank implements GameSprite {
         }
     }
 
-	boolean poweringUp = false;
-	public int power = 1;
-	int maxPower = 150;
-	public boolean powerUp() {
-		if(poweringUp) {
-			poweringUp = !poweringUp;
-			return false;
-		} else {
-			poweringUp = !poweringUp;
-			return true;
-		}
-	}
-	public void powerTick() {
-		if(poweringUp) { power += 1; }// (int)Math.ceil(power*1.5); }
-		if(power > maxPower) { power = maxPower; }
-	}
-	public void resetPower() {
-		power = 1;
-	}
-    public void fireProjectile() {
-		if(!this.powerUp()) {
-			float vectorY = (float) sin(Math.toRadians(barrelDeg));
-			float vectorX = (float) cos(Math.toRadians(barrelDeg));
-
-			// start pos
-			Vector2 pos = getBarrelPosition();
-			// exit velocity
-			Vector2 velocity = new Vector2(vectorX * power, vectorY * power);
-			// use object pooling
-			state.fireFromPool(pos, velocity);
-			this.resetPower();
-		}
-	}
-
-    public void drive(Vector2 force) {
-        body.setLinearVelocity(force);
+    public int getFirePower() {
+        return firePower;
     }
 
+    public void setPoweringUp(boolean isPoweringUp) {
+        this.isPoweringUp = isPoweringUp;
+    }
+
+	public void powerUp() {
+		if(isPoweringUp) {
+		    if(firePower > maxFirePower || firePower < 1) {
+                gainPower = !gainPower;
+            }
+
+            if(gainPower) {
+                firePower += 1;
+            } else {
+                firePower -= 1;
+            }
+		}
+	}
+
+    public void fireProjectile() {
+        float vectorY = (float) sin(Math.toRadians(barrelDeg));
+        float vectorX = (float) cos(Math.toRadians(barrelDeg));
+
+        // start pos
+        Vector2 pos = getBarrelPosition();
+        // exit velocity
+        Vector2 velocity = new Vector2(vectorX * firePower, vectorY * firePower);
+        // use object pooling
+        state.fireFromPool(pos, velocity);
+
+        // reset power
+        firePower = 1;
+	}
 
     public void move() {
         if(moveLeft && energy > 0) {
@@ -261,10 +268,6 @@ public class Tank implements GameSprite {
         this.health = health;
     }
 
-    public int getBarrelDeg() {
-        return barrelDeg;
-    }
-
     @Override
     public Body getBody() {
         return body;
@@ -285,27 +288,5 @@ public class Tank implements GameSprite {
     public void draw(SpriteBatch batch) {
         barrelSprite.draw(batch);
         tankSprite.draw(batch);
-
-		batch.end();
-		if(!projectionMatrixSet){
-			shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
-		}
-		float x = body.getPosition().x-50;
-		float y = body.getPosition().y+25;
-		float length = 100;
-		float height = 20;
-		if(poweringUp) {
-			shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-			shapeRenderer.setColor(Color.WHITE);
-			shapeRenderer.rect(x, y, length, height);
-
-			shapeRenderer.setColor(Color.BLACK);
-			shapeRenderer.rect(x + 5, y + 5, length - 10, height - 10);
-
-			shapeRenderer.setColor(Color.RED);
-			shapeRenderer.rect(x + 5, y + 5, ((float)(power)/(float)(maxPower))*(length-10), height - 10);
-			shapeRenderer.end();
-		}
-		batch.begin();
     }
 }
