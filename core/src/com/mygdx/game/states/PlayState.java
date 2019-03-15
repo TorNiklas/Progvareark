@@ -231,7 +231,8 @@ public class PlayState extends State {
                 Body bodyA = contact.getFixtureA().getBody();
                 Body bodyB = contact.getFixtureB().getBody();
                 if(bodyB.isBullet() && bodyA.getType() == BodyDef.BodyType.StaticBody ){
-                    System.out.println("Bullet hit ground at" + bodyB.getPosition());
+                    //System.out.println("Bullet hit ground at" + bodyB.getPosition());
+                    //Bullet hit ground, should explode?
                 }
 
                 if(bodyB.isBullet() && bodyA == (gameSprites.get(1)).getBody() && (gameSprites.get(1)) instanceof Tank){
