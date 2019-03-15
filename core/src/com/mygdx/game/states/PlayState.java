@@ -169,21 +169,30 @@ public class PlayState extends State {
             }
         });
 
+
         fireButton.addListener(new ClickListener() {
             public void clicked(InputEvent e, float x, float y) {
-                System.out.println("Firebutton has been pressed!");
+            	if(!((Tank)gameSprites.get(0)).powerUp()) {
+					int power = ((Tank) gameSprites.get(0)).power;
+					float vectorY = (float) sin(Math.toRadians(deg));
+					float vectorX = (float) cos(Math.toRadians(deg));
 
-                float vectorY = (float)sin(Math.toRadians(deg));
-                float vectorX = (float)cos(Math.toRadians(deg));
-                //fire(vectorX,vectorY);
+//					fire(vectorX,vectorY, power);
+//					System.out.println("Firebutton has been pressed!");
+//					System.out.println(power);
+//
+//					((Tank)gameSprites.get(0)).power = 1;
+//				}
 
-                // use object pooling
-                // start pos
-                Vector2 pos = ((Tank)gameSprites.get(0)).getBarrelPosition();
+					// use object pooling
+					// start pos
+					Vector2 pos = ((Tank) gameSprites.get(0)).getBarrelPosition();
 
-                // exit velocity
-                Vector2 velocity = new Vector2(vectorX * 1000f, vectorY * 1000f);
-                fireFromPool(pos, velocity);
+					// exit velocity
+					Vector2 velocity = new Vector2(vectorX * power, vectorY * power);
+					fireFromPool(pos, velocity);
+					((Tank)gameSprites.get(0)).resetPower();
+				}
 
                 // Integer[] send = { x, y };
                 // TankGame.getBluetooth().writeObject(send);
@@ -294,10 +303,10 @@ public class PlayState extends State {
     }
 
 
-    public static void fire(float x, float y) {
-        System.out.println("FIRING " + x + " - " + y);
-        gameSprites.add(((Tank)gameSprites.get(0)).fireProjectile(world, x, y));
-    }
+//    public static void fire(float x, float y) {
+//        System.out.println("FIRING " + x + " - " + y);
+//        gameSprites.add(((Tank)gameSprites.get(0)).fireProjectile(world, x, y, power));
+//    }
 
     public void fireFromPool(Vector2 pos, Vector2 force) {
         System.out.println("FIRING " + pos.x + " - " + pos.y);
@@ -378,6 +387,7 @@ public class PlayState extends State {
             readNetSprites();
         }
         for (GameSprite gs : gameSprites) {
+
             gs.update();
         }
 
@@ -404,6 +414,7 @@ public class PlayState extends State {
 
     @Override
     public void render(SpriteBatch sb, PolygonSpriteBatch psb) {
+		((Tank)gameSprites.get(0)).powerTick();
         sb.setProjectionMatrix(cam.combined);
         sb.begin();
         sb.draw(bg, 0,0, 1280, 720);
