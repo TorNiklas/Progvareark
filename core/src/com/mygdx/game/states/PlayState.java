@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -227,13 +228,15 @@ public class PlayState extends State {
         world.setContactListener(new ContactListener() {
             @Override
             public void beginContact(Contact contact) {
-                Fixture fixtureA = contact.getFixtureA();
-                Fixture fixtureB = contact.getFixtureB();
-                if(fixtureB.getBody().isBullet() && fixtureA.getBody().getType() == BodyDef.BodyType.StaticBody ){
-                    System.out.println("Bullet hit ground at" + fixtureB.getBody().getPosition());
+                Body bodyA = contact.getFixtureA().getBody();
+                Body bodyB = contact.getFixtureB().getBody();
+                if(bodyB.isBullet() && bodyA.getType() == BodyDef.BodyType.StaticBody ){
+                    System.out.println("Bullet hit ground at" + bodyB.getPosition());
                 }
-                if(fixtureB.getBody().isBullet() && fixtureA.getBody() == (gameSprites.get(1)).getBody()){
-                    System.out.println("tank hit!" + fixtureB.getBody().getPosition());
+
+                if(bodyB.isBullet() && bodyA == (gameSprites.get(1)).getBody() && (gameSprites.get(1)) instanceof Tank){
+                    System.out.println("tank hit!" + bodyB.getPosition());
+                    System.out.println("Tank energy: " + ((Tank)gameSprites.get(1)) .getEnergy());
                 }
             }
 
@@ -284,7 +287,7 @@ public class PlayState extends State {
         }
 
         gameSprites.add(new Tank(world, 500, spawnHeight));
-        //gameSprites.add(new Tank(world, 800, 100));
+        gameSprites.add(new Tank(world, 800, 100));
 
         /*Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new Runnable() {
             @Override
