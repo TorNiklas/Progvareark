@@ -238,6 +238,9 @@ public class PlayState extends State {
                 if(bodyB.isBullet() && bodyA == (gameSprites.get(1)).getBody() && (gameSprites.get(1)) instanceof Tank){
                     System.out.println("tank hit!" + bodyB.getPosition());
                     System.out.println("Tank energy: " + ((Tank)gameSprites.get(1)) .getEnergy());
+
+                    //Just for testing
+                    healthBar.setValue(healthBar.getValue() - 10f);
                 }
             }
 
