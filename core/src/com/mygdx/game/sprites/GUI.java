@@ -98,14 +98,17 @@ public class GUI {
 
         //create options menu button
         volumeOn = new Image(new Texture("volumeOnBtn.png"));
+        volumeOn.setName("volumeOn");
         volumeOn.setSize(volumeOn.getWidth(), volumeOn.getHeight());
         volumeOn.setPosition(TankGame.WIDTH - volumeOn.getWidth()*2, TankGame.HEIGHT - volumeOn.getHeight()*2);
 
         volumeOff = new Image(new Texture("volumeOffBtn.png"));
+        volumeOff.setName("volumeOff");
         volumeOff.setSize(volumeOff.getWidth(), volumeOff.getHeight());
         volumeOff.setPosition(TankGame.WIDTH - volumeOff.getWidth()*2, TankGame.HEIGHT - volumeOff.getHeight()*2);
 
         surrender = new Image(new Texture("surrenderBtn.png"));
+        surrender.setName("surrender");
         surrender.setSize(surrender.getWidth(), surrender.getHeight());
         surrender.setPosition(TankGame.WIDTH - surrender.getWidth()*2, TankGame.HEIGHT - surrender.getHeight()*3.5f);
 
@@ -291,14 +294,15 @@ public class GUI {
 
     private void setPlayable(Boolean bool){
         Array<Actor> stageActors = stage.getActors();
-        if(bool){
-            for (Actor a: stageActors
-            ) {
-                a.setTouchable(Touchable.enabled);
+        for (Actor a: stageActors) {
+            if(a.getName() != null) {
+                if ((a.getName().equals("surrender") || a.getName().equals("volumeOn") || a.getName().equals("volumeOff"))) {
+                    return;
+                }
             }
-        } else {
-            for (Actor a: stageActors
-            ) {
+            if(bool) {
+                a.setTouchable(Touchable.enabled);
+            } else {
                 a.setTouchable(Touchable.disabled);
             }
         }
