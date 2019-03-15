@@ -22,6 +22,22 @@ public class MenuState extends State{
     private Image optionBtn;
     private Stage stage;
 
+    private Runnable onConnected = new Runnable() {
+        @Override
+        public void run() {
+            System.out.println("Connected!");
+
+            GameStateManager.getGsm().set(new PlayState(1));
+        }
+    };
+
+    private Runnable onDisconnect = new Runnable() {
+        @Override
+        public void run() {
+            System.out.println("Disconnected");
+        }
+    };
+
     public MenuState() {
         super();
         cam.setToOrtho(false, TankGame.WIDTH, TankGame.HEIGHT);
@@ -38,7 +54,7 @@ public class MenuState extends State{
         optionBtn.setPosition(center, 200);
 
         // create stage and add maps as actors
-        stage = new Stage(new StretchViewport(1280, 720, cam));
+        stage = new Stage(new StretchViewport(TankGame.WIDTH, TankGame.HEIGHT, cam));
         stage.addActor(hostBtn);
         stage.addActor(connectBtn);
         stage.addActor(optionBtn);
@@ -63,6 +79,7 @@ public class MenuState extends State{
                     public void input(String text) {
                         // handle input
                         System.out.println(text);
+                        TankGame.getBluetooth().startClient(text, onConnected, onDisconnect);
                     }
 
                     @Override
@@ -89,7 +106,7 @@ public class MenuState extends State{
 
     @Override
     public void handleInput() {
-        if(Gdx.input.justTouched()){
+        /*if(Gdx.input.justTouched()){
             //TankGame.getBluetooth().startHost();
             if (Gdx.input.getX() > Gdx.graphics.getWidth() / 2 && Gdx.input.getY() > Gdx.graphics.getHeight() / 2) {
                 System.out.println("HOST");
@@ -101,20 +118,11 @@ public class MenuState extends State{
             }
             else {
 
-                GameStateManager.getGsm().set(new GameSetupState(/*gsm*/));
+                GameStateManager.getGsm().set(new GameSetupState(*//*gsm*//*));
             }
             // go to game setup always, for testing
-            GameStateManager.getGsm().set(new GameSetupState(/*gsm*/));
-        }
-    }
-
-    public static void onConnected(boolean isHost) {
-        System.out.println("Connected!");
-        //GameStateManager.getGsm().set(new PlayState(/*gsm*/));
-    }
-
-    public static void onDisconnect() {
-        System.out.println("Disconnected!");
+            GameStateManager.getGsm().set(new GameSetupState(*//*gsm*//*));
+        }*/
     }
 
     @Override

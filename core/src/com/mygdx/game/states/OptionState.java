@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.mygdx.game.TankGame;
 import com.mygdx.game.sprites.Tank;
 
@@ -43,7 +44,7 @@ public class OptionState extends State {
         surrenderBtn.setPosition(cam.position.x - surrenderBtn.getWidth()/2, cam.position.y - surrenderBtn.getHeight());
 
 
-        stage = new Stage(new ScreenViewport());
+        stage = new Stage(new StretchViewport(TankGame.WIDTH, TankGame.HEIGHT));
         stage.addActor(soundBtn);
         stage.addActor(surrenderBtn);
 
