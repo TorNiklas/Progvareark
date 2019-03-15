@@ -45,6 +45,9 @@ public class GUI {
 
     private ProgressBar healthBar;
     private ProgressBar energyBar;
+    private Image volumeOn;
+    private Image volumeOff;
+    private Image surrender;
 
     private long timer;
     private BitmapFont font;
@@ -93,6 +96,19 @@ public class GUI {
 
         timer = System.currentTimeMillis();
 
+        //create options menu button
+        volumeOn = new Image(new Texture("volumeOnBtn.png"));
+        volumeOn.setSize(volumeOn.getWidth(), volumeOn.getHeight());
+        volumeOn.setPosition(TankGame.WIDTH - volumeOn.getWidth()*2, TankGame.HEIGHT - volumeOn.getHeight()*2);
+
+        volumeOff = new Image(new Texture("volumeOffBtn.png"));
+        volumeOff.setSize(volumeOff.getWidth(), volumeOff.getHeight());
+        volumeOff.setPosition(TankGame.WIDTH - volumeOff.getWidth()*2, TankGame.HEIGHT - volumeOff.getHeight()*2);
+
+        surrender = new Image(new Texture("surrenderBtn.png"));
+        surrender.setSize(surrender.getWidth(), surrender.getHeight());
+        surrender.setPosition(TankGame.WIDTH - surrender.getWidth()*2, TankGame.HEIGHT - surrender.getHeight()*3.5f);
+
         stage = new Stage(new StretchViewport(1280, 720, cam));
         stage.addActor(statusBar);
         stage.addActor(leftBtn);
@@ -102,6 +118,21 @@ public class GUI {
         stage.addActor(decreaseElevation);
         stage.addActor(energyBar);
         stage.addActor(healthBar);
+        stage.addActor(volumeOn);
+        stage.addActor(volumeOff);
+        stage.addActor(surrender);
+
+        //Volume is on by default
+        if(TankGame.music_level1.getVolume() == 1f){
+            volumeOn.setVisible(true);
+            volumeOff.setVisible(false);
+        }
+        //Volume is on by default
+        if(TankGame.music_level1.getVolume() == 0f){
+            volumeOn.setVisible(false);
+            volumeOff.setVisible(true);
+        }
+
 
         Gdx.input.setInputProcessor(stage);
 
@@ -179,6 +210,34 @@ public class GUI {
             }
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
                 tank.setDecrease(false);
+            }
+        });
+
+        volumeOn.addListener(new InputListener(){
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("Mute");
+                volumeOn.setVisible(false);
+                volumeOff.setVisible(true);
+                TankGame.music_level1.setVolume(0f);
+
+                return false;
+            }
+        });
+
+        volumeOff.addListener(new InputListener(){
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("Unmute");
+                volumeOn.setVisible(true);
+                volumeOff.setVisible(false);
+                TankGame.music_level1.setVolume(1f);
+                return false;
+            }
+        });
+
+        surrender.addListener(new InputListener() {
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("Surrender");
+                return false;
             }
         });
     }

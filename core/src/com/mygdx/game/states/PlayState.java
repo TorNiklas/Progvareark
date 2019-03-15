@@ -32,6 +32,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -69,6 +70,9 @@ public class PlayState extends State {
     private Ground ground;
     private BTInterface btInterface;
     private GUI gui;
+
+
+
 
     // active projectiles
     private final Array<Projectile> activeProjectiles = new Array<Projectile>();

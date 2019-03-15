@@ -22,53 +22,85 @@ import com.mygdx.game.sprites.Tank;
 public class OptionState extends State {
     private Texture bg;
     private Texture optionTitle;
-    private Image soundBtn;
+    private Image volumeOn;
+    private Image volumeOff;
     private Image surrenderBtn;
     private Image homeBtn;
+    private Image returnToGameBtn;
     private Stage stage;
 
     public OptionState(boolean fromMenuState) {
         super();
         cam.setToOrtho(false, TankGame.WIDTH, TankGame.HEIGHT);
         bg = new Texture("bg.png");
+//        soundBtn.setPosition(cam.position.x - soundBtn.getWidth()/2, 400);
 
         optionTitle = new Texture("optionTitle.png");
-
-        soundBtn = new Image(new Texture("volumeBtn.png"));
-        surrenderBtn = new Image(new Texture("surrenderBtn.png"));
-
-        soundBtn.setSize(surrenderBtn.getWidth()/4, surrenderBtn.getHeight()/4);
-        soundBtn.setPosition(cam.position.x - soundBtn.getWidth()/2, cam.position.y);
-        surrenderBtn.setSize(surrenderBtn.getWidth()/4, surrenderBtn.getHeight()/4);
-        surrenderBtn.setPosition(cam.position.x - surrenderBtn.getWidth()/2, cam.position.y - surrenderBtn.getHeight());
-
-
         stage = new Stage(new ScreenViewport());
-        stage.addActor(soundBtn);
-        stage.addActor(surrenderBtn);
+
+        volumeOn = new Image(new Texture("volumeOnTextBtn.png"));
+        volumeOn.setSize(volumeOn.getWidth(), volumeOn.getHeight());
+        volumeOn.setPosition(cam.position.x - volumeOn.getWidth()/2, 400);
+        stage.addActor(volumeOn);
+
+
+
+        volumeOff = new Image(new Texture("volumeOffTextBtn.png"));
+        volumeOff.setSize(volumeOff.getWidth(), volumeOff.getHeight());
+        volumeOff.setPosition(cam.position.x - volumeOff.getWidth()/2, 400);
+        stage.addActor(volumeOff);
+
+        //Volume is on by default
+        if(TankGame.music_level1.getVolume() == 1f){
+            volumeOn.setVisible(true);
+            volumeOff.setVisible(false);
+        }
+        //Volume is on by default
+        if(TankGame.music_level1.getVolume() == 0f){
+            volumeOn.setVisible(false);
+            volumeOff.setVisible(true);
+        }
+
+
 
         if(fromMenuState){
             homeBtn = new Image(new Texture("homeBtn.png"));
-            homeBtn.setSize(homeBtn.getWidth()/5, homeBtn.getHeight()/5);
-            homeBtn.setPosition(TankGame.WIDTH - homeBtn.getWidth()*1.5f,TankGame.HEIGHT - homeBtn.getHeight()*1.5f);
+            homeBtn.setSize(homeBtn.getWidth(), homeBtn.getHeight());
+            homeBtn.setPosition(cam.position.x - homeBtn.getWidth()/2,300);
             stage.addActor(homeBtn);
+        }
+
+        if(!fromMenuState){
+            surrenderBtn = new Image(new Texture("surrenderBtn.png"));
+            surrenderBtn.setPosition(cam.position.x - surrenderBtn.getWidth()/2,  300);
+            stage.addActor(surrenderBtn);
+
+            returnToGameBtn = new Image(new Texture("return.png"));
+            returnToGameBtn.setSize(returnToGameBtn.getWidth(), returnToGameBtn.getHeight());
+            returnToGameBtn.setPosition(cam.position.x - returnToGameBtn.getWidth()/2, 200);
+            stage.addActor(returnToGameBtn);
         }
 
         Gdx.input.setInputProcessor(stage);
 
-
-        soundBtn.addListener(new InputListener(){
+        volumeOn.addListener(new InputListener(){
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Volume changed");
+                System.out.println("Mute");
+                volumeOn.setVisible(false);
+                volumeOff.setVisible(true);
+                TankGame.music_level1.setVolume(0f);
+
                 return false;
             }
-
-
         });
 
-        surrenderBtn.addListener(new InputListener() {
+        volumeOff.addListener(new InputListener(){
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("Surrender");
+                System.out.println("Unmute");
+                volumeOn.setVisible(true);
+                volumeOff.setVisible(false);
+                TankGame.music_level1.setVolume(1f);
+
                 return false;
             }
         });
@@ -82,6 +114,23 @@ public class OptionState extends State {
                 }
             });
         }
+        /*if(!fromMenuState){
+            returnToGameBtn.addListener(new InputListener() {
+                public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                    System.out.println("Return to game");
+                    State prevState = GameStateManager.getGsm().peek();
+
+                    GameStateManager.getGsm().push(prevState); //set(new MenuState());
+                    return true;
+                }
+            });
+            surrenderBtn.addListener(new InputListener() {
+                public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                    System.out.println("Surrender");
+                    return false;
+                }
+            });
+        }*/
 
     }
 
@@ -100,7 +149,7 @@ public class OptionState extends State {
         sb.setProjectionMatrix(cam.combined);
         sb.begin();
         sb.draw(bg, 0,0, 1280, 720);
-        sb.draw(optionTitle, cam.position.x - optionTitle.getWidth()/2, cam.position.y + optionTitle.getHeight());
+        sb.draw(optionTitle, cam.position.x - optionTitle.getWidth()/2, 500+optionTitle.getHeight()/4);
         sb.end();
 
         // draw stage actors
