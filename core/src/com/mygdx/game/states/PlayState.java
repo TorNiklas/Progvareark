@@ -4,6 +4,7 @@ import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -20,6 +21,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -66,6 +68,9 @@ public class PlayState extends State {
     private boolean isIncreasing;
     private boolean isDecreasing;
 
+    private ProgressBar healthBar;
+    private ProgressBar energyBar;
+
     public PlayState(int level) {
         super();
         cam.setToOrtho(false, TankGame.WIDTH, TankGame.HEIGHT);
@@ -92,31 +97,63 @@ public class PlayState extends State {
         decreaseElevation.setSize(100,100);
         decreaseElevation.setPosition(0, 200);
 
+        // create energy bar
+        energyBar = generateProgressBar(300, 20, 100, 20, Color.DARK_GRAY, Color.GOLD);
+
+        // create health bar
+        healthBar = generateProgressBar(450, 20, 100, 20, Color.FIREBRICK, Color.GREEN);
+        healthBar.setValue(75f);
+
         stage = new Stage(new ScreenViewport());
         stage.addActor(leftBtn);
         stage.addActor(rightBtn);
         stage.addActor(fireButton);
         stage.addActor(increaseElevation);
         stage.addActor(decreaseElevation);
+        stage.addActor(energyBar);
+        stage.addActor(healthBar);
 
         Gdx.input.setInputProcessor(stage);
 
         //Button event handlers, should probably not be here
-        leftBtn.addListener(new EventListener() {
-            @Override
+        leftBtn.addListener(new ClickListener() {
+            /*@Override
             public boolean handle(Event event) {
                 System.out.println("Pressed left button");
-                ((Tank)gameSprites.get(0)).drive(new Vector2(-50f, -5f));
+                //((Tank)gameSprites.get(0)).drive(new Vector2(-50f, -5f));
+                return true;
+            }*/
+
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("touch down - left");
+                ((Tank)gameSprites.get(0)).setMoveLeft(true);
                 return true;
             }
+
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("touch up - left");
+                ((Tank)gameSprites.get(0)).setMoveLeft(false);
+            }
+
         });
 
-        rightBtn.addListener(new EventListener() {
-            @Override
+        rightBtn.addListener(new ClickListener() {
+            /*@Override
             public boolean handle(Event event) {
                 System.out.println("Pressed right button");
                 ((Tank)gameSprites.get(0)).drive(new Vector2(50f, -5f));
                 return true;
+            }*/
+
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("touch down - right");
+                ((Tank)gameSprites.get(0)).setMoveRight(true);
+                return true;
+            }
+
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("touch up - right");
+                ((Tank)gameSprites.get(0)).setMoveRight(false);
             }
         });
 
@@ -196,6 +233,45 @@ public class PlayState extends State {
         }, 100, 100, TimeUnit.MILLISECONDS);*/
     }
 
+    private ProgressBar generateProgressBar(int x, int y, int width, int height, Color bgColor, Color barColor) {
+        // energy background bar pixmap
+        Pixmap bgPixmap = new Pixmap(width, height, Pixmap.Format.RGBA8888);
+        bgPixmap.setColor(bgColor);
+        bgPixmap.fill();
+
+        // full bar pixmap
+        Pixmap fullPixmap = new Pixmap(width, height, Pixmap.Format.RGBA8888);
+        fullPixmap.setColor(barColor);
+        fullPixmap.fill();
+
+        // empty pixmap
+        Pixmap emptyPixmap = new Pixmap(0, height, Pixmap.Format.RGBA8888);
+        emptyPixmap.setColor(barColor);
+        emptyPixmap.fill();
+
+        // texture region drawables
+        TextureRegionDrawable bgDrawable = new TextureRegionDrawable(new TextureRegion(new Texture(bgPixmap)));
+        TextureRegionDrawable fullDrawable = new TextureRegionDrawable(new TextureRegion(new Texture(fullPixmap)));
+        TextureRegionDrawable emptyDrawable = new TextureRegionDrawable(new TextureRegion(new Texture(emptyPixmap)));
+        bgPixmap.dispose();
+        fullPixmap.dispose();
+        emptyPixmap.dispose();
+
+        // set up style
+        ProgressBar.ProgressBarStyle progressBarStyle = new ProgressBar.ProgressBarStyle();
+        progressBarStyle.background = bgDrawable;
+        progressBarStyle.knobBefore = fullDrawable;
+        progressBarStyle.knob = emptyDrawable;
+
+        // create energy bar
+        ProgressBar progressBar = new ProgressBar(0.0f, 100.0f, 0.1f, false, progressBarStyle);
+        progressBar.setValue(100f);
+        progressBar.setAnimateDuration(0.05f);
+        progressBar.setBounds(x, y, width, height);
+
+        return progressBar;
+    }
+
 
     public static void fire(float x, float y) {
         System.out.println("FIRING " + x + " - " + y);
@@ -263,6 +339,9 @@ public class PlayState extends State {
 
     @Override
     public void update(float dt) {
+        // update energy
+        energyBar.setValue(((Tank)gameSprites.get(0)).getEnergy());
+
         handleInput();
         // doesn't work on desktop
         if(Gdx.app.getType() == Application.ApplicationType.Android) {
@@ -294,7 +373,6 @@ public class PlayState extends State {
         for (int i = 0; i < gameSprites.size(); i++) {
             gameSprites.get(i).draw(sb);
         }
-
         sb.end();
 
         // ground terrain
@@ -306,7 +384,7 @@ public class PlayState extends State {
         stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();
         // box-2d
-        //debugRenderer.render(world, cam.combined);
+        debugRenderer.render(world, cam.combined);
         world.step(1/60f, 6, 2);
     }
 
