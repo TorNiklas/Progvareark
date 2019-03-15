@@ -6,10 +6,12 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2D;
@@ -21,6 +23,7 @@ import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -72,6 +75,9 @@ public class PlayState extends State {
     private boolean isIncreasing;
     private boolean isDecreasing;
 
+    private long timer;
+    private BitmapFont font;
+
     // active projectiles
     private final Array<Projectile> activeProjectiles = new Array<Projectile>();
 
@@ -117,6 +123,14 @@ public class PlayState extends State {
         // create health bar
         healthBar = generateProgressBar(450, 20, 100, 20, Color.FIREBRICK, Color.GREEN);
         healthBar.setValue(75f);
+
+        timer = System.currentTimeMillis();
+
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/arial.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameter.size = 20;
+        font = generator.generateFont(parameter); // font size 12 pixels
+        generator.dispose(); // don't forget to dispose to avoid memory leaks!
 
         stage = new Stage(new StretchViewport(1280, 720, cam));
         stage.addActor(leftBtn);
@@ -313,6 +327,29 @@ public class PlayState extends State {
         gameSprites.add(p);
     }
 
+    private long getTime(){
+        long diff = 45 - ((System.currentTimeMillis()-timer)/1000);
+        if(diff > 0) {
+            return diff;
+        }
+        return 0;
+    }
+
+    private void setPlayable(Boolean bool){
+        Array<Actor> stageActors = stage.getActors();
+        if(bool){
+            for (Actor a: stageActors
+            ) {
+                a.setTouchable(Touchable.disabled);
+            }
+        } else {
+            for (Actor a: stageActors
+            ) {
+                a.setTouchable(Touchable.enabled);
+            }
+        }
+    }
+
     public static World getWorld() {
         return world;
     }
@@ -395,6 +432,10 @@ public class PlayState extends State {
             ((Tank) gameSprites.get(0)).updateBarrel(deg);
         }
 
+        if(getTime() == 0) {
+            setPlayable(true);
+        }
+
         // free dead projectiles
         Projectile p;
         for(int i = activeProjectiles.size; --i >= 0;) {
@@ -419,6 +460,9 @@ public class PlayState extends State {
         for (int i = 0; i < gameSprites.size(); i++) {
             gameSprites.get(i).draw(sb);
         }
+
+
+        font.draw(sb, "Time: " + getTime(), 1200, 700);
         sb.end();
 
         // ground terrain
