@@ -241,6 +241,7 @@ public class PlayState extends State {
                 System.out.println("Mute");
                 volumeOn.setVisible(false);
                 volumeOff.setVisible(true);
+                TankGame.music_level1.setVolume(0f);
 
                 return false;
             }
@@ -251,6 +252,7 @@ public class PlayState extends State {
                 System.out.println("Unmute");
                 volumeOn.setVisible(true);
                 volumeOff.setVisible(false);
+                TankGame.music_level1.setVolume(1f);
 
                 return false;
             }
