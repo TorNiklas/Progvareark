@@ -3,6 +3,7 @@ package com.mygdx.game.states;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -74,6 +75,7 @@ public class PlayState extends State {
     private Box2DDebugRenderer debugRenderer;
     private Ground ground;
     private GUI gui;
+    private Sound explosionSound;
 
     // active projectiles
     private final Array<Projectile> activeProjectiles = new Array<Projectile>();
@@ -104,6 +106,9 @@ public class PlayState extends State {
         cam.setToOrtho(false, TankGame.WIDTH, TankGame.HEIGHT);
         bg = new Texture("bg.png");
 
+        // load sound effects
+        explosionSound = Gdx.audio.newSound(Gdx.files.internal("sounds/explosion-7.mp3"));
+
         // init box2d world
         Box2D.init();
         world = new World(new Vector2(0, -50f), true);
@@ -123,6 +128,9 @@ public class PlayState extends State {
                     Vector2 hitPos = bodyB.getPosition();
                     explodeEffect(hitPos.x, hitPos.y, 0.3f, 100);
 
+                    // explosion sound effect
+                    explosionSound.play();
+
                     // delete bullet
                     bodyB.setAwake(false);
                 }
@@ -139,8 +147,11 @@ public class PlayState extends State {
                     Vector2 hitPos = bodyB.getPosition();
                     explodeEffect(hitPos.x, hitPos.y, 0.3f, 100);
 
+                    // explosion sound effect
+                    explosionSound.play();
+
                     // vibrate on tank hit, maybe only if own tank is hit?
-                    Gdx.input.vibrate(2000);
+                    Gdx.input.vibrate(500);
 
                     // delete bullet
                     bodyB.setAwake(false);

@@ -33,7 +33,7 @@ public class TankGame extends ApplicationAdapter {
 
 	@Override
 	public void create () {
-		music_level1 = Gdx.audio.newMusic(Gdx.files.internal("level1.ogg"));
+		music_level1 = Gdx.audio.newMusic(Gdx.files.internal("sounds/level1.ogg"));
 		music_level1.setLooping(true);
 		music_level1.play();
 
