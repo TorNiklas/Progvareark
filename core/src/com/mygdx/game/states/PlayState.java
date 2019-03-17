@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
+import com.badlogic.gdx.graphics.g2d.ParticleEffectPool;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -84,7 +86,10 @@ public class PlayState extends State {
         }
     };
 
-
+    // particle effect
+    private ParticleEffect explosionEffect;
+    private ParticleEffectPool particleEffectPool;
+    private Array<ParticleEffectPool.PooledEffect> effects;
     private int seed;
 
     private int level;
@@ -113,6 +118,10 @@ public class PlayState extends State {
                     //System.out.println("Bullet hit ground at" + bodyB.getPosition());
                     //Bullet hit ground, should explode?
 
+                    // explosion effect
+                    Vector2 hitPos = bodyB.getPosition();
+                    explodeEffect(hitPos.x, hitPos.y, 0.3f, 100);
+
                     // delete bullet
                     bodyB.setAwake(false);
                 }
@@ -124,6 +133,10 @@ public class PlayState extends State {
                     ((Tank)gameSprites.get(1)).setHealth(((Tank)gameSprites.get(1)).getHealth()-25f);
 
                     System.out.println("Tank health now: " + ((Tank)gameSprites.get(1)).getHealth());
+
+                    // explosion effect
+                    Vector2 hitPos = bodyB.getPosition();
+                    explodeEffect(hitPos.x, hitPos.y, 0.3f, 100);
 
                     // delete bullet
                     bodyB.setAwake(false);
@@ -199,6 +212,12 @@ public class PlayState extends State {
         // test simple gui
         gui = new GUI(this, guiHeight);
 
+        // particle effect
+        explosionEffect = new ParticleEffect();
+        explosionEffect.load(Gdx.files.internal("effects/explosion.p"), Gdx.files.internal("effects"));
+        particleEffectPool = new ParticleEffectPool(explosionEffect, 0, 10);
+        effects = new Array<ParticleEffectPool.PooledEffect>();
+
         /*Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
@@ -218,6 +237,16 @@ public class PlayState extends State {
         gameSprites.add(p);
     }
 
+    public void explodeEffect(float x, float y, float scale, int duration) {
+        // create effect
+        ParticleEffectPool.PooledEffect effect = particleEffectPool.obtain();
+        effect.setPosition(x, y);
+        effect.scaleEffect(scale);
+        effect.setDuration(duration);
+        effect.start();
+        effects.add(effect);
+    }
+
     public void fireFromPool(Vector2 pos, Vector2 force) {
         fireFromPool(pos, force, true);
     }
@@ -232,17 +261,10 @@ public class PlayState extends State {
 
     @Override
     protected void handleInput() {
-        /*if(Gdx.input.justTouched()) {
-            //System.out.println("FIRE!");
-            //gameSprites.add(((Tank)gameSprites.get(0)).fireProjectile(world, Gdx.input.getX(), Gdx.input.getY()));
-
-            int x = Gdx.input.getX();
-            int y = Gdx.input.getY();
-            //fire(x,y);
-            *//*Integer[] send = { x, y };
-            TankGame.getBluetooth().writeObject(send);*//*
-            //TankGame.getBluetooth().writeObject("FIRE");
+        if(Gdx.input.justTouched()) {
+            //explodeEffect(Gdx.input.getX(), Gdx.input.getY());
         }
+        /*
         // for testing purposes
         if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             GameStateManager.getGsm().push(new MenuState(*//*gsm*//*));
@@ -335,6 +357,17 @@ public class PlayState extends State {
         for (int i = 0; i < gameSprites.size(); i++) {
             gameSprites.get(i).draw(sb);
         }
+
+        // update and draw effects
+        for (int i = effects.size - 1; i >= 0; i--) {
+            ParticleEffectPool.PooledEffect effect = effects.get(i);
+            effect.draw(sb, Gdx.graphics.getDeltaTime());
+            if (effect.isComplete()) {
+                effect.free();
+                effects.removeIndex(i);
+            }
+        }
+
         sb.end();
 
         // ground terrain

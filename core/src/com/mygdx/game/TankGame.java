@@ -35,7 +35,7 @@ public class TankGame extends ApplicationAdapter {
 	public void create () {
 		music_level1 = Gdx.audio.newMusic(Gdx.files.internal("level1.ogg"));
 		music_level1.setLooping(true);
-		music_level1.play();
+		//music_level1.play();
 
 		sb = new SpriteBatch();
 		psb = new PolygonSpriteBatch();
