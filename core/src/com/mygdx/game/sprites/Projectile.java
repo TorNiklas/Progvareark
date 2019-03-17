@@ -1,6 +1,9 @@
 package com.mygdx.game.sprites;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
+import com.badlogic.gdx.graphics.g2d.ParticleEffectPool;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
@@ -12,6 +15,7 @@ import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import com.mygdx.game.TankGame;
 import com.mygdx.game.network.SpriteSerialize;
@@ -27,6 +31,9 @@ public class Projectile implements GameSprite, Pool.Poolable {
     private Sprite sprite;
     private Body body;
     private boolean alive;
+
+    // particle effect
+    private ParticleEffect trailEffect;
 
     public Projectile() {
         this.alive = false;
@@ -66,6 +73,9 @@ public class Projectile implements GameSprite, Pool.Poolable {
         generateProjectile(world, new Vector2(pos.x, pos.y));
         body.setLinearVelocity(velocity);
         alive = true;
+
+        // particle effect
+        trailEffect(pos.x, pos.y, 0.2f, 2000);
     }
 
     private void generateProjectile(World world, Vector2 pos) {
@@ -107,10 +117,20 @@ public class Projectile implements GameSprite, Pool.Poolable {
         return !(body.isAwake() && body.getLinearVelocity().len() > 0.05f);
     }
 
+    public void trailEffect(float x, float y, float scale, int duration) {
+        // create effect
+        trailEffect = new ParticleEffect();
+        trailEffect.load(Gdx.files.internal("effects/smoke_trail.p"), Gdx.files.internal("effects"));
+        trailEffect.setPosition(x, y);
+        trailEffect.scaleEffect(scale);
+        trailEffect.setDuration(duration);
+        trailEffect.start();
+    }
+
     @Override
     public void update(){
         sprite.setPosition(body.getPosition().x - sprite.getWidth()/2, body.getPosition().y - sprite.getHeight()/2);
-
+        trailEffect.setPosition(body.getPosition().x, body.getPosition().y);
         // set alive false if projectile out of bounds or hit
         if(outOfBounds() || inactiveBody()) {
             alive = false;
@@ -187,6 +207,7 @@ public class Projectile implements GameSprite, Pool.Poolable {
     @Override
     public void draw(SpriteBatch batch) {
         sprite.draw(batch);
+        trailEffect.draw(batch, Gdx.graphics.getDeltaTime());
     }
 
     @Override

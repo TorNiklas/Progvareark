@@ -90,6 +90,7 @@ public class PlayState extends State {
     private ParticleEffect explosionEffect;
     private ParticleEffectPool particleEffectPool;
     private Array<ParticleEffectPool.PooledEffect> effects;
+
     private int seed;
 
     private int level;
