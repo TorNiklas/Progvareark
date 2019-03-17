@@ -420,6 +420,7 @@ public class PlayState extends State {
         world.dispose();
         gui.dispose();
         debugRenderer.dispose();
+        explosionSound.dispose();
         /*for (GameSprite gs : gameSprites) {
             gs.dispose();
         }*/
