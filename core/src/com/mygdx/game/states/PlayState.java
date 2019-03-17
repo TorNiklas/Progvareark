@@ -139,6 +139,9 @@ public class PlayState extends State {
                     Vector2 hitPos = bodyB.getPosition();
                     explodeEffect(hitPos.x, hitPos.y, 0.3f, 100);
 
+                    // vibrate on tank hit, maybe only if own tank is hit?
+                    Gdx.input.vibrate(2000);
+
                     // delete bullet
                     bodyB.setAwake(false);
                 }
