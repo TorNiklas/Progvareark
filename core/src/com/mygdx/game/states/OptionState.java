@@ -90,7 +90,7 @@ public class OptionState extends State {
                 volumeOn.setVisible(false);
                 volumeOff.setVisible(true);
                 TankGame.music_level1.setVolume(0f);
-
+                TankGame.isMuted = true;
                 return false;
             }
         });
@@ -101,7 +101,7 @@ public class OptionState extends State {
                 volumeOn.setVisible(true);
                 volumeOff.setVisible(false);
                 TankGame.music_level1.setVolume(1f);
-
+                TankGame.isMuted = false;
                 return false;
             }
         });

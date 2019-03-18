@@ -49,11 +49,13 @@ public class Tank implements GameSprite {
     private float energy;
     private float health;
 
+    private int ammo;
+    private int maxAmmo;
+
+    private Projectile.AmmoType activeAmmoType;
+
     PlayState state;
     //private static final AtomicInteger idCounter = new AtomicInteger();
-
-	private ShapeRenderer shapeRenderer;
-	static private boolean projectionMatrixSet;
 
 	public Tank(World world, PlayState state, int x, int y, boolean local, int id) {
 	    this(world, state, x, y);
@@ -95,6 +97,11 @@ public class Tank implements GameSprite {
         // stats
         energy = 100.0f;
         health = 100.0f;
+
+        // set ammo
+        maxAmmo = 10;
+        ammo = maxAmmo;
+        activeAmmoType = Projectile.AmmoType.STANDARD;
 
         this.state = state;
     }
@@ -165,6 +172,22 @@ public class Tank implements GameSprite {
         return new Vector2(barrelX, barrelY);
     }
 
+    public Projectile.AmmoType getNextAmmo() {
+        return activeAmmoType.getNext();
+    }
+
+    public Projectile.AmmoType getPrevAmmo() {
+        return activeAmmoType.getPrev();
+    }
+
+    public Projectile.AmmoType getActiveAmmoType() {
+        return activeAmmoType;
+    }
+
+    public void setActiveAmmoType(Projectile.AmmoType activeAmmoType) {
+        this.activeAmmoType = activeAmmoType;
+    }
+
     @Override
     public int getId() {
         return id;
@@ -213,7 +236,7 @@ public class Tank implements GameSprite {
 		}
 	}
 
-    public void fireProjectile() {
+    public void fireProjectile(Projectile.AmmoType type) {
         float vectorY = (float) sin(Math.toRadians(barrelDeg));
         float vectorX = (float) cos(Math.toRadians(barrelDeg));
 
@@ -222,10 +245,13 @@ public class Tank implements GameSprite {
         // exit velocity
         Vector2 velocity = new Vector2(vectorX * firePower, vectorY * firePower);
         // use object pooling
-        state.fireFromPool(pos, velocity);
+        state.fireFromPool(type, pos, velocity);
 
         // reset power
         firePower = 1;
+
+        // decrease ammo count
+        ammo -= 1;
 	}
 
     public void move() {
@@ -272,6 +298,14 @@ public class Tank implements GameSprite {
 
     public float getHealth() {
         return health;
+    }
+
+    public int getAmmo() {
+        return ammo;
+    }
+
+    public int getMaxAmmo() {
+        return maxAmmo;
     }
 
     public void setEnergy(float energy) {

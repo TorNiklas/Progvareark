@@ -3,7 +3,6 @@ package com.mygdx.game.sprites;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
-import com.badlogic.gdx.graphics.g2d.ParticleEffectPool;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
@@ -11,16 +10,14 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.utils.Pool;
 import com.mygdx.game.TankGame;
 import com.mygdx.game.network.SpriteSerialize;
-
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class Projectile implements GameSprite, Pool.Poolable {
     private boolean local;
@@ -31,15 +28,29 @@ public class Projectile implements GameSprite, Pool.Poolable {
     private Sprite sprite;
     private Body body;
     private boolean alive;
+    private Image displayImage;
+
+    public enum AmmoType {
+        STANDARD,
+        SPREAD;
+
+        private static AmmoType[] vals = values();
+
+        public AmmoType getNext() {
+            return vals[(this.ordinal() + 1) % vals.length];
+        }
+
+        public AmmoType getPrev() {
+            int prevIndex = (this.ordinal() - 1) < 0 ? (this.ordinal() + vals.length - 1) : (this.ordinal() - 1);
+            return vals[prevIndex % vals.length];
+        }
+    }
 
     // particle effect
     private ParticleEffect trailEffect;
 
     public Projectile() {
         this.alive = false;
-        sprite = new Sprite(new Texture("bullet.png"));
-        sprite.setPosition(-10, -10);
-        sprite.setOriginCenter();
     }
 
     public Projectile(World world, float x, float y, Vector2 force) {
@@ -69,13 +80,26 @@ public class Projectile implements GameSprite, Pool.Poolable {
         body.setLinearVelocity(linVel);
     }
 
-    public void init(World world, Vector2 pos, Vector2 velocity) {
+    public void init(World world, AmmoType type, Vector2 pos, Vector2 velocity) {
+        switch (type) {
+            case STANDARD:
+                sprite = new Sprite(new Texture("bullet.png"));
+                break;
+
+            case SPREAD:
+                sprite = new Sprite(new Texture("bullet-spread.png"));
+                break;
+        }
+        sprite.setPosition(-10, -10);
+        sprite.setOriginCenter();
+
+        // generate projectile and set velocity
         generateProjectile(world, new Vector2(pos.x, pos.y));
         body.setLinearVelocity(velocity);
-        alive = true;
 
         // particle effect
         trailEffect(pos.x, pos.y, 0.2f, 2000);
+        alive = true;
     }
 
     private void generateProjectile(World world, Vector2 pos) {
@@ -99,6 +123,9 @@ public class Projectile implements GameSprite, Pool.Poolable {
         // add body to world
         body = world.createBody(bodyDef);
 
+        // set group index to disable collision between projectiles
+        fixtureDef.filter.groupIndex = -1;
+
         // attach fixtures
         fixtureDef.shape = shape;
         body.createFixture(fixtureDef);
@@ -114,7 +141,7 @@ public class Projectile implements GameSprite, Pool.Poolable {
     }
 
     public boolean inactiveBody() {
-        return !(body.isAwake() && body.getLinearVelocity().len() > 0.05f);
+        return !(body.isAwake() && body.getLinearVelocity().len() > 0.001f);
     }
 
     public void trailEffect(float x, float y, float scale, int duration) {

@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -17,12 +18,14 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
@@ -51,6 +54,10 @@ public class GUI {
     private TextButton leftBtn;
     private TextButton rightBtn;
 
+    private TextButton nextAmmoBtn;
+    private TextButton prevAmmoBtn;
+    private Image ammoImage;
+
     private ProgressBar healthBar;
     private ProgressBar tankHealthBar;
     private ProgressBar tankFirePower;
@@ -62,9 +69,11 @@ public class GUI {
 
     private long timer;
     private BitmapFont font;
+    private int height;
 
     public GUI(PlayState state, int height) {
         this.state = state;
+        this.height = height;
         statusBar = new Image(new Texture("statusBar.png"));
         statusBar.setSize(TankGame.WIDTH, height);
 
@@ -86,6 +95,18 @@ public class GUI {
         rightBtn = new TextButton("-->", skin);
         rightBtn.setSize(200, height - 75);
         rightBtn.setPosition(leftBtn.getWidth() + 20, 10);
+
+        ammoImage = new Image(new Texture("ammo-standard.png"));
+        ammoImage.setSize(100, 100);
+        ammoImage.setPosition(TankGame.WIDTH/2 - 15, ammoImage.getHeight()/2 + 35, 1);
+
+        nextAmmoBtn = new TextButton("-->", skin);
+        nextAmmoBtn.setSize(50, 100);
+        nextAmmoBtn.setPosition(ammoImage.getX() + ammoImage.getWidth()/2 + nextAmmoBtn.getWidth() + 10, ammoImage.getY());
+
+        prevAmmoBtn = new TextButton("<--", skin);
+        prevAmmoBtn.setSize(50, 100);
+        prevAmmoBtn.setPosition(ammoImage.getX() - prevAmmoBtn.getWidth() - 10, ammoImage.getY());
 
         fireButton = new TextButton("Fire!", skin);
         fireButton.setSize(200,height - 75);
@@ -134,6 +155,9 @@ public class GUI {
         stage.addActor(statusBar);
         stage.addActor(leftBtn);
         stage.addActor(rightBtn);
+        stage.addActor(ammoImage);
+        stage.addActor(prevAmmoBtn);
+        stage.addActor(nextAmmoBtn);
         stage.addActor(fireButton);
         stage.addActor(increaseElevation);
         stage.addActor(decreaseElevation);
@@ -200,6 +224,36 @@ public class GUI {
             }
         });
 
+        nextAmmoBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                tank.setActiveAmmoType(tank.getNextAmmo());
+                switch (tank.getActiveAmmoType()) {
+                    case STANDARD:
+                        ammoImage.setDrawable(new SpriteDrawable(new Sprite(new Texture("ammo-standard.png"))));
+                        break;
+                    case SPREAD:
+                        ammoImage.setDrawable(new SpriteDrawable(new Sprite(new Texture("ammo-spread.png"))));
+                        break;
+                }
+            }
+        });
+
+        prevAmmoBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                tank.setActiveAmmoType(tank.getPrevAmmo());
+                switch (tank.getActiveAmmoType()) {
+                    case STANDARD:
+                        ammoImage.setDrawable(new SpriteDrawable(new Sprite(new Texture("ammo-standard.png"))));
+                        break;
+                    case SPREAD:
+                        ammoImage.setDrawable(new SpriteDrawable(new Sprite(new Texture("ammo-spread.png"))));
+                        break;
+                }
+            }
+        });
+
         fireButton.addListener(new ClickListener() {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 System.out.println("power up");
@@ -212,7 +266,7 @@ public class GUI {
                 System.out.println("fire");
                 tankFirePower.setVisible(false);
                 tank.setPoweringUp(false);
-                tank.fireProjectile();
+                tank.fireProjectile(tank.getActiveAmmoType());
             }
         });
 
@@ -242,7 +296,7 @@ public class GUI {
                 volumeOn.setVisible(false);
                 volumeOff.setVisible(true);
                 TankGame.music_level1.setVolume(0f);
-
+                TankGame.isMuted = true;
                 return false;
             }
         });
@@ -253,6 +307,7 @@ public class GUI {
                 volumeOn.setVisible(true);
                 volumeOff.setVisible(false);
                 TankGame.music_level1.setVolume(1f);
+                TankGame.isMuted = false;
                 return false;
             }
         });
@@ -359,9 +414,14 @@ public class GUI {
         tankFirePower.setPosition(tankPos.x - tankFirePower.getWidth()/2 + tank.getSprite().getWidth()/2, tankPos.y + 30);
         tankFirePower.setValue(tank.getFirePower());
 
+        if(tank.getAmmo() <= 0 && fireButton.getTouchable().equals(Touchable.enabled)) {
+            //TODO: fix disabled style for button
+            fireButton.setDisabled(true);
+            fireButton.setTouchable(Touchable.disabled);
+        }
 
         if(getTime() == 0) {
-            setPlayable(false);
+            //setPlayable(false);
         }
     }
 
@@ -371,6 +431,7 @@ public class GUI {
 
         batch.begin();
         font.draw(batch, "Time: " + getTime(), TankGame.WIDTH - 175, 700);
+        font.draw(batch, "Ammo: " + tank.getAmmo() + "/" + tank.getMaxAmmo(), TankGame.WIDTH/2 - 15, height-25, 0f, 1, false);
         batch.end();
     }
 

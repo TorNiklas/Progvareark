@@ -16,6 +16,7 @@ public class TankGame extends ApplicationAdapter {
 	public static final String TITLE = "Panzerwagen";
 
 	public static Music music_level1;
+	public static boolean isMuted = false;
 
 	private static SpriteBatch sb;
 	private static PolygonSpriteBatch psb;

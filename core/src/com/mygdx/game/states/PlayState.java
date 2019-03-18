@@ -129,7 +129,9 @@ public class PlayState extends State {
                     explodeEffect(hitPos.x, hitPos.y, 0.3f, 100);
 
                     // explosion sound effect
-                    explosionSound.play();
+                    if(!TankGame.isMuted) {
+                        explosionSound.play();
+                    }
 
                     // delete bullet
                     bodyB.setAwake(false);
@@ -148,7 +150,9 @@ public class PlayState extends State {
                     explodeEffect(hitPos.x, hitPos.y, 0.3f, 100);
 
                     // explosion sound effect
-                    explosionSound.play();
+                    if(!TankGame.isMuted) {
+                        explosionSound.play();
+                    }
 
                     // vibrate on tank hit, maybe only if own tank is hit?
                     Gdx.input.vibrate(500);
@@ -241,15 +245,46 @@ public class PlayState extends State {
         }, 100, 100, TimeUnit.MILLISECONDS);*/
     }
 
-    public void fireFromPool(Vector2 pos, Vector2 force, boolean local) {
+    public void fireFromPool(Projectile.AmmoType type, Vector2 pos, Vector2 force, boolean local) {
         System.out.println("FIRING " + pos.x + " - " + pos.y);
         System.out.println("FORCE " + force.x + " - " + force.y);
-        Projectile p = projectilePool.obtain();
-        p.setId(idCounter.getAndIncrement());
-        p.setLocal(local);
-        p.init(world, pos, force);
-        activeProjectiles.add(p);
-        gameSprites.add(p);
+
+        // TODO: add more types
+        switch (type) {
+            case STANDARD:
+                Projectile p = projectilePool.obtain();
+                p.setId(idCounter.getAndIncrement());
+                p.setLocal(local);
+                p.init(world, type, pos, force);
+                activeProjectiles.add(p);
+                gameSprites.add(p);
+                break;
+
+            case SPREAD:
+                Array<Projectile> spreadProjectiles = new Array<Projectile>();
+
+                // amount of projectiles in spread, use odd numbers
+                int projectileAmt = 5;
+                for(int i = 0; i < projectileAmt; i++) {
+                    spreadProjectiles.add(projectilePool.obtain());
+                }
+
+                float rotStep = 15f;
+                float rotRange = (projectileAmt-1) * rotStep - 2*rotStep;
+                for(Projectile sp : spreadProjectiles) {
+                    if(spreadProjectiles.first().equals(sp)) {
+                        force.rotate(rotRange);
+                    } else {
+                        force.rotate(-rotStep);
+                    }
+                    sp.setId(idCounter.getAndIncrement());
+                    sp.setLocal(local);
+                    sp.init(world, type, pos, force);
+                    activeProjectiles.add(sp);
+                    gameSprites.add(sp);
+                }
+                break;
+        }
     }
 
     public void explodeEffect(float x, float y, float scale, int duration) {
@@ -262,8 +297,8 @@ public class PlayState extends State {
         effects.add(effect);
     }
 
-    public void fireFromPool(Vector2 pos, Vector2 force) {
-        fireFromPool(pos, force, true);
+    public void fireFromPool(Projectile.AmmoType type, Vector2 pos, Vector2 force) {
+        fireFromPool(type, pos, force, true);
     }
 
     public static World getWorld() {
@@ -321,7 +356,8 @@ public class PlayState extends State {
             if (!exists) {
                 idCounter.set(s.getId());
                 if (s.getType() == SpriteSerialize.Type.PROJECTILE) {
-                    fireFromPool(s.getPos(), s.getLinVel(), false);
+                    // TODO: check active ammotype
+                    fireFromPool(Projectile.AmmoType.STANDARD, s.getPos(), s.getLinVel(), false);
                 }
             }
         }
