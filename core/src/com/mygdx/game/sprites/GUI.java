@@ -377,7 +377,7 @@ public class GUI {
     }
 
     private long getTime(){
-        long diff = 45 - ((System.currentTimeMillis()-timer)/1000);
+        long diff = 60 - ((System.currentTimeMillis()-timer)/1000);
         if(diff > 0) {
             return diff;
         }
@@ -421,7 +421,7 @@ public class GUI {
         }
 
         if(getTime() == 0) {
-            //setPlayable(false);
+            setPlayable(false);
         }
     }
 

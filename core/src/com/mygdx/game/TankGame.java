@@ -13,7 +13,7 @@ import com.mygdx.game.states.OptionState;
 public class TankGame extends ApplicationAdapter {
 	public static final int WIDTH = 1280;
 	public static final int HEIGHT = 720;
-	public static final String TITLE = "Panzerwagen";
+	public static final String TITLE = "PANZERWAGEN";
 
 	public static Music music_level1;
 	public static boolean isMuted = false;
