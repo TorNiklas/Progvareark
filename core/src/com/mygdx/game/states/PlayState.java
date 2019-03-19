@@ -51,6 +51,7 @@ import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.mygdx.game.BTInterface;
 import com.mygdx.game.TankGame;
 import com.mygdx.game.network.SpriteSerialize;
+import com.mygdx.game.sprites.Background;
 import com.mygdx.game.sprites.GUI;
 import com.mygdx.game.sprites.GameSprite;
 import com.mygdx.game.sprites.Ground;
@@ -69,11 +70,12 @@ import static java.lang.StrictMath.sin;
 public class PlayState extends State {
     private static final AtomicInteger idCounter = new AtomicInteger(); //Highest id
 
-    private Texture bg;
+    private Background bg;
     private static ArrayList<GameSprite> gameSprites;
     private static World world;
     private Box2DDebugRenderer debugRenderer;
     private Ground ground;
+    private Sprite shadow;
     private GUI gui;
     private Sound explosionSound;
 
@@ -104,7 +106,12 @@ public class PlayState extends State {
         System.out.println("Level: " + level);
         System.out.println("Seed: " + seed);
         cam.setToOrtho(false, TankGame.WIDTH, TankGame.HEIGHT);
-        bg = new Texture("bg.png");
+
+        // dynamic background
+        bg = new Background(TankGame.WIDTH, TankGame.HEIGHT, 0, 150, 0.15f);
+
+        shadow = new Sprite(new Texture("fade.png"));
+        shadow.setSize(TankGame.WIDTH, 550);
 
         // load sound effects
         explosionSound = Gdx.audio.newSound(Gdx.files.internal("sounds/explosion-7.mp3"));
@@ -392,18 +399,21 @@ public class PlayState extends State {
                 gameSprites.remove(p);
             }
         }
+
+        // update bg
+        bg.update();
     }
 
     @Override
     public void render(SpriteBatch sb, PolygonSpriteBatch psb) {
         sb.setProjectionMatrix(cam.combined);
         sb.begin();
-        //gui.draw(sb);
-        //sb.draw(bg, 0,0, 1280, 720);
-        sb.draw(bg, 0,0, 1280, 720);
         /*for (Iterator<GameSprite> it = gameSprites.iterator(); it.hasNext();) {
             it.next().draw(sb);
         }*/
+
+        // draw bg
+        bg.draw(sb);
 
         for (int i = 0; i < gameSprites.size(); i++) {
             gameSprites.get(i).draw(sb);
@@ -427,6 +437,11 @@ public class PlayState extends State {
         ground.draw(psb);
         psb.end();
 
+        // find another way to do this maybe, gives more depth to terrain
+        sb.begin();
+        shadow.draw(sb);
+        sb.end();
+
         gui.draw(sb);
 
         //stage for buttons
@@ -434,7 +449,7 @@ public class PlayState extends State {
         //stage.draw();
 
         // box-2d
-        debugRenderer.render(world, cam.combined);
+        //debugRenderer.render(world, cam.combined);
         world.step(1/60f, 6, 2);
     }
 
