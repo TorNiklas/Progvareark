@@ -31,6 +31,13 @@ public class GameSetupState extends State {
     private BitmapFont gameCode;
     private String gameCodeString;
     private Stage stage;
+    private Map selectedMap;
+    private Map prevSelectedMap;
+    private enum Map {
+        FOREST,
+        SNOW,
+        DESERT
+    }
 
     private static PlayState selectedState;
 
@@ -91,6 +98,10 @@ public class GameSetupState extends State {
         forestMapBtn.addListener(new InputListener() {
                 public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
                     System.out.println("forest selected");
+
+                    // set selected
+                    selectedMap = Map.FOREST;
+
                     // desktop, for testing
                     if(Gdx.app.getType() == Application.ApplicationType.Desktop) {
                         GameStateManager.getGsm().set(new PlayState(1, seed));
@@ -108,6 +119,10 @@ public class GameSetupState extends State {
         snowMapBtn.addListener(new InputListener() {
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
                 System.out.println("snow selected");
+
+                // set selected
+                selectedMap = Map.SNOW;
+
                 // desktop, for testing
                 if(Gdx.app.getType() == Application.ApplicationType.Desktop) {
                     GameStateManager.getGsm().set(new PlayState(2, seed));
@@ -125,6 +140,10 @@ public class GameSetupState extends State {
         desertMapBtn.addListener(new InputListener() {
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
                 System.out.println("desert selected");
+
+                // set selected
+                selectedMap = Map.DESERT;
+
                 // desktop, for testing
                 if(Gdx.app.getType() == Application.ApplicationType.Desktop) {
                     GameStateManager.getGsm().set(new PlayState(3, seed));
@@ -177,6 +196,30 @@ public class GameSetupState extends State {
 
     }
 
+    public void setSelectedMap() {
+        if(selectedMap != null) {
+            switch (selectedMap) {
+                case FOREST:
+                    forestMapBtn.setColor(Color.DARK_GRAY);
+                    snowMapBtn.setColor(Color.WHITE);
+                    desertMapBtn.setColor(Color.WHITE);
+                    break;
+
+                case SNOW:
+                    snowMapBtn.setColor(Color.DARK_GRAY);
+                    forestMapBtn.setColor(Color.WHITE);
+                    desertMapBtn.setColor(Color.WHITE);
+                    break;
+
+                case DESERT:
+                    desertMapBtn.setColor(Color.DARK_GRAY);
+                    forestMapBtn.setColor(Color.WHITE);
+                    snowMapBtn.setColor(Color.WHITE);
+                    break;
+            }
+        }
+    }
+
     public static void onDisconnect() {
         System.out.println("Disconnected!");
     }
@@ -184,6 +227,12 @@ public class GameSetupState extends State {
     @Override
     public void update(float dt) {
         handleInput();
+
+        // handle map select
+        if(prevSelectedMap != selectedMap) {
+            setSelectedMap();
+            prevSelectedMap = selectedMap;
+        }
     }
 
     @Override
