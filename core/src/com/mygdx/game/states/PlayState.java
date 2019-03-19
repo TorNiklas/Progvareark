@@ -107,9 +107,7 @@ public class PlayState extends State {
         System.out.println("Seed: " + seed);
         cam.setToOrtho(false, TankGame.WIDTH, TankGame.HEIGHT);
 
-        // dynamic background
-        bg = new Background(TankGame.WIDTH, TankGame.HEIGHT, 0, 150, 0.15f);
-
+        // add shadow to give more depth to terrain
         shadow = new Sprite(new Texture("fade.png"));
         shadow.setSize(TankGame.WIDTH, 550);
 
@@ -199,23 +197,35 @@ public class PlayState extends State {
             case 1:
                 spawnHeight = 100 + guiHeight;
                 ground = new Ground(world, seed,10, 30 + guiHeight, 100 + guiHeight, 10, Color.FOREST);
+
+                // dynamic background
+                bg = new Background(TankGame.WIDTH, TankGame.HEIGHT, 0, 150, 0.15f, "backgrounds/forest/");
                 break;
 
             // snow level
             case 2:
                 spawnHeight = 200 + guiHeight;
                 ground = new Ground(world, seed, 10, 30 + guiHeight, 200 + guiHeight, 10, Color.WHITE);
+
+                // dynamic background
+                bg = new Background(TankGame.WIDTH, TankGame.HEIGHT, 0, 90, 0.15f, "backgrounds/forest/");
                 break;
 
             // desert level
             case 3:
                 spawnHeight = 70 + guiHeight;
                 ground = new Ground(world, seed, 10, 30 + guiHeight, 70 + guiHeight, 10, Color.GOLDENROD);
+
+                // dynamic background
+                bg = new Background(TankGame.WIDTH, TankGame.HEIGHT, 0, 120, 0.15f, "backgrounds/desert/");
                 break;
 
             // default to forest
             default:
                 ground = new Ground(world, seed, 10, 30 + 250, 100 + guiHeight, 10, Color.FOREST);
+                // dynamic background
+                bg = new Background(TankGame.WIDTH, TankGame.HEIGHT, 0, 150, 0.15f, "backgrounds/forest/");
+
         }
 
 //        int pos = 600;
