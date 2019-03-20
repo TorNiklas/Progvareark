@@ -16,6 +16,7 @@ public class TankGame extends ApplicationAdapter {
 	public static final String TITLE = "PANZERWAGEN";
 
 	public static Music music_level1;
+	public static float volume = 0.2f;
 	public static boolean isMuted = false;
 
 	private static SpriteBatch sb;
@@ -37,7 +38,7 @@ public class TankGame extends ApplicationAdapter {
 		music_level1 = Gdx.audio.newMusic(Gdx.files.internal("sounds/level1.ogg"));
 		music_level1.setLooping(true);
 		music_level1.play();
-		music_level1.setVolume(0.2f);
+		music_level1.setVolume(volume);
 
 		sb = new SpriteBatch();
 		psb = new PolygonSpriteBatch();

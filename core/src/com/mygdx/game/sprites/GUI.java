@@ -306,7 +306,7 @@ public class GUI {
                 System.out.println("Unmute");
                 volumeOn.setVisible(true);
                 volumeOff.setVisible(false);
-                TankGame.music_level1.setVolume(0.2f);
+                TankGame.music_level1.setVolume(TankGame.volume);
                 TankGame.isMuted = false;
                 return false;
             }
