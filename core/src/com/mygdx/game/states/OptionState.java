@@ -52,7 +52,7 @@ public class OptionState extends State {
         stage.addActor(volumeOff);
 
         //Volume is on by default
-        if(TankGame.music_level1.getVolume() == 1f){
+        if(TankGame.music_level1.getVolume() > 0){
             volumeOn.setVisible(true);
             volumeOff.setVisible(false);
         }
@@ -100,7 +100,7 @@ public class OptionState extends State {
                 System.out.println("Unmute");
                 volumeOn.setVisible(true);
                 volumeOff.setVisible(false);
-                TankGame.music_level1.setVolume(1f);
+                TankGame.music_level1.setVolume(0.2f);
                 TankGame.isMuted = false;
                 return false;
             }
