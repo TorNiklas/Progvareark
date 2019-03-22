@@ -301,6 +301,14 @@ public class PlayState extends State {
                     gameSprites.add(sp);
                 }
                 break;
+            case LASER:
+                Projectile l = projectilePool.obtain();
+                l.setId(idCounter.getAndIncrement());
+                l.setLocal(local);
+                l.init(world, type, pos, force);
+                activeProjectiles.add(l);
+                gameSprites.add(l);
+                break;
         }
     }
 

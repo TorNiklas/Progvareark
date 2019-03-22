@@ -235,6 +235,9 @@ public class GUI {
                     case SPREAD:
                         ammoImage.setDrawable(new SpriteDrawable(new Sprite(new Texture("ammo-spread.png"))));
                         break;
+                    case LASER:
+                        ammoImage.setDrawable(new SpriteDrawable(new Sprite(new Texture("ammo-laser.png"))));
+                        break;
                 }
             }
         });
@@ -249,6 +252,9 @@ public class GUI {
                         break;
                     case SPREAD:
                         ammoImage.setDrawable(new SpriteDrawable(new Sprite(new Texture("ammo-spread.png"))));
+                        break;
+                    case LASER:
+                        ammoImage.setDrawable(new SpriteDrawable(new Sprite(new Texture("ammo-laser.png"))));
                         break;
                 }
             }
