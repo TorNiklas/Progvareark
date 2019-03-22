@@ -240,6 +240,7 @@ public class GUI {
                         break;
                     case AIRSTRIKE:
                         ammoImage.setDrawable(new SpriteDrawable(new Sprite(new Texture("ammo-airstrike.png"))));
+                        break;
                 }
             }
         });
@@ -259,7 +260,7 @@ public class GUI {
                         ammoImage.setDrawable(new SpriteDrawable(new Sprite(new Texture("ammo-laser.png"))));
                         break;
                     case AIRSTRIKE:
-                        ammoImage.setDrawable(new SpriteDrawable(new Sprite(new Texture("ammo-laser.png"))));
+                        ammoImage.setDrawable(new SpriteDrawable(new Sprite(new Texture("ammo-airstrike.png"))));
                         break;
                 }
             }
