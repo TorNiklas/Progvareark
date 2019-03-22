@@ -97,7 +97,7 @@ public class Projectile implements GameSprite, Pool.Poolable {
                 sprite = new Sprite(new Texture("bullet-laser.png"));
                 break;
             case AIRSTRIKE:
-                sprite = new Sprite(new Texture("bullet-laser.png"));
+                sprite = new Sprite(new Texture("bullet-missile.png"));
                 break;
         }
         sprite.setPosition(-10, -10);
