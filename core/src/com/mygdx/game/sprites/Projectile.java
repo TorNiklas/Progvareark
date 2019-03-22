@@ -43,6 +43,7 @@ public class Projectile implements GameSprite, Pool.Poolable {
 
         public AmmoType getPrev() {
             int prevIndex = (this.ordinal() - 1) < 0 ? (this.ordinal() + vals.length - 1) : (this.ordinal() - 1);
+            System.out.println(vals[prevIndex % vals.length]);
             return vals[prevIndex % vals.length];
         }
     }
