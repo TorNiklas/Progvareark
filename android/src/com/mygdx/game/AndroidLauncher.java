@@ -273,12 +273,13 @@ public class AndroidLauncher extends AndroidApplication implements BTInterface {
 
 	private void showToast(final String text) {
 		System.out.println(text);
-		runOnUiThread(new Runnable() {
+		// FIXME: doesn't work on all android devices?
+		/*runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
 				Toast.makeText(AndroidLauncher.this, text, Toast.LENGTH_SHORT).show();
 			}
-		});
+		});*/
 	}
 
 	@Override

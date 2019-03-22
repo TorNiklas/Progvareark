@@ -125,10 +125,9 @@ public class PlayState extends State {
             public void beginContact(Contact contact) {
                 Body bodyA = contact.getFixtureA().getBody();
                 Body bodyB = contact.getFixtureB().getBody();
-                if(bodyB.isBullet() && bodyA.getType() == BodyDef.BodyType.StaticBody ){
-                    //System.out.println("Bullet hit ground at" + bodyB.getPosition());
-                    //Bullet hit ground, should explode?
 
+                // ground hit
+                if(bodyB.isBullet() && bodyA.getType() == BodyDef.BodyType.StaticBody ){
                     // explosion effect
                     Vector2 hitPos = bodyB.getPosition();
                     explodeEffect(hitPos.x, hitPos.y, 0.3f, 100);
@@ -142,13 +141,40 @@ public class PlayState extends State {
                     bodyB.setAwake(false);
                 }
 
+                // enemy tank hit
                 if(bodyB.isBullet() && bodyA == (gameSprites.get(1)).getBody() && (gameSprites.get(1)) instanceof Tank){
-                    System.out.println("Tank hit!" + bodyB.getPosition());
-                    System.out.println("Tank health was: " + ((Tank)gameSprites.get(1)).getHealth());
+                    System.out.println("Enemy tank hit!" + bodyB.getPosition());
+                    System.out.println("Enemy tank health was: " + ((Tank)gameSprites.get(1)).getHealth());
 
                     ((Tank)gameSprites.get(1)).setHealth(((Tank)gameSprites.get(1)).getHealth()-25f);
 
-                    System.out.println("Tank health now: " + ((Tank)gameSprites.get(1)).getHealth());
+                    System.out.println("Enemy tank health now: " + ((Tank)gameSprites.get(1)).getHealth());
+
+                    // explosion effect
+                    Vector2 hitPos = bodyB.getPosition();
+                    explodeEffect(hitPos.x, hitPos.y, 0.3f, 100);
+
+                    // explosion sound effect
+                    if(!TankGame.isMuted) {
+                        explosionSound.play();
+                    }
+
+                    // vibrate on tank hit, maybe only if own tank is hit?
+                    //Gdx.input.vibrate(500);
+
+                    // delete bullet
+                    bodyB.setAwake(false);
+                }
+
+                // own tank hit
+                if(bodyB.isBullet() && bodyA == (gameSprites.get(0)).getBody() && (gameSprites.get(0)) instanceof Tank){
+                    System.out.println("Tank hit!" + bodyB.getPosition());
+                    System.out.println("Tank health was: " + ((Tank)gameSprites.get(0)).getHealth());
+
+                    float projectileDmg = (Float)bodyB.getUserData();
+                    ((Tank)gameSprites.get(0)).setHealth(((Tank)gameSprites.get(0)).getHealth() - projectileDmg);
+
+                    System.out.println("Tank health now: " + ((Tank)gameSprites.get(0)).getHealth());
 
                     // explosion effect
                     Vector2 hitPos = bodyB.getPosition();
@@ -467,7 +493,7 @@ public class PlayState extends State {
         //stage.draw();
 
         // box-2d
-        //debugRenderer.render(world, cam.combined);
+        debugRenderer.render(world, cam.combined);
         world.step(1/60f, 6, 2);
     }
 
