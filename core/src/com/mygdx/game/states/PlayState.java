@@ -335,6 +335,14 @@ public class PlayState extends State {
                 activeProjectiles.add(l);
                 gameSprites.add(l);
                 break;
+            case AIRSTRIKE:
+                Projectile as = projectilePool.obtain();
+                as.setId(idCounter.getAndIncrement());
+                as.setLocal(local);
+                as.init(world, type, pos, force);
+                activeProjectiles.add(as);
+                gameSprites.add(as);
+                break;
         }
     }
 

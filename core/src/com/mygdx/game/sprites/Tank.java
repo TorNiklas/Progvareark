@@ -31,12 +31,15 @@ public class Tank implements GameSprite {
     private Vector3 position;
     private Sprite tankSprite;
     private Sprite barrelSprite;
+    private Sprite airStrike;
     private Body body;
 
     private boolean moveLeft;
     private boolean moveRight;
     private boolean increase;
     private boolean decrease;
+    private boolean airStrikeIncrease;
+    private boolean airStrikeDecrease;
     private boolean isPoweringUp;
     private boolean gainPower;
 
@@ -44,6 +47,7 @@ public class Tank implements GameSprite {
     private int maxFirePower;
 
     private int barrelDeg;
+    private int airStrikePos;
     private int aimRate;
 
     private float energy;
@@ -69,6 +73,10 @@ public class Tank implements GameSprite {
         tankSprite.setPosition(x, y);
         tankSprite.setOriginCenter();
 
+        airStrike = new Sprite(new Texture("airStrike.png"));
+        airStrike.setPosition(x, y);
+        airStrike.setOriginCenter();
+
         // barrel sprite
         barrelSprite = new Sprite(new Texture("barrel.png"));
         barrelSprite.setOrigin(0f, barrelSprite.getHeight()/2);
@@ -93,6 +101,9 @@ public class Tank implements GameSprite {
         gainPower = true;
         firePower = 1;
         maxFirePower = 150;
+
+        //airstrike
+        airStrikePos = x;
 
         // stats
         energy = 100.0f;
@@ -150,6 +161,9 @@ public class Tank implements GameSprite {
 
         // handle fire power
         powerUp();
+
+        //Airstrike
+        if (activeAmmoType == Projectile.AmmoType.AIRSTRIKE) {updateAirStrike();}
 
         // tank
         tankSprite.setPosition(body.getPosition().x - tankSprite.getWidth()/2, body.getPosition().y - tankSprite.getHeight()/2);
@@ -241,7 +255,15 @@ public class Tank implements GameSprite {
         float vectorX = (float) cos(Math.toRadians(barrelDeg));
 
         // start pos
-        Vector2 pos = getBarrelPosition();
+        Vector2 pos;
+        switch (activeAmmoType){
+            case AIRSTRIKE:
+                pos = new Vector2(airStrikePos + (airStrike.getWidth() / 2), TankGame.HEIGHT);
+                break;
+            default:
+                pos = getBarrelPosition();
+                break;
+        }
         // exit velocity
         Vector2 velocity = new Vector2(vectorX * firePower, vectorY * firePower);
         // use object pooling
@@ -276,6 +298,16 @@ public class Tank implements GameSprite {
         barrelSprite.setRotation(barrelDeg);
     }
 
+    public void updateAirStrike() {
+        if(airStrikeIncrease) {
+            airStrikePos += 5;
+        }
+        if(airStrikeDecrease) {
+            airStrikePos -= 5;
+        }
+        airStrike.setPosition(airStrikePos, airStrike.getY());
+    }
+
     public void setMoveLeft(boolean moveLeft) {
         this.moveLeft = moveLeft;
     }
@@ -291,7 +323,8 @@ public class Tank implements GameSprite {
     public void setDecrease(boolean decrease) {
         this.decrease = decrease;
     }
-
+    public void setIncreaseAirStrike(boolean increase) {this.airStrikeIncrease = increase;}
+    public void setDecreaseAirStrike(boolean decrease) {this.airStrikeDecrease = decrease;}
     public float getEnergy() {
         return energy;
     }
@@ -330,11 +363,17 @@ public class Tank implements GameSprite {
     public void dispose(){
         tankSprite.getTexture().dispose();
         barrelSprite.getTexture().dispose();
+        airStrike.getTexture().dispose();
     }
 
     @Override
     public void draw(SpriteBatch batch) {
         barrelSprite.draw(batch);
         tankSprite.draw(batch);
+        switch (activeAmmoType){
+            case AIRSTRIKE:
+                airStrike.draw(batch);
+                break;
+        }
     }
 }

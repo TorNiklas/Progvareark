@@ -33,7 +33,8 @@ public class Projectile implements GameSprite, Pool.Poolable {
     public enum AmmoType {
         STANDARD,
         SPREAD,
-        LASER;
+        LASER,
+        AIRSTRIKE;
 
         private static AmmoType[] vals = values();
 
@@ -95,6 +96,9 @@ public class Projectile implements GameSprite, Pool.Poolable {
             case LASER:
                 sprite = new Sprite(new Texture("bullet-laser.png"));
                 break;
+            case AIRSTRIKE:
+                sprite = new Sprite(new Texture("bullet-missile.png"));
+                break;
         }
         sprite.setPosition(-10, -10);
         sprite.setOriginCenter();
@@ -106,6 +110,10 @@ public class Projectile implements GameSprite, Pool.Poolable {
             case LASER:
                 body.setGravityScale(0.0f);
                 body.setLinearVelocity(velocity.scl(1000));
+                break;
+            case AIRSTRIKE:
+                body.setLinearVelocity(new Vector2(0,-1000));
+                break;
         }
         // particle effect
         trailEffect(type, pos.x, pos.y, 0.2f, 2000);
@@ -163,7 +171,6 @@ public class Projectile implements GameSprite, Pool.Poolable {
                 break;
             default:
                 trailEffect.load(Gdx.files.internal("effects/smoke_trail.p"), Gdx.files.internal("effects"));
-
                 break;
         }
         trailEffect.setPosition(x, y);
