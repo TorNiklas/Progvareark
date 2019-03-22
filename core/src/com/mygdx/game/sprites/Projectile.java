@@ -107,7 +107,7 @@ public class Projectile implements GameSprite, Pool.Poolable {
                 body.setLinearVelocity(velocity.scl(1000));
         }
         // particle effect
-        trailEffect(pos.x, pos.y, 0.2f, 2000);
+        trailEffect(type, pos.x, pos.y, 0.2f, 2000);
         alive = true;
     }
 
@@ -158,15 +158,16 @@ public class Projectile implements GameSprite, Pool.Poolable {
         trailEffect = new ParticleEffect();
         switch (type) {
             case LASER:
-
+                trailEffect.load(Gdx.files.internal("effects/laser_p.p"), Gdx.files.internal("effects"));
+                break;
             default:
                 trailEffect.load(Gdx.files.internal("effects/smoke_trail.p"), Gdx.files.internal("effects"));
-                trailEffect.setPosition(x, y);
-                trailEffect.scaleEffect(scale);
-                trailEffect.setDuration(duration);
+
                 break;
         }
-
+        trailEffect.setPosition(x, y);
+        trailEffect.scaleEffect(scale);
+        trailEffect.setDuration(duration);
         trailEffect.start();
     }
 
