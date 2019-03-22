@@ -1,12 +1,10 @@
 package com.mygdx.game.desktop;
 
 import com.mygdx.game.BTInterface;
-import com.mygdx.game.network.SpriteSerialize;
-import com.mygdx.game.sprites.GameSprite;
-import com.mygdx.game.states.MenuState;
+import com.mygdx.game.network.SpriteJSON;
 
-import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Stack;
 
 public class BT implements BTInterface {
     @Override
@@ -30,7 +28,7 @@ public class BT implements BTInterface {
     }
 
     @Override
-    public ArrayList<SpriteSerialize> getSprites() {
+    public Stack<SpriteJSON> getSprites() {
         return null;
     }
 }

@@ -23,14 +23,18 @@ import android.widget.Toast;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
-import com.mygdx.game.network.SpriteSerialize;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.mygdx.game.network.SpriteJSON;
+
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Stack;
 import java.util.UUID;
 
 public class AndroidLauncher extends AndroidApplication implements BTInterface {
-	private ArrayList<SpriteSerialize> sprites = new ArrayList<>(); //Most recent sprites received over network
+	Stack<SpriteJSON> sprites = new Stack<>(); //Most recent sprites received over network
 	private static final UUID uuid = UUID.fromString("20a85f51-908e-451f-ba1e-395ced9acdf0");
 	private String oName = BluetoothAdapter.getDefaultAdapter().getName();
 	private static ConnectedThread connThread;
@@ -283,11 +287,7 @@ public class AndroidLauncher extends AndroidApplication implements BTInterface {
 	}
 
 	@Override
-	public ArrayList<SpriteSerialize> getSprites() {
+	public Stack<SpriteJSON> getSprites() {
 		return sprites;
-	}
-
-	public void setSprites(ArrayList<SpriteSerialize> sprites) {
-		this.sprites = sprites;
 	}
 }
