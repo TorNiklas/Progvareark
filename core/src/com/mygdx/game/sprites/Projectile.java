@@ -32,7 +32,8 @@ public class Projectile implements GameSprite, Pool.Poolable {
 
     public enum AmmoType {
         STANDARD,
-        SPREAD;
+        SPREAD,
+        LASER;
 
         private static AmmoType[] vals = values();
 
@@ -89,6 +90,10 @@ public class Projectile implements GameSprite, Pool.Poolable {
             case SPREAD:
                 sprite = new Sprite(new Texture("bullet-spread.png"));
                 break;
+
+            case LASER:
+                sprite = new Sprite(new Texture("bullet-laser.png"));
+                break;
         }
         sprite.setPosition(-10, -10);
         sprite.setOriginCenter();
@@ -96,7 +101,11 @@ public class Projectile implements GameSprite, Pool.Poolable {
         // generate projectile and set velocity
         generateProjectile(world, new Vector2(pos.x, pos.y));
         body.setLinearVelocity(velocity);
-
+        switch (type){
+            case LASER:
+                body.setGravityScale(0.0f);
+                body.setLinearVelocity(velocity.scl(1000));
+        }
         // particle effect
         trailEffect(pos.x, pos.y, 0.2f, 2000);
         alive = true;
@@ -144,13 +153,20 @@ public class Projectile implements GameSprite, Pool.Poolable {
         return !(body.isAwake() && body.getLinearVelocity().len() > 0.001f);
     }
 
-    public void trailEffect(float x, float y, float scale, int duration) {
+    public void trailEffect(AmmoType type, float x, float y, float scale, int duration) {
         // create effect
         trailEffect = new ParticleEffect();
-        trailEffect.load(Gdx.files.internal("effects/smoke_trail.p"), Gdx.files.internal("effects"));
-        trailEffect.setPosition(x, y);
-        trailEffect.scaleEffect(scale);
-        trailEffect.setDuration(duration);
+        switch (type) {
+            case LASER:
+
+            default:
+                trailEffect.load(Gdx.files.internal("effects/smoke_trail.p"), Gdx.files.internal("effects"));
+                trailEffect.setPosition(x, y);
+                trailEffect.scaleEffect(scale);
+                trailEffect.setDuration(duration);
+                break;
+        }
+
         trailEffect.start();
     }
 
