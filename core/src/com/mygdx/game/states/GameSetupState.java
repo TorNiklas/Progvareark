@@ -32,7 +32,6 @@ public class GameSetupState extends State {
     private String gameCodeString;
     private Stage stage;
     private Map selectedMap;
-    private Map prevSelectedMap;
     private enum Map {
         FOREST,
         SNOW,
@@ -100,7 +99,9 @@ public class GameSetupState extends State {
                     System.out.println("forest selected");
 
                     // set selected
-                    selectedMap = Map.FOREST;
+                    if(selectedMap != Map.FOREST) {
+                        setSelectedMap(Map.FOREST);
+                    }
 
                     // desktop, for testing
                     if(Gdx.app.getType() == Application.ApplicationType.Desktop) {
@@ -121,7 +122,9 @@ public class GameSetupState extends State {
                 System.out.println("snow selected");
 
                 // set selected
-                selectedMap = Map.SNOW;
+                if(selectedMap != Map.SNOW) {
+                    setSelectedMap(Map.SNOW);
+                }
 
                 // desktop, for testing
                 if(Gdx.app.getType() == Application.ApplicationType.Desktop) {
@@ -142,8 +145,9 @@ public class GameSetupState extends State {
                 System.out.println("desert selected");
 
                 // set selected
-                selectedMap = Map.DESERT;
-
+                if(selectedMap != Map.DESERT) {
+                    setSelectedMap(Map.DESERT);
+                }
                 // desktop, for testing
                 if(Gdx.app.getType() == Application.ApplicationType.Desktop) {
                     GameStateManager.getGsm().set(new PlayState(3, seed));
@@ -196,27 +200,26 @@ public class GameSetupState extends State {
 
     }
 
-    public void setSelectedMap() {
-        if(selectedMap != null) {
-            switch (selectedMap) {
-                case FOREST:
-                    forestMapBtn.setColor(Color.DARK_GRAY);
-                    snowMapBtn.setColor(Color.WHITE);
-                    desertMapBtn.setColor(Color.WHITE);
-                    break;
+    public void setSelectedMap(Map map) {
+        selectedMap = map;
+        switch (map) {
+            case FOREST:
+                forestMapBtn.setColor(Color.DARK_GRAY);
+                snowMapBtn.setColor(Color.WHITE);
+                desertMapBtn.setColor(Color.WHITE);
+                break;
 
-                case SNOW:
-                    snowMapBtn.setColor(Color.DARK_GRAY);
-                    forestMapBtn.setColor(Color.WHITE);
-                    desertMapBtn.setColor(Color.WHITE);
-                    break;
+            case SNOW:
+                snowMapBtn.setColor(Color.DARK_GRAY);
+                forestMapBtn.setColor(Color.WHITE);
+                desertMapBtn.setColor(Color.WHITE);
+                break;
 
-                case DESERT:
-                    desertMapBtn.setColor(Color.DARK_GRAY);
-                    forestMapBtn.setColor(Color.WHITE);
-                    snowMapBtn.setColor(Color.WHITE);
-                    break;
-            }
+            case DESERT:
+                desertMapBtn.setColor(Color.DARK_GRAY);
+                forestMapBtn.setColor(Color.WHITE);
+                snowMapBtn.setColor(Color.WHITE);
+                break;
         }
     }
 
@@ -227,12 +230,6 @@ public class GameSetupState extends State {
     @Override
     public void update(float dt) {
         handleInput();
-
-        // handle map select
-        if(prevSelectedMap != selectedMap) {
-            setSelectedMap();
-            prevSelectedMap = selectedMap;
-        }
     }
 
     @Override
