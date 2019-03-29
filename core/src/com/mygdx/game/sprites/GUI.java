@@ -153,6 +153,7 @@ public class GUI {
         endGameD.setSize(600, 200);
         endGameD.setPosition(TankGame.WIDTH/2-endGameD.getWidth()/2, TankGame.HEIGHT/2);
 
+
         // create energy bar
         energyBar = generateProgressBar(20, height-58, 390, 30, 100f, 100f, Color.DARK_GRAY, Color.GOLD);
 
@@ -488,7 +489,7 @@ public class GUI {
         Array<Actor> stageActors = stage.getActors();
         for (Actor a: stageActors) {
             if(a.getName() != null) {
-                if ((a.getName().equals("surrender") || a.getName().equals("volumeOn") || a.getName().equals("volumeOff"))) {
+                if (a.getName().equals("surrender") || a.getName().equals("volumeOn") || a.getName().equals("volumeOff") || a.getName().equals("endGame")) {
                     return;
                 }
             }
