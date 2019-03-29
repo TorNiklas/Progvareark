@@ -8,14 +8,13 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.mygdx.game.TankGame;
 import com.mygdx.game.network.SpriteJSON;
 import com.mygdx.game.states.PlayState;
-
-import org.json.JSONObject;
 
 import static java.lang.Math.cos;
 import static java.lang.StrictMath.sin;
@@ -115,18 +114,25 @@ public class Tank implements GameSprite {
     private void generateTank(World world, Vector2 pos) {
         // body definition
         BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(pos.x, pos.y);
-
-        // create shapes
-        PolygonShape tankShape = new PolygonShape();
-        tankShape.setAsBox(tankSprite.getWidth()/2, tankSprite.getHeight()/2);
 
         // create fixtures
         FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.density = 2.5f;
-        fixtureDef.friction = 0.7f;
-        fixtureDef.restitution = 0f;
+
+        if (local) {
+            bodyDef.type = BodyDef.BodyType.DynamicBody;
+            fixtureDef.density = 2.5f;
+            fixtureDef.friction = 0.7f;
+            fixtureDef.restitution = 0f;
+        }
+        else {
+            bodyDef.type = BodyDef.BodyType.StaticBody;
+            fixtureDef.isSensor = true; // Disable collision
+        }
+
+        // create shapes
+        PolygonShape tankShape = new PolygonShape();
+        tankShape.setAsBox(tankSprite.getWidth() / 2, tankSprite.getHeight() / 2);
 
         // add body to world
         body = world.createBody(bodyDef);
@@ -134,7 +140,7 @@ public class Tank implements GameSprite {
         // attach fixture
         fixtureDef.shape = tankShape;
         body.createFixture(fixtureDef);
-        
+
         body.setAngularDamping(2f);
 
         // clean up
@@ -222,7 +228,7 @@ public class Tank implements GameSprite {
     @Override
     public void readJSON(SpriteJSON obj) {
         body.setTransform(obj.getPos(), obj.getAngle());
-        body.setLinearVelocity(obj.getVel());
+//        body.setLinearVelocity(obj.getVel());
     }
 
     public int getFirePower() {

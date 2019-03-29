@@ -204,6 +204,10 @@ public class Projectile implements GameSprite, Pool.Poolable {
 //        return body.getWorldCenter();
     }
 
+    public Vector2 getBodyPosition() {
+        return new Vector2(sprite.getX() + sprite.getWidth() / 2, sprite.getY() + sprite.getHeight() / 2);
+    }
+
     @Override
     public Sprite getSprite() {
         return sprite;
@@ -227,25 +231,9 @@ public class Projectile implements GameSprite, Pool.Poolable {
         this.local = local;
     }
 
-    /*@Override
-    public SpriteSerialize getSerialize() {
-        return new SpriteSerialize(id, SpriteSerialize.Type.PROJECTILE, getPosition(), body.getLinearVelocity());
-    }
-
-    @Override
-    public void readSerialize(SpriteSerialize sprite) {
-        //body.setLinearVelocity(getPosition().lerp(sprite.getPos(), 0.5f));
-        //body.setLinearVelocity(0, 0);
-        //body.setTransform(sprite.getPos(), 0);
-        //body.applyForce(getPosition().lerp(sprite.getPos(), 0.5f), sprite.getPos(), true);
-
-        body.setTransform(sprite.getPos(), 0);
-        //body.applyForce(sprite.getLinVel(), sprite.getPos(), true);
-    }*/
-
     @Override
     public SpriteJSON getJSON() {
-        return new SpriteJSON(id, SpriteJSON.Type.PROJECTILE, getPosition(), body.getLinearVelocity(), 0);
+        return new SpriteJSON(id, SpriteJSON.Type.PROJECTILE, getBodyPosition(), body.getLinearVelocity(), 0);
     }
 
     @Override

@@ -27,6 +27,9 @@ class ConnectedThread extends Thread {
     private final int JOLength = 105; //JSON Object length in chars
     private byte[] buffer = new byte[1024];
 
+    public static int level = -1;
+    public static int seed = -1;
+
     //    private ArrayList<SpriteJSON> objs = new ArrayList<>();
     private AndroidLauncher act;
     private String code;
@@ -73,7 +76,7 @@ class ConnectedThread extends Thread {
         }
     }
 
-    public void startGameHost(int level, int seed) {
+    public void startGameHost() {
         //Send seed
         try {
 
