@@ -398,7 +398,7 @@ public class GUI {
         endGameD.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if(endGameV.isVisible()){
+                if(endGameD.isVisible()){
                     GameStateManager.getGsm().set(new MenuState());
                 }
             }
@@ -480,7 +480,7 @@ public class GUI {
         if(winner){
             endGameV.setVisible(true);
         } else {
-            endGameV.setVisible(true);
+            endGameD.setVisible(true);
         }
     }
 
