@@ -20,14 +20,11 @@ import com.mygdx.game.network.SpriteJSON;
 
 import org.json.JSONObject;
 
-public class Projectile implements GameSprite, Pool.Poolable {
-    private boolean local;
-    private int id;
+public class Projectile extends GameSprite implements Pool.Poolable {
     private Vector3 position;
     private Vector3 velocity;
     private Rectangle bounds;
     private Sprite sprite;
-    private Body body;
     private boolean alive;
     private Image displayImage;
 
@@ -66,7 +63,7 @@ public class Projectile implements GameSprite, Pool.Poolable {
         sprite.setOriginCenter();
 
         generateProjectile(world, new Vector2(sprite.getX(), sprite.getY()));
-        Vector2 impulse = new Vector2(force.x*2, force.y*2);
+        Vector2 impulse = new Vector2(force.x * 2, force.y * 2);
         body.applyLinearImpulse(impulse, new Vector2(x, y), true);
 
     }
@@ -107,13 +104,13 @@ public class Projectile implements GameSprite, Pool.Poolable {
         // generate projectile and set velocity
         generateProjectile(world, new Vector2(pos.x, pos.y));
         body.setLinearVelocity(velocity);
-        switch (type){
+        switch (type) {
             case LASER:
                 body.setGravityScale(0.0f);
                 body.setLinearVelocity(velocity.scl(1000));
                 break;
             case AIRSTRIKE:
-                body.setLinearVelocity(new Vector2(0,-1000));
+                body.setLinearVelocity(new Vector2(0, -1000));
                 break;
         }
         // particle effect
@@ -130,7 +127,7 @@ public class Projectile implements GameSprite, Pool.Poolable {
 
         // create shapes
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(sprite.getWidth()/2, sprite.getHeight()/2);
+        shape.setAsBox(sprite.getWidth() / 2, sprite.getHeight() / 2);
 
         // create fixtures
         FixtureDef fixtureDef = new FixtureDef();
@@ -181,11 +178,11 @@ public class Projectile implements GameSprite, Pool.Poolable {
     }
 
     @Override
-    public void update(){
-        sprite.setPosition(body.getPosition().x - sprite.getWidth()/2, body.getPosition().y - sprite.getHeight()/2);
+    public void update() {
+        sprite.setPosition(body.getPosition().x - sprite.getWidth() / 2, body.getPosition().y - sprite.getHeight() / 2);
         trailEffect.setPosition(body.getPosition().x, body.getPosition().y);
         // set alive false if projectile out of bounds or hit
-        if(outOfBounds() || inactiveBody()) {
+        if (outOfBounds() || inactiveBody()) {
             alive = false;
         }
     }
@@ -214,41 +211,23 @@ public class Projectile implements GameSprite, Pool.Poolable {
     }
 
     @Override
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    @Override
-    public boolean isLocal() {
-        return local;
-    }
-
-    public void setLocal(boolean local) {
-        this.local = local;
-    }
-
-    @Override
     public SpriteJSON getJSON() {
         return new SpriteJSON(id, SpriteJSON.Type.PROJECTILE, getBodyPosition(), body.getLinearVelocity(), 0);
     }
 
     @Override
     public void readJSON(SpriteJSON obj) {
-        body.setTransform(obj.getPos(), 0);
-        body.setLinearVelocity(obj.getVel());
+        Vector2 target = obj.getPos();
+        float diff = getPosition().sub(target).len(); //distance from current to target
+
+        if (diff > 5) { //Tolerance for projectile error, relatively loose
+            body.setTransform(obj.getPos(), obj.getAngle());
+            body.setLinearVelocity(obj.getVel());
+        }
     }
 
     public Rectangle getBounds() {
         return bounds;
-    }
-
-    @Override
-    public Body getBody() {
-        return body;
     }
 
     @Override

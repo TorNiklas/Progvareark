@@ -17,16 +17,14 @@ import com.mygdx.game.network.SpriteJSON;
 import com.mygdx.game.states.PlayState;
 
 import static java.lang.Math.cos;
+import static java.lang.Math.toRadians;
 import static java.lang.StrictMath.sin;
 
-public class Tank implements GameSprite {
-    private int id = -1;
-    private boolean local = true;
+public class Tank extends GameSprite {
     private Vector3 position;
     private Sprite tankSprite;
     private Sprite barrelSprite;
     private Sprite airStrike;
-    private Body body;
 
     private boolean moveLeft;
     private boolean moveRight;
@@ -119,16 +117,10 @@ public class Tank implements GameSprite {
         // create fixtures
         FixtureDef fixtureDef = new FixtureDef();
 
-        if (local) {
-            bodyDef.type = BodyDef.BodyType.DynamicBody;
-            fixtureDef.density = 2.5f;
-            fixtureDef.friction = 0.7f;
-            fixtureDef.restitution = 0f;
-        }
-        else {
-            bodyDef.type = BodyDef.BodyType.StaticBody;
-            fixtureDef.isSensor = true; // Disable collision
-        }
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        fixtureDef.density = 2.5f;
+        fixtureDef.friction = 0.7f;
+        fixtureDef.restitution = 0f;
 
         // create shapes
         PolygonShape tankShape = new PolygonShape();
@@ -147,10 +139,7 @@ public class Tank implements GameSprite {
         tankShape.dispose();
     }
 
-    @Override
-    public boolean isLocal() {
-        return local;
-    }
+
 
     @Override
     public void update(){
@@ -205,11 +194,6 @@ public class Tank implements GameSprite {
     }
 
     @Override
-    public int getId() {
-        return id;
-    }
-
-    @Override
     public SpriteJSON getJSON() {
 //        System.out.println("Get JSON from tank");
 //        System.out.println(getPosition());
@@ -220,15 +204,51 @@ public class Tank implements GameSprite {
 	    return new SpriteJSON(id, SpriteJSON.Type.BARREL, getBarrelPosition(), body.getLinearVelocity(), barrelDeg);
     }
 
-    public void readBarrelJSON(SpriteJSON json) {
-	    barrelDeg = json.getAngle();
-	    barrelSprite.setRotation(barrelDeg);
-    }
-
     @Override
     public void readJSON(SpriteJSON obj) {
-        body.setTransform(obj.getPos(), obj.getAngle());
-//        body.setLinearVelocity(obj.getVel());
+        float posDiff = obj.getPos().x - getPosition().x;
+        setEnergy(100);
+        if (posDiff > 1) {
+            //body.setLinearVelocity(new Vector2(30f, body.getLinearVelocity().y));
+            moveRight = true;
+            moveLeft = false;
+            System.out.println("Right");
+        }
+        else if (posDiff < -1) {
+            //body.setLinearVelocity(new Vector2(-30f, body.getLinearVelocity().y));
+            moveRight = false;
+            moveLeft = true;
+            System.out.println("Left");
+        }
+        else {
+            //body.setLinearVelocity(new Vector2(0, body.getLinearVelocity().y));
+            moveRight = false;
+            moveLeft = false;
+//            System.out.println("Stop");
+        }
+    }
+
+    public void readBarrelJSON(SpriteJSON json) {
+	    float diff = json.getAngle() - barrelDeg;
+        System.out.println(json.getAngle());
+        System.out.println(barrelDeg);
+        System.out.println(diff);
+	    if (diff > 5) {
+	        increase = false;
+	        decrease = true;
+            System.out.println("Decr");
+        }
+        else if (diff < -5) {
+            increase = true;
+            decrease = false;
+            System.out.println("Incr");
+        }
+        else {
+            increase = false;
+            decrease = false;
+        }
+	    /*barrelDeg = json.getAngle();
+	    barrelSprite.setRotation(barrelDeg);*/
     }
 
     public int getFirePower() {
@@ -281,10 +301,10 @@ public class Tank implements GameSprite {
 
     public void move() {
         if(moveLeft && energy > 0) {
-            energy -= 0.25;
+            //energy -= 0.25; TODO uncomment
             body.setLinearVelocity(new Vector2(-30f, body.getLinearVelocity().y));
         } else if(moveRight && energy > 0) {
-            energy -= 0.25;
+            //energy -= 0.25; TODO uncomment
             body.setLinearVelocity(new Vector2(30f, body.getLinearVelocity().y));
         } else {
             body.setLinearVelocity(new Vector2(0f, body.getLinearVelocity().y));
@@ -350,11 +370,6 @@ public class Tank implements GameSprite {
 
     public void setHealth(float health) {
         this.health = health;
-    }
-
-    @Override
-    public Body getBody() {
-        return body;
     }
 
     @Override

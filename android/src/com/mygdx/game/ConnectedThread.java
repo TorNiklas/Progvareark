@@ -128,7 +128,7 @@ class ConnectedThread extends Thread {
                     e.printStackTrace();
                 }
             }
-        }, 100, 50, TimeUnit.MILLISECONDS);
+        }, 100, 100, TimeUnit.MILLISECONDS);
     }
 
     public void run() {
@@ -177,6 +177,7 @@ class ConnectedThread extends Thread {
                 else {
                     System.out.println("DIFF INPUT O SHIT");
                     System.out.println(in);
+                    System.out.println(in.getBytes().length);
                 }
 
 
