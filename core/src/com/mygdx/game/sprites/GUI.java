@@ -97,8 +97,8 @@ public class GUI {
         TextureRegionDrawable leftBtnTr = new TextureRegionDrawable(new TextureRegion(buttonSheet, 276,235, 176 ,185 ));
         TextureRegionDrawable rightBtnTr = new TextureRegionDrawable(new TextureRegion(buttonSheet, 276,20, 176 ,185 ));
 
-        TextureRegionDrawable prevAmmoBtnTr = new TextureRegionDrawable(new TextureRegion(buttonSheet, 699,445, 176 ,187 ));
-        TextureRegionDrawable nextAmmoBtnTr = new TextureRegionDrawable(new TextureRegion(buttonSheet, 699,662, 176 ,187 ));
+        TextureRegionDrawable prevAmmoBtnTr = new TextureRegionDrawable(new TextureRegion(buttonSheet, 699,235, 176 ,187 ));
+        TextureRegionDrawable nextAmmoBtnTr = new TextureRegionDrawable(new TextureRegion(buttonSheet, 699,20, 176 ,187 ));
 
         TextureRegionDrawable decreaseElevationTr = new TextureRegionDrawable(new TextureRegion(buttonSheet, 276,445, 176 ,187 ));
         TextureRegionDrawable increaseElevationTr = new TextureRegionDrawable(new TextureRegion(buttonSheet, 276,662, 176 ,187 ));
@@ -239,14 +239,14 @@ public class GUI {
         rightBtn.addListener(new ClickListener() {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 System.out.println("touch down - right");
-                leftBtn.getImage().setColor(Color.GRAY);
+                rightBtn.getImage().setColor(Color.GRAY);
                 tank.setMoveRight(true);
                 return true;
             }
 
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 System.out.println("touch up - right");
-                leftBtn.getImage().setColor(Color.WHITE);
+                rightBtn.getImage().setColor(Color.WHITE);
                 tank.setMoveRight(false);
             }
         });
@@ -296,6 +296,7 @@ public class GUI {
         fireButton.addListener(new ClickListener() {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 System.out.println("power up");
+                fireButton.getImage().setColor(Color.GRAY);
                 tankFirePower.setVisible(true);
                 tank.setPoweringUp(true);
                 return true;
@@ -305,6 +306,7 @@ public class GUI {
                 System.out.println("fire");
                 tankFirePower.setVisible(false);
                 tank.setPoweringUp(false);
+                fireButton.getImage().setColor(Color.WHITE);
                 tank.fireProjectile(tank.getActiveAmmoType());
             }
         });
@@ -317,12 +319,14 @@ public class GUI {
                     default:
                         tank.setIncrease(true);
                 }
+                increaseElevation.getImage().setColor(Color.GRAY);
 
                 return true;
             }
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
                 tank.setIncrease(false);
                 tank.setIncreaseAirStrike(false);
+                increaseElevation.getImage().setColor(Color.WHITE);
             }
         });
 
@@ -335,12 +339,14 @@ public class GUI {
                         tank.setDecrease(true);
 
                 }
+                decreaseElevation.getImage().setColor(Color.GRAY);
 
                 return true;
             }
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
                 tank.setDecrease(false);
                 tank.setDecreaseAirStrike(false);
+                decreaseElevation.getImage().setColor(Color.WHITE);
             }
         });
 
