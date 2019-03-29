@@ -47,7 +47,7 @@ public class TankGame extends ApplicationAdapter {
 
 		music_level1 = assetHandler.manager.get(assetHandler.musicPath); //Gdx.audio.newMusic(Gdx.files.internal("sounds/level1.ogg"));
 		music_level1.setLooping(true);
-		//music_level1.play();
+		music_level1.play();
 		music_level1.setVolume(volume);
 
 		sb = new SpriteBatch();
