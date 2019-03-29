@@ -46,7 +46,7 @@ public class GUI {
     private Tank tank;
     private Tank enemyTank;
 
-    Skin skin;
+    private Skin skin;
     private TextButton fireButton;
     private TextButton increaseElevation;
     private TextButton decreaseElevation;
@@ -56,12 +56,14 @@ public class GUI {
 
     private TextButton nextAmmoBtn;
     private TextButton prevAmmoBtn;
+
+    private TextButton endGame;
+
     private Image ammoImage;
 
     private ProgressBar healthBar;
     private ProgressBar tankHealthBar;
     private ProgressBar tankFirePower;
-    //private ProgressBar tankHealthBar;
     private ProgressBar energyBar;
     private Image volumeOn;
     private Image volumeOff;
@@ -87,6 +89,7 @@ public class GUI {
         generator.dispose();
 
         skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
+        skin.get(TextButton.TextButtonStyle.class).font = font;
 
         leftBtn = new TextButton("<--", skin);
         leftBtn.setSize(200, height - 75);
@@ -101,11 +104,11 @@ public class GUI {
         ammoImage.setPosition(TankGame.WIDTH/2 - 15, ammoImage.getHeight()/2 + 35, 1);
 
         nextAmmoBtn = new TextButton("-->", skin);
-        nextAmmoBtn.setSize(50, 100);
+        nextAmmoBtn.setSize(60, 100);
         nextAmmoBtn.setPosition(ammoImage.getX() + ammoImage.getWidth()/2 + nextAmmoBtn.getWidth() + 10, ammoImage.getY());
 
         prevAmmoBtn = new TextButton("<--", skin);
-        prevAmmoBtn.setSize(50, 100);
+        prevAmmoBtn.setSize(60, 100);
         prevAmmoBtn.setPosition(ammoImage.getX() - prevAmmoBtn.getWidth() - 10, ammoImage.getY());
 
         fireButton = new TextButton("Fire!", skin);
@@ -119,6 +122,10 @@ public class GUI {
         decreaseElevation = new TextButton("-", skin);
         decreaseElevation.setSize(100,height - 75);
         decreaseElevation.setPosition(fireButton.getX()-fireButton.getWidth()/2-10, 10);
+
+        endGame = new TextButton("", skin);
+        endGame.setSize(600, 200);
+        endGame.setPosition(TankGame.WIDTH/2-endGame.getWidth()/2, TankGame.HEIGHT/2);
 
         // create energy bar
         energyBar = generateProgressBar(20, height-58, 390, 30, 100f, 100f, Color.DARK_GRAY, Color.GOLD);
@@ -168,6 +175,8 @@ public class GUI {
         stage.addActor(volumeOn);
         stage.addActor(volumeOff);
         stage.addActor(surrender);
+        stage.addActor(endGame);
+        endGame.setVisible(false);
 
         //Volume is on by default
         if(TankGame.music_level1.getVolume() > 0f){
@@ -339,6 +348,15 @@ public class GUI {
             }
         });
 
+        endGame.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if(endGame.isVisible()){
+                    GameStateManager.getGsm().set(new MenuState());
+                }
+            }
+        });
+
         final Dialog dialog = new Dialog("Warning", skin, "dialog") {
             public void result(Object obj) {
                 if(obj.equals(true)){
@@ -411,7 +429,16 @@ public class GUI {
         return 0;
     }
 
-    private void setPlayable(Boolean bool){
+    public void endSplash(boolean winner){
+        if(winner){
+            endGame.setText("Winner!");
+        } else {
+            endGame.setText("Loser!");
+        }
+        endGame.setVisible(true);
+    }
+
+    public void setPlayable(Boolean bool){
         Array<Actor> stageActors = stage.getActors();
         for (Actor a: stageActors) {
             if(a.getName() != null) {

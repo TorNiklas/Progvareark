@@ -463,8 +463,8 @@ public class PlayState extends State {
         if (Gdx.app.getType() == Application.ApplicationType.Android) {
             readJSON();
         }
-        for (GameSprite gs : gameSprites) {
 
+        for (GameSprite gs : gameSprites) {
             gs.update();
         }
 
@@ -493,9 +493,19 @@ public class PlayState extends State {
 
         // draw bg
         bg.draw(sb);
-
         for (int i = 0; i < gameSprites.size(); i++) {
-            gameSprites.get(i).draw(sb);
+            GameSprite sprite = gameSprites.get(i);
+            if(sprite instanceof  Tank){
+                if (((Tank) sprite).getHealth() <= 0){
+                    gui.setPlayable(false);
+                    boolean won = false;
+                    if(sprite.getId() == -2){
+                        won = true;
+                    }
+                    gui.endSplash(won);
+                }
+            }
+            sprite.draw(sb);
         }
 
         // update and draw effects
