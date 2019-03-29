@@ -501,12 +501,7 @@ public class PlayState extends State {
                     if(sprite.getId() == -2){
                         won = true;
                     }
-                    for(int j = activeProjectiles.size; --j >= 0;) {
-                        Projectile p = activeProjectiles.get(j);
-                        activeProjectiles.removeIndex(j);
-                        projectilePool.free(p);
-                        gameSprites.remove(p);
-                    }
+                    projectilePool.freeAll(activeProjectiles);
                     gui.setPlayable(false);
                     gui.endSplash(won);
                 }
