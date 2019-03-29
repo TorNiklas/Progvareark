@@ -1,6 +1,7 @@
 package com.mygdx.game.states;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
@@ -20,6 +21,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.mygdx.game.TankGame;
 
+import java.nio.file.Files;
 
 
 public class TutorialState extends State {
@@ -27,8 +29,8 @@ public class TutorialState extends State {
     //private Texture optionTitle;
     private Image homeBtn;
     private Stage stage;
-    private BitmapFont tutorialText;
-    private String lorem;
+    private BitmapFont tutorialFont;
+    private String tutorialContent;
 
     public TutorialState(boolean fromMenuState) {
         super();
@@ -41,7 +43,7 @@ public class TutorialState extends State {
         if(fromMenuState){
             homeBtn = new Image(new Texture("homeBtn.png"));
             homeBtn.setSize(homeBtn.getWidth(), homeBtn.getHeight());
-            homeBtn.setPosition(cam.position.x - homeBtn.getWidth(),TankGame.HEIGHT - homeBtn.getHeight());
+            homeBtn.setPosition(TankGame.WIDTH * 0.1f,TankGame.HEIGHT - (homeBtn.getHeight() + 10 ));
             stage.addActor(homeBtn);
         }
 
@@ -60,10 +62,14 @@ public class TutorialState extends State {
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/arial.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = 18;
-        tutorialText = generator.generateFont(parameter);
+        tutorialFont = generator.generateFont(parameter);
         generator.dispose();
 
-        lorem = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur pretium eu diam in dictum. Phasellus non pellentesque magna, interdum laoreet purus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi consectetur velit id varius accumsan. Nam lobortis ligula in dolor scelerisque, in molestie elit tempus. Aliquam viverra eget neque et dapibus. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Suspendisse placerat ut nisl nec tristique. Curabitur pretium ante eu orci volutpat, quis commodo ex hendrerit. Ut vel tortor dignissim, vestibulum mi non, vulputate tellus. Ut vel turpis urna. Nullam sagittis molestie cursus.";
+        //Should maybe load tutorial text in from external file?
+        //new String(Files.readAllBytes(...)) or Files.lines(..).forEach(...) requires a higher Android API than we're using?
+
+        FileHandle file = Gdx.files.internal("tutorialText.txt");
+        tutorialContent = file.readString();
     }
 
     @Override
@@ -82,7 +88,14 @@ public class TutorialState extends State {
         sb.begin();
         sb.draw(bg, 0,0, 1280, 720);
         //sb.draw(optionTitle, cam.position.x - optionTitle.getWidth()/2, 500+optionTitle.getHeight()/4);
-        tutorialText.draw(sb, lorem, 0, 650, TankGame.WIDTH * 0.8f , 8, true);
+        tutorialFont.draw(sb,
+                tutorialContent,
+                TankGame.WIDTH * 0.1f,
+                600,
+                TankGame.WIDTH * 0.8f ,
+                8,
+                true);
+
         sb.end();
 
         // draw stage actors
