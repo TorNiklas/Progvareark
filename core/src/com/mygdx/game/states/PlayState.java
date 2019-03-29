@@ -48,6 +48,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
+import com.mygdx.game.AssetHandler;
 import com.mygdx.game.BTInterface;
 import com.mygdx.game.TankGame;
 import com.mygdx.game.network.SpriteJSON;
@@ -57,8 +58,6 @@ import com.mygdx.game.sprites.GameSprite;
 import com.mygdx.game.sprites.Ground;
 import com.mygdx.game.sprites.Projectile;
 import com.mygdx.game.sprites.Tank;
-
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -101,6 +100,8 @@ public class PlayState extends State {
 
     private int level;
 
+    private AssetHandler assetHandler;
+
     public PlayState(int level, int seed) {
         super();
         this.level = level;
@@ -109,12 +110,15 @@ public class PlayState extends State {
         System.out.println("Seed: " + seed);
         cam.setToOrtho(false, TankGame.WIDTH, TankGame.HEIGHT);
 
+        // set asset handler
+        assetHandler = ((TankGame)Gdx.app.getApplicationListener()).assetHandler;
+
         // add shadow to give more depth to terrain
-        shadow = new Sprite(new Texture("fade.png"));
+        shadow = new Sprite((Texture) assetHandler.manager.get(assetHandler.fadePath)); //new Sprite(new Texture("fade.png"));
         shadow.setSize(TankGame.WIDTH, 550);
 
         // load sound effects
-        explosionSound = Gdx.audio.newSound(Gdx.files.internal("sounds/explosion-7.mp3"));
+        explosionSound = assetHandler.manager.get(assetHandler.explosionSoundPath); //Gdx.audio.newSound(Gdx.files.internal("sounds/explosion-7.mp3"));
 
         // init box2d world
         Box2D.init();

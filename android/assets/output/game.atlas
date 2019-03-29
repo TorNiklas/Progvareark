@@ -1,0 +1,265 @@
+
+game.png
+size: 1024,1024
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+airstrike
+  rotate: false
+  xy: 945, 953
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+ammo-airstrike
+  rotate: false
+  xy: 940, 621
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+ammo-laser
+  rotate: false
+  xy: 762, 467
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+ammo-spread
+  rotate: false
+  xy: 560, 356
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+ammo-standard
+  rotate: false
+  xy: 945, 887
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+back
+  rotate: false
+  xy: 606, 764
+  size: 200, 75
+  orig: 200, 75
+  offset: 0, 0
+  index: -1
+barrel
+  rotate: false
+  xy: 536, 523
+  size: 16, 8
+  orig: 16, 8
+  offset: 0, 0
+  index: -1
+bullet
+  rotate: false
+  xy: 554, 527
+  size: 4, 4
+  orig: 4, 4
+  offset: 0, 0
+  index: -1
+bullet-laser
+  rotate: false
+  xy: 554, 521
+  size: 4, 4
+  orig: 4, 4
+  offset: 0, 0
+  index: -1
+bullet-missile
+  rotate: false
+  xy: 1011, 1001
+  size: 8, 16
+  orig: 8, 16
+  offset: 0, 0
+  index: -1
+bullet-spread
+  rotate: false
+  xy: 940, 615
+  size: 4, 4
+  orig: 4, 4
+  offset: 0, 0
+  index: -1
+connect
+  rotate: false
+  xy: 606, 687
+  size: 200, 75
+  orig: 200, 75
+  offset: 0, 0
+  index: -1
+desert_level
+  rotate: false
+  xy: 2, 2
+  size: 200, 150
+  orig: 200, 150
+  offset: 0, 0
+  index: -1
+downBtn
+  rotate: false
+  xy: 2, 510
+  size: 176, 176
+  orig: 176, 176
+  offset: 0, 0
+  index: -1
+fireBtn
+  rotate: false
+  xy: 2, 840
+  size: 406, 177
+  orig: 406, 177
+  offset: 0, 0
+  index: -1
+forest_level
+  rotate: false
+  xy: 358, 359
+  size: 200, 150
+  orig: 200, 150
+  offset: 0, 0
+  index: -1
+green_pixel
+  rotate: false
+  xy: 1021, 1016
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+homeBtn
+  rotate: false
+  xy: 358, 282
+  size: 200, 75
+  orig: 200, 75
+  offset: 0, 0
+  index: -1
+homeIconBtn
+  rotate: false
+  xy: 2, 154
+  size: 175, 176
+  orig: 175, 176
+  offset: 0, 0
+  index: -1
+host
+  rotate: false
+  xy: 808, 764
+  size: 200, 75
+  orig: 200, 75
+  offset: 0, 0
+  index: -1
+leftAmmoBtn
+  rotate: false
+  xy: 589, 841
+  size: 176, 176
+  orig: 176, 176
+  offset: 0, 0
+  index: -1
+leftBtn
+  rotate: false
+  xy: 2, 332
+  size: 176, 176
+  orig: 176, 176
+  offset: 0, 0
+  index: -1
+muteBtn
+  rotate: false
+  xy: 180, 333
+  size: 176, 175
+  orig: 176, 175
+  offset: 0, 0
+  index: -1
+optionTitle
+  rotate: false
+  xy: 2, 688
+  size: 400, 150
+  orig: 400, 150
+  offset: 0, 0
+  index: -1
+options
+  rotate: false
+  xy: 808, 687
+  size: 200, 75
+  orig: 200, 75
+  offset: 0, 0
+  index: -1
+play
+  rotate: false
+  xy: 536, 610
+  size: 200, 75
+  orig: 200, 75
+  offset: 0, 0
+  index: -1
+return
+  rotate: false
+  xy: 536, 533
+  size: 200, 75
+  orig: 200, 75
+  offset: 0, 0
+  index: -1
+rightAmmoBtn
+  rotate: false
+  xy: 358, 511
+  size: 176, 175
+  orig: 176, 175
+  offset: 0, 0
+  index: -1
+rightBtn
+  rotate: false
+  xy: 180, 510
+  size: 176, 176
+  orig: 176, 176
+  offset: 0, 0
+  index: -1
+snow_level
+  rotate: false
+  xy: 404, 688
+  size: 200, 150
+  orig: 200, 150
+  offset: 0, 0
+  index: -1
+statusBar
+  rotate: false
+  xy: 560, 422
+  size: 128, 32
+  orig: 128, 32
+  offset: 0, 0
+  index: -1
+tank
+  rotate: false
+  xy: 690, 438
+  size: 32, 16
+  orig: 32, 16
+  offset: 0, 0
+  index: -1
+unmuteBtn
+  rotate: false
+  xy: 410, 841
+  size: 177, 176
+  orig: 177, 176
+  offset: 0, 0
+  index: -1
+upBtn
+  rotate: false
+  xy: 767, 841
+  size: 176, 176
+  orig: 176, 176
+  offset: 0, 0
+  index: -1
+volumeBtn
+  rotate: false
+  xy: 738, 610
+  size: 200, 75
+  orig: 200, 75
+  offset: 0, 0
+  index: -1
+volumeOffTextBtn
+  rotate: false
+  xy: 738, 533
+  size: 200, 75
+  orig: 200, 75
+  offset: 0, 0
+  index: -1
+volumeOnTextBtn
+  rotate: false
+  xy: 560, 456
+  size: 200, 75
+  orig: 200, 75
+  offset: 0, 0
+  index: -1

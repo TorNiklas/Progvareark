@@ -1,5 +1,6 @@
 package com.mygdx.game.sprites;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -11,11 +12,11 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.mygdx.game.AssetHandler;
 import com.mygdx.game.TankGame;
 import com.mygdx.game.network.SpriteJSON;
 import com.mygdx.game.states.PlayState;
 
-import org.json.JSONObject;
 
 import static java.lang.Math.cos;
 import static java.lang.StrictMath.sin;
@@ -53,6 +54,8 @@ public class Tank implements GameSprite {
 
     private Projectile.AmmoType activeAmmoType;
 
+    private AssetHandler assetHandler;
+
     PlayState state;
     //private static final AtomicInteger idCounter = new AtomicInteger();
 
@@ -63,17 +66,20 @@ public class Tank implements GameSprite {
     }
 
     public Tank(World world, PlayState state, int x, int y) {
+        // set asset handler
+        assetHandler = ((TankGame) Gdx.app.getApplicationListener()).assetHandler;
+
         // tank sprite
-        tankSprite = new Sprite(new Texture("tank.png"));
+        tankSprite = new Sprite((Texture) assetHandler.manager.get(assetHandler.tankPath)); //new Sprite(new Texture("tank.png"));
         tankSprite.setPosition(x, y);
         tankSprite.setOriginCenter();
 
-        airStrike = new Sprite(new Texture("airstrike.png"));
+        airStrike = new Sprite((Texture) assetHandler.manager.get(assetHandler.airstrikePath)); //new Sprite(new Texture("airstrike.png"));
         airStrike.setPosition(x, y);
         airStrike.setOriginCenter();
 
         // barrel sprite
-        barrelSprite = new Sprite(new Texture("barrel.png"));
+        barrelSprite = new Sprite((Texture) assetHandler.manager.get(assetHandler.barrelPath)); //new Sprite(new Texture("barrel.png"));
         barrelSprite.setOrigin(0f, barrelSprite.getHeight()/2);
 
         // create box2d tank

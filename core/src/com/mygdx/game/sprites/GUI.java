@@ -31,6 +31,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
+import com.mygdx.game.AssetHandler;
 import com.mygdx.game.TankGame;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.mygdx.game.states.PlayState;
@@ -69,30 +70,29 @@ public class GUI {
     private ImageButton surrender;
 
     Texture buttonSheet;
-
+    Texture ammoTexture;
 
     private long timer;
     private BitmapFont font;
     private int height;
 
+    private AssetHandler assetHandler;
+
     public GUI(PlayState state, int height) {
         this.state = state;
         this.height = height;
-        statusBar = new Image(new Texture("statusBar.png"));
+
+        // set asset handler
+        assetHandler = ((TankGame)Gdx.app.getApplicationListener()).assetHandler;
+
+        statusBar = new Image((Texture) assetHandler.manager.get(assetHandler.statusBarPath)); //new Image(new Texture("statusBar.png"));
         statusBar.setSize(TankGame.WIDTH, height);
 
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/arial.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 40;
-        parameter.shadowColor = Color.BLACK;
-        parameter.shadowOffsetX = 3;
-        parameter.shadowOffsetY = 3;
-        font = generator.generateFont(parameter);
-        generator.dispose();
+        font = assetHandler.manager.get(assetHandler.fontPath); //generator.generateFont(parameter);
 
-        skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
+        skin = assetHandler.manager.get(assetHandler.skinJsonPath); // new Skin(Gdx.files.internal("skin/uiskin.json"));
 
-        buttonSheet = new Texture(Gdx.files.internal("skin/guiButtons.png"));
+        buttonSheet = assetHandler.manager.get(assetHandler.guiButtonsPath);
 
         TextureRegionDrawable leftBtnTr = new TextureRegionDrawable(new TextureRegion(buttonSheet, 276,235, 176 ,185 ));
         TextureRegionDrawable rightBtnTr = new TextureRegionDrawable(new TextureRegion(buttonSheet, 276,20, 176 ,185 ));
@@ -109,8 +109,6 @@ public class GUI {
         TextureRegionDrawable volumeOffTr = new TextureRegionDrawable(new TextureRegion(buttonSheet, 912,452, 176,186 ));
         TextureRegionDrawable surrenderTr = new TextureRegionDrawable(new TextureRegion(buttonSheet, 917,666, 176,186 ));
 
-
-
         leftBtn = new ImageButton(leftBtnTr);
         leftBtn.setSize(200, height - 75);
         leftBtn.setPosition(10, 10);
@@ -119,7 +117,8 @@ public class GUI {
         rightBtn.setSize(200, height - 75);
         rightBtn.setPosition(leftBtn.getWidth() + 20, 10);
 
-        ammoImage = new Image(new Texture("ammo-standard.png"));
+        ammoTexture = assetHandler.manager.get(assetHandler.ammoStandardPath);
+        ammoImage = new Image(ammoTexture);
         ammoImage.setSize(100, 100);
         ammoImage.setPosition(TankGame.WIDTH/2 - 15, ammoImage.getHeight()/2 + 35, 1);
 
@@ -257,18 +256,20 @@ public class GUI {
                 tank.setActiveAmmoType(tank.getNextAmmo());
                 switch (tank.getActiveAmmoType()) {
                     case STANDARD:
-                        ammoImage.setDrawable(new SpriteDrawable(new Sprite(new Texture("ammo-standard.png"))));
+                        ammoTexture = assetHandler.manager.get(assetHandler.ammoStandardPath);
                         break;
                     case SPREAD:
-                        ammoImage.setDrawable(new SpriteDrawable(new Sprite(new Texture("ammo-spread.png"))));
+                        ammoTexture = assetHandler.manager.get(assetHandler.ammoSpreadPath);
                         break;
                     case LASER:
-                        ammoImage.setDrawable(new SpriteDrawable(new Sprite(new Texture("ammo-laser.png"))));
+                        ammoTexture = assetHandler.manager.get(assetHandler.ammoLaserPath);
                         break;
                     case AIRSTRIKE:
-                        ammoImage.setDrawable(new SpriteDrawable(new Sprite(new Texture("ammo-airstrike.png"))));
+                        ammoTexture = assetHandler.manager.get(assetHandler.ammoAirstrikePath);
                         break;
                 }
+                ammoImage.setDrawable(new SpriteDrawable(new Sprite(ammoTexture)));
+
             }
         });
 
@@ -278,18 +279,19 @@ public class GUI {
                 tank.setActiveAmmoType(tank.getPrevAmmo());
                 switch (tank.getActiveAmmoType()) {
                     case STANDARD:
-                        ammoImage.setDrawable(new SpriteDrawable(new Sprite(new Texture("ammo-standard.png"))));
+                        ammoTexture = assetHandler.manager.get(assetHandler.ammoStandardPath);
                         break;
                     case SPREAD:
-                        ammoImage.setDrawable(new SpriteDrawable(new Sprite(new Texture("ammo-spread.png"))));
+                        ammoTexture = assetHandler.manager.get(assetHandler.ammoSpreadPath);
                         break;
                     case LASER:
-                        ammoImage.setDrawable(new SpriteDrawable(new Sprite(new Texture("ammo-laser.png"))));
+                        ammoTexture = assetHandler.manager.get(assetHandler.ammoLaserPath);
                         break;
                     case AIRSTRIKE:
-                        ammoImage.setDrawable(new SpriteDrawable(new Sprite(new Texture("ammo-airstrike.png"))));
+                        ammoTexture = assetHandler.manager.get(assetHandler.ammoAirstrikePath);
                         break;
                 }
+                ammoImage.setDrawable(new SpriteDrawable(new Sprite(ammoTexture)));
             }
         });
 
@@ -459,13 +461,13 @@ public class GUI {
         healthBar.setValue(tank.getHealth());
 
         Vector2 enemyTankPos = enemyTank.getPosition();
-        tankHealthBar.setPosition(enemyTankPos.x - tankHealthBar.getWidth()/2 + enemyTank.getSprite().getWidth()/2, enemyTankPos.y + 20);
+        tankHealthBar.setPosition(enemyTankPos.x - tankHealthBar.getWidth()/2, enemyTankPos.y + 20);
         tankHealthBar.setValue(enemyTank.getHealth());
         // TODO: fix rotation?
         //tankHealthBar.setRotation(tank.getSprite().getRotation());
 
         Vector2 tankPos = tank.getPosition();
-        tankFirePower.setPosition(tankPos.x - tankFirePower.getWidth()/2 + tank.getSprite().getWidth()/2, tankPos.y + 30);
+        tankFirePower.setPosition(tankPos.x - tankFirePower.getWidth()/2, tankPos.y + 20);
         tankFirePower.setValue(tank.getFirePower());
 
         if(tank.getAmmo() <= 0 && fireButton.getTouchable().equals(Touchable.enabled)) {
