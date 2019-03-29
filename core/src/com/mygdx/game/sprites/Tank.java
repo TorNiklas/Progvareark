@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
@@ -17,18 +18,15 @@ import com.mygdx.game.TankGame;
 import com.mygdx.game.network.SpriteJSON;
 import com.mygdx.game.states.PlayState;
 
-
 import static java.lang.Math.cos;
+import static java.lang.Math.toRadians;
 import static java.lang.StrictMath.sin;
 
-public class Tank implements GameSprite {
-    private int id = -1;
-    private boolean local = true;
+public class Tank extends GameSprite {
     private Vector3 position;
     private Sprite tankSprite;
     private Sprite barrelSprite;
     private Sprite airStrike;
-    private Body body;
 
     private boolean moveLeft;
     private boolean moveRight;
@@ -121,18 +119,19 @@ public class Tank implements GameSprite {
     private void generateTank(World world, Vector2 pos) {
         // body definition
         BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(pos.x, pos.y);
-
-        // create shapes
-        PolygonShape tankShape = new PolygonShape();
-        tankShape.setAsBox(tankSprite.getWidth()/2, tankSprite.getHeight()/2);
 
         // create fixtures
         FixtureDef fixtureDef = new FixtureDef();
+
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
         fixtureDef.density = 2.5f;
         fixtureDef.friction = 0.7f;
         fixtureDef.restitution = 0f;
+
+        // create shapes
+        PolygonShape tankShape = new PolygonShape();
+        tankShape.setAsBox(tankSprite.getWidth() / 2, tankSprite.getHeight() / 2);
 
         // add body to world
         body = world.createBody(bodyDef);
@@ -140,17 +139,14 @@ public class Tank implements GameSprite {
         // attach fixture
         fixtureDef.shape = tankShape;
         body.createFixture(fixtureDef);
-        
+
         body.setAngularDamping(2f);
 
         // clean up
         tankShape.dispose();
     }
 
-    @Override
-    public boolean isLocal() {
-        return local;
-    }
+
 
     @Override
     public void update(){
@@ -205,11 +201,6 @@ public class Tank implements GameSprite {
     }
 
     @Override
-    public int getId() {
-        return id;
-    }
-
-    @Override
     public SpriteJSON getJSON() {
 //        System.out.println("Get JSON from tank");
 //        System.out.println(getPosition());
@@ -220,15 +211,51 @@ public class Tank implements GameSprite {
 	    return new SpriteJSON(id, SpriteJSON.Type.BARREL, getBarrelPosition(), body.getLinearVelocity(), barrelDeg);
     }
 
-    public void readBarrelJSON(SpriteJSON json) {
-	    barrelDeg = json.getAngle();
-	    barrelSprite.setRotation(barrelDeg);
-    }
-
     @Override
     public void readJSON(SpriteJSON obj) {
-        body.setTransform(obj.getPos(), obj.getAngle());
-        body.setLinearVelocity(obj.getVel());
+        float posDiff = obj.getPos().x - getPosition().x;
+        setEnergy(100);
+        if (posDiff > 1) {
+            //body.setLinearVelocity(new Vector2(30f, body.getLinearVelocity().y));
+            moveRight = true;
+            moveLeft = false;
+            System.out.println("Right");
+        }
+        else if (posDiff < -1) {
+            //body.setLinearVelocity(new Vector2(-30f, body.getLinearVelocity().y));
+            moveRight = false;
+            moveLeft = true;
+            System.out.println("Left");
+        }
+        else {
+            //body.setLinearVelocity(new Vector2(0, body.getLinearVelocity().y));
+            moveRight = false;
+            moveLeft = false;
+//            System.out.println("Stop");
+        }
+    }
+
+    public void readBarrelJSON(SpriteJSON json) {
+	    float diff = json.getAngle() - barrelDeg;
+        System.out.println(json.getAngle());
+        System.out.println(barrelDeg);
+        System.out.println(diff);
+	    if (diff > 5) {
+	        increase = false;
+	        decrease = true;
+            System.out.println("Decr");
+        }
+        else if (diff < -5) {
+            increase = true;
+            decrease = false;
+            System.out.println("Incr");
+        }
+        else {
+            increase = false;
+            decrease = false;
+        }
+	    /*barrelDeg = json.getAngle();
+	    barrelSprite.setRotation(barrelDeg);*/
     }
 
     public int getFirePower() {
@@ -281,10 +308,10 @@ public class Tank implements GameSprite {
 
     public void move() {
         if(moveLeft && energy > 0) {
-            energy -= 0.25;
+            //energy -= 0.25; TODO uncomment
             body.setLinearVelocity(new Vector2(-30f, body.getLinearVelocity().y));
         } else if(moveRight && energy > 0) {
-            energy -= 0.25;
+            //energy -= 0.25; TODO uncomment
             body.setLinearVelocity(new Vector2(30f, body.getLinearVelocity().y));
         } else {
             body.setLinearVelocity(new Vector2(0f, body.getLinearVelocity().y));
@@ -353,20 +380,15 @@ public class Tank implements GameSprite {
     }
 
     @Override
-    public Body getBody() {
-        return body;
-    }
-
-    @Override
     public Sprite getSprite() {
         return tankSprite;
     }
 
     @Override
     public void dispose(){
-        tankSprite.getTexture().dispose();
-        barrelSprite.getTexture().dispose();
-        airStrike.getTexture().dispose();
+        //tankSprite.getTexture().dispose();
+        //barrelSprite.getTexture().dispose();
+        //airStrike.getTexture().dispose();
     }
 
     @Override

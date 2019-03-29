@@ -7,20 +7,40 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.mygdx.game.network.SpriteJSON;
 
 
-public interface GameSprite {
-    boolean isLocal();
+public abstract class GameSprite {
+    Body body;
+    int id;
+    boolean local;
 
-    void update();
-    void draw(SpriteBatch batch);
-    void dispose();
-    Vector2 getPosition();
-    Sprite getSprite();
+    public boolean isLocal() {
+        return local;
+    }
+
+    public void setLocal(boolean local) {
+        this.local = local;
+    }
+
+    public abstract void update();
+    public abstract void draw(SpriteBatch batch);
+    public abstract void dispose();
+    public abstract Vector2 getPosition();
+    public abstract Sprite getSprite();
     /*SpriteSerialize getSerialize();
     void readSerialize(SpriteSerialize sprite);*/
 
-    SpriteJSON getJSON();
-    void readJSON(SpriteJSON obj);
+    public abstract SpriteJSON getJSON();
 
-    int getId();
-    Body getBody();
+    public abstract void readJSON(SpriteJSON obj);
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public Body getBody() {
+        return body;
+    }
 }

@@ -101,7 +101,12 @@ public class AndroidLauncher extends AndroidApplication implements BTInterface {
 	@Override
 	public void startHostGame(int level, int seed) {
 		System.out.println("Starting host game");
-		connThread.startGameHost(level, seed);
+		ConnectedThread.level = level;
+		ConnectedThread.seed = seed;
+
+		if (connThread != null) {
+			connThread.startGameHost(); //start game if ready
+		}
 	}
 
 	@Override
@@ -153,36 +158,41 @@ public class AndroidLauncher extends AndroidApplication implements BTInterface {
 	private final BroadcastReceiver receiver = new BroadcastReceiver() {
 		//ArrayList<BluetoothDevice> devices = new ArrayList<>();
 
-		public void onReceive(Context context, Intent intent) {
-			String action = intent.getAction();
-			if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-				// Discovery has found a device. Get the BluetoothDevice
-				// object and its info from the Intent.
-				BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-				System.out.println("BT unit found: " + device.getName());
-				String name = device.getName();
-				if (name != null && name.equals(uuid.toString() + code)) {
-					showToast("Found host");
-					continueDiscovery = false;
-					BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
+		public void onReceive(Context context, final Intent intent) {
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					String action = intent.getAction();
+					if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+						// Discovery has found a device. Get the BluetoothDevice
+						// object and its info from the Intent.
+						BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+						System.out.println("BT unit found: " + device.getName());
+						String name = device.getName();
+						if (name != null && name.equals(uuid.toString() + code)) {
+							showToast("Found host");
+							continueDiscovery = false;
+							BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
 
-					try {
-						BluetoothSocket socket = device.createInsecureRfcommSocketToServiceRecord(uuid);
-						socket.connect();
-						connThread = new ConnectedThread(socket, false, AndroidLauncher.this);
-						connThread.startGameClient(code);
-					} catch (IOException e) {
-						e.printStackTrace();
-						//Ikke riktig device?
+							try {
+								BluetoothSocket socket = device.createInsecureRfcommSocketToServiceRecord(uuid);
+								socket.connect();
+								connThread = new ConnectedThread(socket, false, AndroidLauncher.this);
+								connThread.startGameClient(code);
+							} catch (IOException e) {
+								e.printStackTrace();
+								//Ikke riktig device?
+							}
+						}
+					}
+					else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
+						showToast("Discovery finished");
+						if (continueDiscovery) {
+							BluetoothAdapter.getDefaultAdapter().startDiscovery();
+						}
 					}
 				}
-			}
-			else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
-				showToast("Discovery finished");
-				if (continueDiscovery) {
-					BluetoothAdapter.getDefaultAdapter().startDiscovery();
-				}
-			}
+			}).start();
 		}
 	};
 
@@ -202,6 +212,10 @@ public class AndroidLauncher extends AndroidApplication implements BTInterface {
 							showToast("Connected, stopping server socket");
 							serverSocket.close();
 							connThread = new ConnectedThread(socket, true, AndroidLauncher.this);
+
+							if (ConnectedThread.level != -1 && ConnectedThread.seed != -1) {
+								connThread.startGameHost();
+							}
 							//connThread.start();
 						}
 						catch (Exception e) {
@@ -260,7 +274,7 @@ public class AndroidLauncher extends AndroidApplication implements BTInterface {
 
 				}
 			}
-		}).run();
+		}).start();
 	}
 	@Override
 	protected void onStop() {
