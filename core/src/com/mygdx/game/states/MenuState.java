@@ -21,6 +21,7 @@ public class MenuState extends State{
     private Image hostBtn;
     private Image connectBtn;
     private Image optionBtn;
+    private Image tutorialBtn;
     private Stage stage;
     private AssetHandler assetHandler;
 
@@ -47,15 +48,17 @@ public class MenuState extends State{
 
         bg = new Image((Texture) assetHandler.manager.get(assetHandler.bgPath));
 
-        hostBtn = new Image((Texture)assetHandler.manager.get(assetHandler.hostPath));
-        connectBtn = new Image((Texture)assetHandler.manager.get(assetHandler.connectPath));
-        optionBtn = new Image((Texture)assetHandler.manager.get(assetHandler.optionsPath));
+        hostBtn = new Image((Texture) assetHandler.manager.get(assetHandler.hostPath));
+        connectBtn = new Image((Texture) assetHandler.manager.get(assetHandler.connectPath));
+        optionBtn = new Image((Texture) assetHandler.manager.get(assetHandler.optionsPath));
+        tutorialBtn = new Image((Texture) assetHandler.manager.get(assetHandler.tutorialPath));
 
         // set pos and size
         float center = TankGame.WIDTH/2 - hostBtn.getWidth()/2;
-        hostBtn.setPosition(center, 400);
-        connectBtn.setPosition(center, 300);
-        optionBtn.setPosition(center, 200);
+        hostBtn.setPosition(center, 450);
+        connectBtn.setPosition(center, 350);
+        optionBtn.setPosition(center, 250);
+        tutorialBtn.setPosition(center, 150);
 
         // create stage and add maps as actors
         stage = new Stage(new StretchViewport(TankGame.WIDTH, TankGame.HEIGHT, cam));
@@ -63,6 +66,7 @@ public class MenuState extends State{
         stage.addActor(hostBtn);
         stage.addActor(connectBtn);
         stage.addActor(optionBtn);
+        stage.addActor(tutorialBtn);
 
         // move l8r
         Gdx.input.setInputProcessor(stage);
@@ -109,6 +113,14 @@ public class MenuState extends State{
             }
         });
 
+        tutorialBtn.addListener(new InputListener() {
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("tutorial selected");
+                GameStateManager.getGsm().set(new TutorialState(true));
+                return true;
+            }
+        });
+
     }
 
     @Override
@@ -139,9 +151,11 @@ public class MenuState extends State{
 
     @Override
     public void render(SpriteBatch sb, PolygonSpriteBatch psb) {
+        stage.act();
+        stage.draw();
+
         sb.setProjectionMatrix(cam.combined);
         sb.begin();
-
 
         // background
         //sb.draw(bg, 0,0, 1280, 720);
@@ -150,9 +164,8 @@ public class MenuState extends State{
         //hostBtn.draw(sb, 1f);
         //connectBtn.draw(sb, 1f);
         //optionBtn.draw(sb, 1f);
+        //tutorialBtn.draw(sb, 1f);
         sb.end();
-        stage.act();
-        stage.draw();
     }
 
     @Override

@@ -42,6 +42,7 @@ public class AssetHandler {
     public final String connectPath = "connect.png";
     public final String optionsPath = "options.png";
     public final String optionsTitlePath = "optionTitle.png";
+    public final String tutorialPath = "tutorialBtn.png";
     public final String backPath = "back.png";
     public final String upBtnPath = "upBtn.png";
     public final String downBtnPath = "downBtn.png";
@@ -115,6 +116,7 @@ public class AssetHandler {
         manager.load(connectPath, Texture.class);
         manager.load(optionsPath, Texture.class);
         manager.load(optionsTitlePath, Texture.class);
+        manager.load(tutorialPath, Texture.class);
         manager.load(backPath, Texture.class);
         manager.load(bgPath, Texture.class);
         manager.load(upBtnPath, Texture.class);

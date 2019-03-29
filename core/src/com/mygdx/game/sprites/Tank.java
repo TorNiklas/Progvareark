@@ -103,7 +103,7 @@ public class Tank implements GameSprite {
         firePower = 1;
         maxFirePower = 150;
 
-        //airstrike
+        // airstrike
         airStrikePos = x;
 
         // stats
