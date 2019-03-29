@@ -387,23 +387,17 @@ public class GUI {
             }
         });
 
-        endGameV.addListener(new ClickListener() {
+        ClickListener endListener = new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if(endGameV.isVisible()){
                     GameStateManager.getGsm().set(new MenuState());
                 }
             }
-        });
+        };
 
-        endGameD.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                if(endGameV.isVisible()){
-                    GameStateManager.getGsm().set(new MenuState());
-                }
-            }
-        });
+        endGameV.addListener(endListener);
+        endGameD.addListener(endListener);
 
         final Dialog dialog = new Dialog("Warning", skin, "dialog") {
             public void result(Object obj) {
@@ -481,7 +475,7 @@ public class GUI {
         if(winner){
             endGameV.setVisible(true);
         } else {
-            endGameV.setVisible(true);
+            endGameD.setVisible(true);
         }
     }
 
