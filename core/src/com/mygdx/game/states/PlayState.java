@@ -497,11 +497,17 @@ public class PlayState extends State {
             GameSprite sprite = gameSprites.get(i);
             if(sprite instanceof  Tank){
                 if (((Tank) sprite).getHealth() <= 0){
-                    gui.setPlayable(false);
                     boolean won = false;
                     if(sprite.getId() == -2){
                         won = true;
                     }
+                    for(int j = activeProjectiles.size; --j >= 0;) {
+                        Projectile p = activeProjectiles.get(j);
+                        activeProjectiles.removeIndex(j);
+                        projectilePool.free(p);
+                        gameSprites.remove(p);
+                    }
+                    gui.setPlayable(false);
                     gui.endSplash(won);
                 }
             }
