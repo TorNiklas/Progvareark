@@ -50,13 +50,15 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.mygdx.game.BTInterface;
 import com.mygdx.game.TankGame;
-import com.mygdx.game.network.SpriteSerialize;
+import com.mygdx.game.network.SpriteJSON;
 import com.mygdx.game.sprites.Background;
 import com.mygdx.game.sprites.GUI;
 import com.mygdx.game.sprites.GameSprite;
 import com.mygdx.game.sprites.Ground;
 import com.mygdx.game.sprites.Projectile;
 import com.mygdx.game.sprites.Tank;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -125,10 +127,9 @@ public class PlayState extends State {
             public void beginContact(Contact contact) {
                 Body bodyA = contact.getFixtureA().getBody();
                 Body bodyB = contact.getFixtureB().getBody();
-                if(bodyB.isBullet() && bodyA.getType() == BodyDef.BodyType.StaticBody ){
-                    //System.out.println("Bullet hit ground at" + bodyB.getPosition());
-                    //Bullet hit ground, should explode?
 
+                // ground hit
+                if(bodyB.isBullet() && bodyA.getType() == BodyDef.BodyType.StaticBody ){
                     // explosion effect
                     Vector2 hitPos = bodyB.getPosition();
                     explodeEffect(hitPos.x, hitPos.y, 0.3f, 100);
@@ -142,13 +143,14 @@ public class PlayState extends State {
                     bodyB.setAwake(false);
                 }
 
+                // enemy tank hit
                 if(bodyB.isBullet() && bodyA == (gameSprites.get(1)).getBody() && (gameSprites.get(1)) instanceof Tank){
-                    System.out.println("Tank hit!" + bodyB.getPosition());
-                    System.out.println("Tank health was: " + ((Tank)gameSprites.get(1)).getHealth());
+                    System.out.println("Enemy tank hit!" + bodyB.getPosition());
+                    System.out.println("Enemy tank health was: " + ((Tank)gameSprites.get(1)).getHealth());
 
                     ((Tank)gameSprites.get(1)).setHealth(((Tank)gameSprites.get(1)).getHealth()-25f);
 
-                    System.out.println("Tank health now: " + ((Tank)gameSprites.get(1)).getHealth());
+                    System.out.println("Enemy tank health now: " + ((Tank)gameSprites.get(1)).getHealth());
 
                     // explosion effect
                     Vector2 hitPos = bodyB.getPosition();
@@ -160,7 +162,7 @@ public class PlayState extends State {
                     }
 
                     // vibrate on tank hit, maybe only if own tank is hit?
-                    Gdx.input.vibrate(500);
+                    //Gdx.input.vibrate(500);
 
                     // delete bullet
                     bodyB.setAwake(false);
@@ -196,7 +198,7 @@ public class PlayState extends State {
             // forest level
             case 1:
                 spawnHeight = 100 + guiHeight;
-                ground = new Ground(world, seed,10, 30 + guiHeight, 100 + guiHeight, 10, Color.FOREST);
+                ground = new Ground(world, seed, 10, 30 + guiHeight, 100 + guiHeight, 10, Color.FOREST);
 
                 // dynamic background
                 bg = new Background(TankGame.WIDTH, TankGame.HEIGHT, 0, 150, 0.15f, "backgrounds/forest/");
@@ -265,6 +267,7 @@ public class PlayState extends State {
     public void fireFromPool(Projectile.AmmoType type, Vector2 pos, Vector2 force, boolean local) {
         System.out.println("FIRING " + pos.x + " - " + pos.y);
         System.out.println("FORCE " + force.x + " - " + force.y);
+        System.out.println("Local " + local);
 
         // TODO: add more types
         switch (type) {
@@ -308,6 +311,14 @@ public class PlayState extends State {
                 l.init(world, type, pos, force);
                 activeProjectiles.add(l);
                 gameSprites.add(l);
+                break;
+            case AIRSTRIKE:
+                Projectile as = projectilePool.obtain();
+                as.setId(idCounter.getAndIncrement());
+                as.setLocal(local);
+                as.init(world, type, pos, force);
+                activeProjectiles.add(as);
+                gameSprites.add(as);
                 break;
         }
     }
@@ -355,36 +366,86 @@ public class PlayState extends State {
 
     }
 
-    public static ArrayList<SpriteSerialize> getNetSprites() {
-        ArrayList<SpriteSerialize> spriteSerializes = new ArrayList<SpriteSerialize>();
+    public static ArrayList<SpriteJSON> getJSON() {
+        ArrayList<SpriteJSON> ret = new ArrayList<SpriteJSON>();
+//        System.out.println(gameSprites);
+
         for (GameSprite g : gameSprites) {
             if (g.isLocal()) {
-                spriteSerializes.add(g.getSerialize());
+                ret.add(g.getJSON());
+                if (g instanceof Tank) {
+                    ret.add(((Tank) g).getBarrelJSON());
+                }
             }
         }
-        return spriteSerializes;
+
+        return ret;
     }
 
-    //Projectils fired locally need new unique id
+    //Projectiles fired locally need new unique id
     //Proj from network need to set id to received one and increment idCounter to same
-    private void readNetSprites() {
-        ArrayList<SpriteSerialize> sprites = TankGame.getBluetooth().getSprites();
-        //System.out.println(sprites);
-        for (SpriteSerialize s : sprites) {
+    private void readJSON() {
+        while (!TankGame.getBluetooth().getSprites().isEmpty()) {
+            SpriteJSON j = TankGame.getBluetooth().getSprites().pop();
+
+            switch (j.getType()) {
+                case PROJECTILE:
+                    boolean exists = false;
+                    for (Projectile p : activeProjectiles) {
+
+                        if (p.getId() == j.getID()) {
+                            //System.out.println("Found existing proj");
+                            exists = true;
+                            p.readJSON(j);
+                            break;
+                        }
+                    }
+                    if (!exists) {
+                        idCounter.set(j.getID());
+                        // TODO: check active ammotype
+                        fireFromPool(Projectile.AmmoType.STANDARD, j.getPos(), j.getVel(), false);
+                    }
+                    break;
+                case TANK:
+                    // Tanks should always exist
+                    for (GameSprite g : gameSprites) {
+                        if (g.getId() == j.getID()) {
+                            g.readJSON(j);
+                            break;
+                        }
+                    }
+                    break;
+                case BARREL:
+                    for (GameSprite g : gameSprites) {
+                        if (g.getId() == j.getID()) {
+                            ((Tank)g).readBarrelJSON(j);
+                            break;
+                        }
+                    }
+                    break;
+            }
+/*
+//            System.out.println(j.toString());
             boolean exists = false;
+//            System.out.println(j.getID());
+//            System.out.println(j);
             for (GameSprite g : gameSprites) {
-                if (s.getId() == g.getId()) {
-                    g.readSerialize(s);
+//                System.out.println(g.getId());
+                System.out.println("Found:");
+                System.out.println(j);
+                System.out.println(j.getID());
+                if (j.getID() == g.getId()) { //Update existing
+                    g.readJSON(j);
                     exists = true;
                 }
             }
-            if (!exists) {
-                idCounter.set(s.getId());
-                if (s.getType() == SpriteSerialize.Type.PROJECTILE) {
+            if (!exists) { //Add new
+                idCounter.set(j.getID());
+                if (j.getType() == SpriteJSON.Type.PROJECTILE) {
                     // TODO: check active ammotype
-                    fireFromPool(Projectile.AmmoType.STANDARD, s.getPos(), s.getLinVel(), false);
+                    fireFromPool(Projectile.AmmoType.STANDARD, j.getPos(), new Vector2(), false);
                 }
-            }
+            }*/
         }
     }
 
@@ -399,8 +460,8 @@ public class PlayState extends State {
 
         handleInput();
         // doesn't work on desktop
-        if(Gdx.app.getType() == Application.ApplicationType.Android) {
-            readNetSprites();
+        if (Gdx.app.getType() == Application.ApplicationType.Android) {
+            readJSON();
         }
         for (GameSprite gs : gameSprites) {
 
@@ -467,7 +528,7 @@ public class PlayState extends State {
         //stage.draw();
 
         // box-2d
-        //debugRenderer.render(world, cam.combined);
+        debugRenderer.render(world, cam.combined);
         world.step(1/60f, 6, 2);
     }
 
@@ -497,6 +558,7 @@ public class PlayState extends State {
             it.next().dispose();
         }
     }
+
     public static ArrayList<GameSprite> getGameSprites() {
         return gameSprites;
     }

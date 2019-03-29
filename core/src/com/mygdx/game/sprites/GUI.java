@@ -265,6 +265,9 @@ public class GUI {
                     case LASER:
                         ammoImage.setDrawable(new SpriteDrawable(new Sprite(new Texture("ammo-laser.png"))));
                         break;
+                    case AIRSTRIKE:
+                        ammoImage.setDrawable(new SpriteDrawable(new Sprite(new Texture("ammo-airstrike.png"))));
+                        break;
                 }
             }
         });
@@ -282,6 +285,9 @@ public class GUI {
                         break;
                     case LASER:
                         ammoImage.setDrawable(new SpriteDrawable(new Sprite(new Texture("ammo-laser.png"))));
+                        break;
+                    case AIRSTRIKE:
+                        ammoImage.setDrawable(new SpriteDrawable(new Sprite(new Texture("ammo-airstrike.png"))));
                         break;
                 }
             }
@@ -305,21 +311,36 @@ public class GUI {
 
         increaseElevation.addListener(new InputListener() {
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                tank.setIncrease(true);
+                switch (tank.getActiveAmmoType()){
+                    case AIRSTRIKE:
+                        tank.setIncreaseAirStrike(true);
+                    default:
+                        tank.setIncrease(true);
+                }
+
                 return true;
             }
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
                 tank.setIncrease(false);
+                tank.setIncreaseAirStrike(false);
             }
         });
 
         decreaseElevation.addListener(new InputListener() {
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                tank.setDecrease(true);
+                switch (tank.getActiveAmmoType()){
+                    case AIRSTRIKE:
+                        tank.setDecreaseAirStrike(true);
+                    default:
+                        tank.setDecrease(true);
+
+                }
+
                 return true;
             }
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
                 tank.setDecrease(false);
+                tank.setDecreaseAirStrike(false);
             }
         });
 

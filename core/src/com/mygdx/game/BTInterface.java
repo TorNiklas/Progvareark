@@ -1,10 +1,11 @@
 package com.mygdx.game;
 
-import com.mygdx.game.network.SpriteSerialize;
-import com.mygdx.game.sprites.GameSprite;
+import com.mygdx.game.network.SpriteJSON;
 
-import java.io.Serializable;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.Stack;
 
 public interface BTInterface {
     public void startHostConnection(String code, Runnable onConnected, Runnable onDisconnect);
@@ -17,5 +18,5 @@ public interface BTInterface {
 
     public void disconnect();
 
-    public ArrayList<SpriteSerialize> getSprites();
+    public Stack<SpriteJSON> getSprites();
 }

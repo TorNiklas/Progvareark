@@ -14,10 +14,11 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.utils.Pool;
 import com.mygdx.game.TankGame;
-import com.mygdx.game.network.SpriteSerialize;
+import com.mygdx.game.network.SpriteJSON;
+
+import org.json.JSONObject;
 
 public class Projectile implements GameSprite, Pool.Poolable {
     private boolean local;
@@ -33,7 +34,8 @@ public class Projectile implements GameSprite, Pool.Poolable {
     public enum AmmoType {
         STANDARD,
         SPREAD,
-        LASER;
+        LASER,
+        AIRSTRIKE;
 
         private static AmmoType[] vals = values();
 
@@ -95,6 +97,9 @@ public class Projectile implements GameSprite, Pool.Poolable {
             case LASER:
                 sprite = new Sprite(new Texture("bullet-laser.png"));
                 break;
+            case AIRSTRIKE:
+                sprite = new Sprite(new Texture("bullet-missile.png"));
+                break;
         }
         sprite.setPosition(-10, -10);
         sprite.setOriginCenter();
@@ -106,6 +111,10 @@ public class Projectile implements GameSprite, Pool.Poolable {
             case LASER:
                 body.setGravityScale(0.0f);
                 body.setLinearVelocity(velocity.scl(1000));
+                break;
+            case AIRSTRIKE:
+                body.setLinearVelocity(new Vector2(0,-1000));
+                break;
         }
         // particle effect
         trailEffect(type, pos.x, pos.y, 0.2f, 2000);
@@ -163,7 +172,6 @@ public class Projectile implements GameSprite, Pool.Poolable {
                 break;
             default:
                 trailEffect.load(Gdx.files.internal("effects/smoke_trail.p"), Gdx.files.internal("effects"));
-
                 break;
         }
         trailEffect.setPosition(x, y);
@@ -219,7 +227,7 @@ public class Projectile implements GameSprite, Pool.Poolable {
         this.local = local;
     }
 
-    @Override
+    /*@Override
     public SpriteSerialize getSerialize() {
         return new SpriteSerialize(id, SpriteSerialize.Type.PROJECTILE, getPosition(), body.getLinearVelocity());
     }
@@ -233,6 +241,17 @@ public class Projectile implements GameSprite, Pool.Poolable {
 
         body.setTransform(sprite.getPos(), 0);
         //body.applyForce(sprite.getLinVel(), sprite.getPos(), true);
+    }*/
+
+    @Override
+    public SpriteJSON getJSON() {
+        return new SpriteJSON(id, SpriteJSON.Type.PROJECTILE, getPosition(), body.getLinearVelocity(), 0);
+    }
+
+    @Override
+    public void readJSON(SpriteJSON obj) {
+        body.setTransform(obj.getPos(), 0);
+        body.setLinearVelocity(obj.getVel());
     }
 
     public Rectangle getBounds() {
@@ -261,5 +280,15 @@ public class Projectile implements GameSprite, Pool.Poolable {
         body.setLinearVelocity(0, 0);
         body.setActive(false);
         alive = false;
+    }
+
+    @Override
+    public String toString() {
+        return "Projectile{" +
+                "local=" + local +
+                ", id=" + id +
+                ", position=" + getPosition() +
+                ", alive=" + alive +
+                '}';
     }
 }

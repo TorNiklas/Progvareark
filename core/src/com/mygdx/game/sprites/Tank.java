@@ -1,26 +1,21 @@
 package com.mygdx.game.sprites;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.physics.box2d.joints.WheelJoint;
-import com.badlogic.gdx.physics.box2d.joints.WheelJointDef;
 import com.mygdx.game.TankGame;
-import com.mygdx.game.network.SpriteSerialize;
+import com.mygdx.game.network.SpriteJSON;
 import com.mygdx.game.states.PlayState;
+
+import org.json.JSONObject;
 
 import static java.lang.Math.cos;
 import static java.lang.StrictMath.sin;
@@ -31,12 +26,15 @@ public class Tank implements GameSprite {
     private Vector3 position;
     private Sprite tankSprite;
     private Sprite barrelSprite;
+    private Sprite airStrike;
     private Body body;
 
     private boolean moveLeft;
     private boolean moveRight;
     private boolean increase;
     private boolean decrease;
+    private boolean airStrikeIncrease;
+    private boolean airStrikeDecrease;
     private boolean isPoweringUp;
     private boolean gainPower;
 
@@ -44,6 +42,7 @@ public class Tank implements GameSprite {
     private int maxFirePower;
 
     private int barrelDeg;
+    private int airStrikePos;
     private int aimRate;
 
     private float energy;
@@ -69,6 +68,10 @@ public class Tank implements GameSprite {
         tankSprite.setPosition(x, y);
         tankSprite.setOriginCenter();
 
+        airStrike = new Sprite(new Texture("airstrike.png"));
+        airStrike.setPosition(x, y);
+        airStrike.setOriginCenter();
+
         // barrel sprite
         barrelSprite = new Sprite(new Texture("barrel.png"));
         barrelSprite.setOrigin(0f, barrelSprite.getHeight()/2);
@@ -93,6 +96,9 @@ public class Tank implements GameSprite {
         gainPower = true;
         firePower = 1;
         maxFirePower = 150;
+
+        //airstrike
+        airStrikePos = x;
 
         // stats
         energy = 100.0f;
@@ -151,6 +157,9 @@ public class Tank implements GameSprite {
         // handle fire power
         powerUp();
 
+        //Airstrike
+        if (activeAmmoType == Projectile.AmmoType.AIRSTRIKE) {updateAirStrike();}
+
         // tank
         tankSprite.setPosition(body.getPosition().x - tankSprite.getWidth()/2, body.getPosition().y - tankSprite.getHeight()/2);
         tankSprite.setRotation(body.getAngle() * MathUtils.radiansToDegrees);
@@ -161,7 +170,8 @@ public class Tank implements GameSprite {
 
     @Override
     public Vector2 getPosition() {
-        return new Vector2(tankSprite.getX(), tankSprite.getY());
+        return new Vector2(tankSprite.getX() + (tankSprite.getWidth() / 2),
+                tankSprite.getY() + (tankSprite.getHeight() / 2));
 //        return body.getWorldCenter();
     }
 
@@ -194,24 +204,25 @@ public class Tank implements GameSprite {
     }
 
     @Override
-    public SpriteSerialize getSerialize() {
-	    Vector2 pos = getPosition();
-	    pos.x += tankSprite.getWidth() / 2;
-	    pos.y += tankSprite.getHeight() / 2;
-        return new SpriteSerialize(id, SpriteSerialize.Type.TANK, pos, body.getLinearVelocity());
+    public SpriteJSON getJSON() {
+//        System.out.println("Get JSON from tank");
+//        System.out.println(getPosition());
+	    return new SpriteJSON(id, SpriteJSON.Type.TANK, getPosition(), body.getLinearVelocity(), body.getAngle());
+    }
+
+    public SpriteJSON getBarrelJSON() {
+	    return new SpriteJSON(id, SpriteJSON.Type.BARREL, getBarrelPosition(), body.getLinearVelocity(), barrelDeg);
+    }
+
+    public void readBarrelJSON(SpriteJSON json) {
+	    barrelDeg = json.getAngle();
+	    barrelSprite.setRotation(barrelDeg);
     }
 
     @Override
-    public void readSerialize(SpriteSerialize sprite) {
-        if (id == sprite.getId()) {
-            /*this.tankSprite.setX(sprite.getPos().x);
-            this.tankSprite.setY(sprite.getPos().y);*/
-            body.setTransform(sprite.getPos(), 0);
-            body.setLinearVelocity(sprite.getLinVel());
-        }
-        else {
-            System.out.println("Wrong ID!");
-        }
+    public void readJSON(SpriteJSON obj) {
+        body.setTransform(obj.getPos(), obj.getAngle());
+        body.setLinearVelocity(obj.getVel());
     }
 
     public int getFirePower() {
@@ -241,7 +252,15 @@ public class Tank implements GameSprite {
         float vectorX = (float) cos(Math.toRadians(barrelDeg));
 
         // start pos
-        Vector2 pos = getBarrelPosition();
+        Vector2 pos;
+        switch (activeAmmoType){
+            case AIRSTRIKE:
+                pos = new Vector2(airStrikePos + (airStrike.getWidth() / 2), TankGame.HEIGHT);
+                break;
+            default:
+                pos = getBarrelPosition();
+                break;
+        }
         // exit velocity
         Vector2 velocity = new Vector2(vectorX * firePower, vectorY * firePower);
         // use object pooling
@@ -276,6 +295,16 @@ public class Tank implements GameSprite {
         barrelSprite.setRotation(barrelDeg);
     }
 
+    public void updateAirStrike() {
+        if(airStrikeIncrease) {
+            airStrikePos += 5;
+        }
+        if(airStrikeDecrease) {
+            airStrikePos -= 5;
+        }
+        airStrike.setPosition(airStrikePos, airStrike.getY());
+    }
+
     public void setMoveLeft(boolean moveLeft) {
         this.moveLeft = moveLeft;
     }
@@ -291,7 +320,8 @@ public class Tank implements GameSprite {
     public void setDecrease(boolean decrease) {
         this.decrease = decrease;
     }
-
+    public void setIncreaseAirStrike(boolean increase) {this.airStrikeIncrease = increase;}
+    public void setDecreaseAirStrike(boolean decrease) {this.airStrikeDecrease = decrease;}
     public float getEnergy() {
         return energy;
     }
@@ -330,11 +360,17 @@ public class Tank implements GameSprite {
     public void dispose(){
         tankSprite.getTexture().dispose();
         barrelSprite.getTexture().dispose();
+        airStrike.getTexture().dispose();
     }
 
     @Override
     public void draw(SpriteBatch batch) {
         barrelSprite.draw(batch);
         tankSprite.draw(batch);
+        switch (activeAmmoType){
+            case AIRSTRIKE:
+                airStrike.draw(batch);
+                break;
+        }
     }
 }
