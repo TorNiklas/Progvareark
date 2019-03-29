@@ -21,6 +21,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -47,15 +48,15 @@ public class GUI {
     private Tank enemyTank;
 
     Skin skin;
-    private TextButton fireButton;
-    private TextButton increaseElevation;
-    private TextButton decreaseElevation;
+    private ImageButton fireButton;
+    private ImageButton increaseElevation;
+    private ImageButton decreaseElevation;
 
-    private TextButton leftBtn;
-    private TextButton rightBtn;
+    private ImageButton leftBtn;
+    private ImageButton rightBtn;
 
-    private TextButton nextAmmoBtn;
-    private TextButton prevAmmoBtn;
+    private ImageButton nextAmmoBtn;
+    private ImageButton prevAmmoBtn;
     private Image ammoImage;
 
     private ProgressBar healthBar;
@@ -63,9 +64,12 @@ public class GUI {
     private ProgressBar tankFirePower;
     //private ProgressBar tankHealthBar;
     private ProgressBar energyBar;
-    private Image volumeOn;
-    private Image volumeOff;
-    private Image surrender;
+    private ImageButton volumeOn;
+    private ImageButton volumeOff;
+    private ImageButton surrender;
+
+    Texture buttonSheet;
+
 
     private long timer;
     private BitmapFont font;
@@ -88,11 +92,30 @@ public class GUI {
 
         skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
 
-        leftBtn = new TextButton("<--", skin);
+        buttonSheet = new Texture(Gdx.files.internal("skin/guiButtons.png"));
+
+        TextureRegionDrawable leftBtnTr = new TextureRegionDrawable(new TextureRegion(buttonSheet, 276,235, 176 ,185 ));
+        TextureRegionDrawable rightBtnTr = new TextureRegionDrawable(new TextureRegion(buttonSheet, 276,20, 176 ,185 ));
+
+        TextureRegionDrawable prevAmmoBtnTr = new TextureRegionDrawable(new TextureRegion(buttonSheet, 699,445, 176 ,187 ));
+        TextureRegionDrawable nextAmmoBtnTr = new TextureRegionDrawable(new TextureRegion(buttonSheet, 699,662, 176 ,187 ));
+
+        TextureRegionDrawable decreaseElevationTr = new TextureRegionDrawable(new TextureRegion(buttonSheet, 276,445, 176 ,187 ));
+        TextureRegionDrawable increaseElevationTr = new TextureRegionDrawable(new TextureRegion(buttonSheet, 276,662, 176 ,187 ));
+
+        TextureRegionDrawable fireBtnTr = new TextureRegionDrawable(new TextureRegion(buttonSheet, 926,239, 405 ,181 ));
+
+        TextureRegionDrawable volumeOnTr = new TextureRegionDrawable(new TextureRegion(buttonSheet, 1106, 454, 176, 186));
+        TextureRegionDrawable volumeOffTr = new TextureRegionDrawable(new TextureRegion(buttonSheet, 912,452, 176,186 ));
+        TextureRegionDrawable surrenderTr = new TextureRegionDrawable(new TextureRegion(buttonSheet, 917,666, 176,186 ));
+
+
+
+        leftBtn = new ImageButton(leftBtnTr);
         leftBtn.setSize(200, height - 75);
         leftBtn.setPosition(10, 10);
 
-        rightBtn = new TextButton("-->", skin);
+        rightBtn = new ImageButton(rightBtnTr);
         rightBtn.setSize(200, height - 75);
         rightBtn.setPosition(leftBtn.getWidth() + 20, 10);
 
@@ -100,23 +123,23 @@ public class GUI {
         ammoImage.setSize(100, 100);
         ammoImage.setPosition(TankGame.WIDTH/2 - 15, ammoImage.getHeight()/2 + 35, 1);
 
-        nextAmmoBtn = new TextButton("-->", skin);
+        nextAmmoBtn = new ImageButton(nextAmmoBtnTr);
         nextAmmoBtn.setSize(50, 100);
         nextAmmoBtn.setPosition(ammoImage.getX() + ammoImage.getWidth()/2 + nextAmmoBtn.getWidth() + 10, ammoImage.getY());
 
-        prevAmmoBtn = new TextButton("<--", skin);
+        prevAmmoBtn = new ImageButton(prevAmmoBtnTr);
         prevAmmoBtn.setSize(50, 100);
         prevAmmoBtn.setPosition(ammoImage.getX() - prevAmmoBtn.getWidth() - 10, ammoImage.getY());
 
-        fireButton = new TextButton("Fire!", skin);
+        fireButton = new ImageButton(fireBtnTr);
         fireButton.setSize(200,height - 75);
         fireButton.setPosition(950, 10);
 
-        increaseElevation = new TextButton("+", skin);
+        increaseElevation = new ImageButton(increaseElevationTr);
         increaseElevation.setSize(100,height - 75);
         increaseElevation.setPosition(fireButton.getX()+fireButton.getWidth()+10, 10);
 
-        decreaseElevation = new TextButton("-", skin);
+        decreaseElevation = new ImageButton(decreaseElevationTr);
         decreaseElevation.setSize(100,height - 75);
         decreaseElevation.setPosition(fireButton.getX()-fireButton.getWidth()/2-10, 10);
 
@@ -136,19 +159,19 @@ public class GUI {
 
         timer = System.currentTimeMillis();
         //create options menu button
-        volumeOn = new Image(new Texture("volumeOnBtn.png"));
+        volumeOn = new ImageButton(volumeOnTr);
         volumeOn.setName("volumeOn");
-        volumeOn.setSize(volumeOn.getWidth(), volumeOn.getHeight());
+        volumeOn.setSize(volumeOn.getWidth()/3, volumeOn.getHeight()/3);
         volumeOn.setPosition(TankGame.WIDTH - volumeOn.getWidth()*2, TankGame.HEIGHT - volumeOn.getHeight()*2.25f);
 
-        volumeOff = new Image(new Texture("volumeOffBtn.png"));
+        volumeOff = new ImageButton(volumeOffTr);
         volumeOff.setName("volumeOff");
-        volumeOff.setSize(volumeOff.getWidth(), volumeOff.getHeight());
+        volumeOff.setSize(volumeOff.getWidth()/3, volumeOff.getHeight()/3);
         volumeOff.setPosition(TankGame.WIDTH - volumeOff.getWidth()*2, TankGame.HEIGHT - volumeOff.getHeight()*2.25f);
 
-        surrender = new Image(new Texture("surrenderBtn.png"));
+        surrender = new ImageButton(surrenderTr);
         surrender.setName("surrender");
-        surrender.setSize(surrender.getWidth(), surrender.getHeight());
+        surrender.setSize(surrender.getWidth()/3, surrender.getHeight()/3);
         surrender.setPosition(TankGame.WIDTH - surrender.getWidth()*2, TankGame.HEIGHT - surrender.getHeight()*3.5f);
 
         stage = new Stage(new StretchViewport(1280, 720, state.getCamera()));
@@ -200,12 +223,14 @@ public class GUI {
 
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 System.out.println("touch down - left");
+                leftBtn.getImage().setColor(Color.GRAY);
                 tank.setMoveLeft(true);
                 return true;
             }
 
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 System.out.println("touch up - left");
+                leftBtn.getImage().setColor(Color.WHITE);
                 tank.setMoveLeft(false);
             }
 
@@ -214,12 +239,14 @@ public class GUI {
         rightBtn.addListener(new ClickListener() {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 System.out.println("touch down - right");
+                leftBtn.getImage().setColor(Color.GRAY);
                 tank.setMoveRight(true);
                 return true;
             }
 
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 System.out.println("touch up - right");
+                leftBtn.getImage().setColor(Color.WHITE);
                 tank.setMoveRight(false);
             }
         });
@@ -329,7 +356,7 @@ public class GUI {
         };
         dialog.getBackground().setMinHeight(200);
         dialog.getBackground().setMinWidth(600);
-        dialog.text("Are you sure you want to surrender and quit the game?");
+        dialog.text("Do you want to surrender game and go to main menu?");
         dialog.button("Yes", true); //sends "true" as the result
         dialog.button("No tank u", false); //sends "false" as the result
 
