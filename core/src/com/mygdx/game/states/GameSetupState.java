@@ -94,7 +94,6 @@ public class GameSetupState extends State {
         backBtn.setPosition(center, 50);
 
         gameCode = assetHandler.manager.get(assetHandler.fontPath);
-        System.out.println(gameCode);
 
         // create stage and add maps as actors
         stage = new Stage(new StretchViewport(TankGame.WIDTH, TankGame.HEIGHT, cam));

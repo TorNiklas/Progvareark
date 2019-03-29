@@ -171,6 +171,13 @@ public class PlayState extends State {
                     // delete bullet
                     bodyB.setAwake(false);
                 }
+
+                // own tank hit
+                if(bodyB.isBullet() && bodyA == (gameSprites.get(0)).getBody() && (gameSprites.get(0)) instanceof Tank){
+                    System.out.println("Own tank hit!" + bodyB.getPosition());
+
+                    // what to do here?
+                }
             }
 
             @Override
@@ -565,7 +572,7 @@ public class PlayState extends State {
         world.dispose();
         gui.dispose();
         debugRenderer.dispose();
-        explosionSound.dispose();
+        //explosionSound.dispose();
         /*for (GameSprite gs : gameSprites) {
             gs.dispose();
         }*/
