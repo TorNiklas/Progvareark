@@ -57,7 +57,8 @@ public class GUI {
     private ImageButton nextAmmoBtn;
     private ImageButton prevAmmoBtn;
 
-    private TextButton endGame;
+    private Image endGameV;
+    private Image endGameD;
     private Image ammoImage;
 
     private ProgressBar healthBar;
@@ -144,9 +145,13 @@ public class GUI {
         decreaseElevation.setSize(100,height - 75);
         decreaseElevation.setPosition(fireButton.getX()-fireButton.getWidth()/2-10, 10);
 
-        endGame = new TextButton("", skin);
-        endGame.setSize(600, 200);
-        endGame.setPosition(TankGame.WIDTH/2-endGame.getWidth()/2, TankGame.HEIGHT/2);
+        endGameV = new Image(new Texture("victory.png"));
+        endGameV.setSize(600, 200);
+        endGameV.setPosition(TankGame.WIDTH/2-endGameV.getWidth()/2, TankGame.HEIGHT/2);
+
+        endGameD = new Image(new Texture("defeat.png"));
+        endGameD.setSize(600, 200);
+        endGameD.setPosition(TankGame.WIDTH/2-endGameD.getWidth()/2, TankGame.HEIGHT/2);
 
         // create energy bar
         energyBar = generateProgressBar(20, height-58, 390, 30, 100f, 100f, Color.DARK_GRAY, Color.GOLD);
@@ -196,8 +201,10 @@ public class GUI {
         stage.addActor(volumeOn);
         stage.addActor(volumeOff);
         stage.addActor(surrender);
-        stage.addActor(endGame);
-        endGame.setVisible(false);
+        stage.addActor(endGameV);
+        stage.addActor(endGameD);
+        endGameV.setVisible(false);
+        endGameD.setVisible(false);
 
         //Volume is on by default
         if(TankGame.music_level1.getVolume() > 0f){
@@ -379,10 +386,19 @@ public class GUI {
             }
         });
 
-        endGame.addListener(new ClickListener() {
+        endGameV.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if(endGame.isVisible()){
+                if(endGameV.isVisible()){
+                    GameStateManager.getGsm().set(new MenuState());
+                }
+            }
+        });
+
+        endGameD.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if(endGameV.isVisible()){
                     GameStateManager.getGsm().set(new MenuState());
                 }
             }
@@ -462,11 +478,10 @@ public class GUI {
 
     public void endSplash(boolean winner){
         if(winner){
-            endGame.setText("Winner!");
+            endGameV.setVisible(true);
         } else {
-            endGame.setText("Loser!");
+            endGameV.setVisible(true);
         }
-        endGame.setVisible(true);
     }
 
     public void setPlayable(Boolean bool){
