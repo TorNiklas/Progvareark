@@ -20,6 +20,7 @@ public class MenuState extends State{
     private Image hostBtn;
     private Image connectBtn;
     private Image optionBtn;
+    private Image tutorialBtn;
     private Stage stage;
 
     private Runnable onConnected = new Runnable() {
@@ -44,19 +45,20 @@ public class MenuState extends State{
         hostBtn = new Image(new Texture("host.png"));
         connectBtn = new Image(new Texture("connect.png"));
         optionBtn = new Image(new Texture("options.png"));
+        tutorialBtn = new Image(new Texture("tutorialBtn.png"));
 
         // set pos and size
         float center = TankGame.WIDTH/2 - hostBtn.getWidth()/2;
-        hostBtn.setPosition(center, 400);
-        connectBtn.setPosition(center, 300);
-        optionBtn.setPosition(center, 200);
-
+        hostBtn.setPosition(center, 450);
+        connectBtn.setPosition(center, 350);
+        optionBtn.setPosition(center, 250);
+        tutorialBtn.setPosition(center, 150);
         // create stage and add maps as actors
         stage = new Stage(new StretchViewport(TankGame.WIDTH, TankGame.HEIGHT, cam));
         stage.addActor(hostBtn);
         stage.addActor(connectBtn);
         stage.addActor(optionBtn);
-
+        stage.addActor(tutorialBtn);
         // move l8r
         Gdx.input.setInputProcessor(stage);
         // event handlers, should probably not be here
@@ -102,6 +104,14 @@ public class MenuState extends State{
             }
         });
 
+        tutorialBtn.addListener(new InputListener() {
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("tutorial selected");
+                GameStateManager.getGsm().set(new TutorialState(true));
+                return true;
+            }
+        });
+
     }
 
     @Override
@@ -143,6 +153,7 @@ public class MenuState extends State{
         hostBtn.draw(sb, 1f);
         connectBtn.draw(sb, 1f);
         optionBtn.draw(sb, 1f);
+        tutorialBtn.draw(sb, 1f);
         sb.end();
     }
 

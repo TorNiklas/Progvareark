@@ -1,0 +1,13 @@
+How to play PanzerWagen: 
+In this game, two players each control their own tanks at opposite sides of a playing field. The goal of the game is to damage and ultimately disable the opposing players tank with different types of projectiles. The game is controlled through buttons at the bottom of the screen
+    1. Moving:
+        Your tank can be moved left and right using the buttons at the bottom left of the screen. The yellow bar displays the energy/fuel left in your tank. Once this is empty, your tank can no longer move!
+
+    2. Choosing ammunition
+        The buttons in the bottom middle of the screen will cycle through your available ammunition. The currently selected ammunition type is indicated by the icon. Once you run out of ammunition, you will no longer be able to shoot!
+
+    3. Firing projectiles
+        The launch angle of the projectile is decided by +/- buttons on the bottom right of the screen. These buttons will rotate the tank barrel either clockwise (+) or counter-clockwise(-). The power of the projectile is chosen by HOLDING the "Fire!"-button and is represented by a bar above your tank that will alternately increase/decrease. The projectile is then fired by RELEASING the "Fire!"-button once the power-bar is at the desired strength.
+
+How to connect with other players:
+This game uses Bluetooth to connect players. To START a new game, you should use the HOST button in the main menu. This will then show a game code that the other player needs to enter. Similarly, to JOIN a game, use the CONNECT button in the main menu, and enter a valid game code. Once both players are ready, the host can choose between the three available maps to start the game.
