@@ -145,6 +145,7 @@ public class GUI {
         decreaseElevation.setPosition(fireButton.getX()-fireButton.getWidth()/2-10, 10);
 
         endGame = new TextButton("", skin);
+        endGame.setName("endGame");
         endGame.setSize(600, 200);
         endGame.setPosition(TankGame.WIDTH/2-endGame.getWidth()/2, TankGame.HEIGHT/2);
 
@@ -473,7 +474,7 @@ public class GUI {
         Array<Actor> stageActors = stage.getActors();
         for (Actor a: stageActors) {
             if(a.getName() != null) {
-                if ((a.getName().equals("surrender") || a.getName().equals("volumeOn") || a.getName().equals("volumeOff"))) {
+                if (a.getName().equals("surrender") || a.getName().equals("volumeOn") || a.getName().equals("volumeOff") || a.getName().equals("endGame")) {
                     return;
                 }
             }
