@@ -90,7 +90,7 @@ public class AssetHandler {
         loadParticleEffects();
         loadSkins();
         loadFonts();
-        manager.finishLoading();
+        //manager.finishLoading();
     }
 
     public void loadTextures() {

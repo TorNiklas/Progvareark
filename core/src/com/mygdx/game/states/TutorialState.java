@@ -24,7 +24,6 @@ public class TutorialState extends State {
 
     public TutorialState(boolean fromMenuState) {
         super();
-        cam.setToOrtho(false, TankGame.WIDTH, TankGame.HEIGHT);
         bg = new Texture("bg.png");
 
         tutorialGuiHelp = new Texture("tutorial_bottom_gui.png");
