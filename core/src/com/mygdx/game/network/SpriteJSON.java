@@ -2,6 +2,7 @@ package com.mygdx.game.network;
 
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.sprites.GameSprite;
+import com.mygdx.game.sprites.Projectile;
 
 import org.json.JSONObject;
 
@@ -10,7 +11,11 @@ import java.util.Locale;
 public class SpriteJSON extends JSONObject {
 
     public enum Type {
-        TANK, BARREL, PROJECTILE
+        TANK, BARREL,
+        STANDARD,
+        SPREAD,
+        LASER,
+        AIRSTRIKE // todo Ammo types exist both here and in Projectile
     }
 
     public SpriteJSON(String in) {
@@ -42,6 +47,16 @@ public class SpriteJSON extends JSONObject {
         return Type.values()[this.getInt("TYPE")];
     }
 
+    public Projectile.AmmoType getAmmoType() {
+        switch (getType()) {
+            case STANDARD: return Projectile.AmmoType.STANDARD;
+            case LASER: return Projectile.AmmoType.LASER;
+            case SPREAD: return Projectile.AmmoType.SPREAD;
+            case AIRSTRIKE: return Projectile.AmmoType.AIRSTRIKE;
+        }
+        return null;
+    }
+
     public Vector2 getPos() {
         return new Vector2(this.getInt("POSX"), this.getInt("POSY"));
     }
@@ -53,11 +68,5 @@ public class SpriteJSON extends JSONObject {
     public int getAngle() {
         return this.getInt("ANGLE");
     }
-    /*@Override
-    public String toString() {
-        return "ID: " +
-                getID() +
-                "Pos: " +
-                getPos();
-    }*/
+
 }
