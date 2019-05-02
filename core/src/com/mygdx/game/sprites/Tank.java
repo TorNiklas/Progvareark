@@ -109,6 +109,8 @@ public class Tank extends GameSprite {
         this.state = state;
     }
 
+
+
     private void generateTank(World world, Vector2 pos) {
         // body definition
         BodyDef bodyDef = new BodyDef();
@@ -301,10 +303,10 @@ public class Tank extends GameSprite {
 
     public void move() {
         if(moveLeft && energy > 0) {
-            //energy -= 0.25; TODO uncomment
+            energy -= 0.25; //TODO uncomment
             body.setLinearVelocity(new Vector2(-30f, body.getLinearVelocity().y));
         } else if(moveRight && energy > 0) {
-            //energy -= 0.25; TODO uncomment
+            energy -= 0.25; //TODO uncomment
             body.setLinearVelocity(new Vector2(30f, body.getLinearVelocity().y));
         } else {
             body.setLinearVelocity(new Vector2(0f, body.getLinearVelocity().y));

@@ -11,7 +11,7 @@ import java.util.Locale;
 public class SpriteJSON extends JSONObject {
 
     public enum Type {
-        TANK, BARREL,
+        TANK, BARREL, ENERGY, TIME,
         STANDARD,
         SPREAD,
         LASER,

@@ -463,13 +463,36 @@ public class GUI {
         return progressBar;
     }
 
-    private long getTime(){
+    public long getTimer() {
+        return timer;
+    }
+
+    public void setTimer(long timer) {
+        this.timer = timer;
+    }
+
+    public void resetTimer() {
+        timer = System.currentTimeMillis();
+    }
+
+    private int timeLeft = 0;
+
+    public void setTimeLeft(int timeLeft) {
+        this.timeLeft = timeLeft;
+    }
+
+    public long getTime(){
+        if (!TankGame.host) {
+            return timeLeft;
+        }
         long diff = 60 - ((System.currentTimeMillis()-timer)/1000);
         if(diff > 0) {
             return diff;
         }
         return 0;
     }
+
+
 
     public void endSplash(boolean winner){
         if(winner){
@@ -479,7 +502,10 @@ public class GUI {
         }
     }
 
+    private boolean playable = true;
+
     public void setPlayable(Boolean bool){
+        playable = bool;
         Array<Actor> stageActors = stage.getActors();
         for (Actor a: stageActors) {
             if(a.getName() != null) {
@@ -493,6 +519,11 @@ public class GUI {
                 a.setTouchable(Touchable.disabled);
             }
         }
+    }
+
+    public void togglePlayable() {
+        System.out.println("TOGGLING PLAYABILITY: " + !playable);
+        setPlayable(!playable);
     }
 
     public void update() {

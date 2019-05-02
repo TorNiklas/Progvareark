@@ -78,7 +78,7 @@ public class PlayState extends State {
     private Box2DDebugRenderer debugRenderer;
     private Ground ground;
     private Sprite shadow;
-    private GUI gui;
+    private static GUI gui;
     private Sound explosionSound;
 
     // active projectiles
@@ -100,6 +100,8 @@ public class PlayState extends State {
     private int seed;
 
     private int level;
+
+    private int opponentTime = 0;
 
     public PlayState(int level, int seed) {
         super();
@@ -249,6 +251,7 @@ public class PlayState extends State {
 
         // test simple gui
         gui = new GUI(this, guiHeight);
+        gui.setPlayable(TankGame.host);
 
         // particle effect
         explosionEffect = new ParticleEffect();
@@ -256,6 +259,28 @@ public class PlayState extends State {
         particleEffectPool = new ParticleEffectPool(explosionEffect, 0, 10);
         effects = new Array<ParticleEffectPool.PooledEffect>();
 
+    }
+
+    private static Tank getPlayer() {
+        return (Tank)gameSprites.get(0);
+    }
+
+    private static Tank getOpponent() {
+        return (Tank)gameSprites.get(1);
+    }
+
+    private void turnCheck() {
+        Tank player = getPlayer();
+        Tank oppo = getOpponent();
+
+        if (player.getEnergy() == 0 || oppo.getEnergy() == 0 || gui.getTime() == 0) {
+            gui.togglePlayable();
+            player.setEnergy(100);
+            oppo.setEnergy(100);
+            if (TankGame.host) {
+                gui.resetTimer();
+            }
+        }
     }
 
     public void fireFromPool(Projectile.AmmoType type, Vector2 pos, Vector2 force, boolean local) {
@@ -363,7 +388,10 @@ public class PlayState extends State {
     public static ArrayList<SpriteJSON> getJSON() {
         ArrayList<SpriteJSON> ret = new ArrayList<SpriteJSON>();
 //        System.out.println(gameSprites);
-
+        ret.add(new SpriteJSON(-1, SpriteJSON.Type.ENERGY, new Vector2(), new Vector2(), getPlayer().getEnergy()));
+        if (TankGame.host) {
+            ret.add(new SpriteJSON(-1, SpriteJSON.Type.TIME, new Vector2(), new Vector2(), gui.getTime()));
+        }
         for (GameSprite g : gameSprites) {
             if (g.isLocal()) {
                 ret.add(g.getJSON());
@@ -385,7 +413,13 @@ public class PlayState extends State {
 //            System.out.println(j);
 
             switch (type) {
-
+                case ENERGY:
+                    getOpponent().setEnergy(j.getAngle());
+                    break;
+                case TIME:
+//                    System.out.println("TIME RECEIVED: " + j.getAngle());
+                    gui.setTimeLeft(j.getAngle());
+                    break;
                 case TANK:
                     // Tanks should always exist
                     for (GameSprite g : gameSprites) {
@@ -430,6 +464,8 @@ public class PlayState extends State {
 
     @Override
     public void update(float dt) {
+        turnCheck();
+
         // update gui
         gui.update();
 
