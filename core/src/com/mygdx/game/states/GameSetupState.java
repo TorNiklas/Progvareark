@@ -7,23 +7,18 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.scenes.scene2d.Event;
-import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
+import com.mygdx.game.AssetHandler;
 import com.mygdx.game.TankGame;
 
 import java.util.Random;
 
 public class GameSetupState extends State {
-    private Texture bg;
+    private Image bg;
     private Image forestMapBtn;
     private Image snowMapBtn;
     private Image desertMapBtn;
@@ -37,6 +32,8 @@ public class GameSetupState extends State {
         SNOW,
         DESERT
     }
+
+    private AssetHandler assetHandler;
 
     private static PlayState selectedState;
 
@@ -63,8 +60,11 @@ public class GameSetupState extends State {
 
     public GameSetupState() {
         super();
-        cam.setToOrtho(false, TankGame.WIDTH, TankGame.HEIGHT);
-        bg = new Texture("bg.png");
+
+        // set asset handler
+        assetHandler = ((TankGame)Gdx.app.getApplicationListener()).assetHandler;
+
+        bg = new Image((Texture) assetHandler.manager.get(assetHandler.bgPath));
 
         // init game code text
         gameCodeString = generateGameCode();
@@ -73,10 +73,10 @@ public class GameSetupState extends State {
         TankGame.getBluetooth().startHostConnection(gameCodeString, onConnect, onDisconnect);
 
         // init buttons
-        forestMapBtn = new Image(new Texture("forest_level.png"));
-        snowMapBtn = new Image(new Texture("snow_level.png"));
-        desertMapBtn = new Image(new Texture("desert_level.png"));
-        backBtn = new Image(new Texture("back.png"));
+        forestMapBtn = new Image((Texture) assetHandler.manager.get(assetHandler.forestLevelPath));
+        snowMapBtn = new Image((Texture) assetHandler.manager.get(assetHandler.snowLevelPath));
+        desertMapBtn = new Image((Texture) assetHandler.manager.get(assetHandler.desertLevelPath));
+        backBtn = new Image((Texture) assetHandler.manager.get(assetHandler.backPath));
 
         // set pos and size
         float center = TankGame.WIDTH/2 - snowMapBtn.getWidth()/2;
@@ -85,8 +85,11 @@ public class GameSetupState extends State {
         desertMapBtn.setPosition(center + 250, 175);
         backBtn.setPosition(center, 50);
 
+        gameCode = assetHandler.manager.get(assetHandler.fontPath);
+
         // create stage and add maps as actors
         stage = new Stage(new StretchViewport(TankGame.WIDTH, TankGame.HEIGHT, cam));
+        stage.addActor(bg);
         stage.addActor(forestMapBtn);
         stage.addActor(snowMapBtn);
         stage.addActor(desertMapBtn);
@@ -170,16 +173,6 @@ public class GameSetupState extends State {
             }
         });
 
-        // Setup font generator
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/arial.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 30;
-        parameter.shadowColor = Color.BLACK;
-        parameter.shadowOffsetX = 3;
-        parameter.shadowOffsetY = 3;
-        gameCode = generator.generateFont(parameter);
-        generator.dispose();
-
     }
 
     /*public static void setSelectedState(int level) {
@@ -234,24 +227,25 @@ public class GameSetupState extends State {
 
     @Override
     public void render(SpriteBatch sb, PolygonSpriteBatch psb) {
+        // draw stage actors
+        stage.act();
+        stage.draw();
+
         sb.setProjectionMatrix(cam.combined);
         sb.begin();
 
         // background
-        sb.draw(bg, 0,0, 1280, 720);
+        //sb.draw(bg, 0,0, 1280, 720);
 
         // game code
-        gameCode.draw(sb, "Game Code: " + gameCodeString, TankGame.WIDTH/2 - gameCode.getRegion().getRegionWidth()/8, 500);
+        gameCode.draw(sb, "Game Code: " + gameCodeString, TankGame.WIDTH/2, 500, 0f, 1, false);
+
 
         sb.end();
-
-        // draw stage actors
-        stage.act();
-        stage.draw();
     }
 
     @Override
     public void dispose() {
-        bg.dispose();
+        //bg.dispose();
     }
 }

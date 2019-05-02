@@ -1,10 +1,6 @@
 package com.mygdx.game;
 
 import com.mygdx.game.network.SpriteJSON;
-
-import org.json.JSONObject;
-
-import java.util.ArrayList;
 import java.util.Stack;
 
 public interface BTInterface {

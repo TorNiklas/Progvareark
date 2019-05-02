@@ -8,17 +8,15 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Pool;
+import com.mygdx.game.AssetHandler;
 import com.mygdx.game.TankGame;
 import com.mygdx.game.network.SpriteJSON;
-
-import org.json.JSONObject;
 
 public class Projectile extends GameSprite implements Pool.Poolable {
     private Vector3 position;
@@ -27,6 +25,8 @@ public class Projectile extends GameSprite implements Pool.Poolable {
     private Sprite sprite;
     private boolean alive;
     private Image displayImage;
+    private Texture bulletTexture;
+    private AssetHandler assetHandler;
     private AmmoType type;
 
     public enum AmmoType {
@@ -52,6 +52,8 @@ public class Projectile extends GameSprite implements Pool.Poolable {
     private ParticleEffect trailEffect;
 
     public Projectile() {
+        // set asset handler
+        assetHandler = ((TankGame)Gdx.app.getApplicationListener()).assetHandler;
         this.alive = false;
     }
 
@@ -74,8 +76,8 @@ public class Projectile extends GameSprite implements Pool.Poolable {
         local = false;
         //idCounter.set(id);
         this.id = id;
-
-        sprite = new Sprite(new Texture("bullet.png"));
+        bulletTexture = assetHandler.manager.get(assetHandler.bulletPath);
+        sprite = new Sprite(bulletTexture);
         sprite.setPosition(x, y);
         sprite.setOriginCenter();
         generateProjectile(world, new Vector2(sprite.getX(), sprite.getY()));
@@ -87,20 +89,22 @@ public class Projectile extends GameSprite implements Pool.Poolable {
 
         switch (type) {
             case STANDARD:
-                sprite = new Sprite(new Texture("bullet.png"));
+                bulletTexture = assetHandler.manager.get(assetHandler.bulletPath);
                 break;
 
             case SPREAD:
-                sprite = new Sprite(new Texture("bullet-spread.png"));
+                bulletTexture = assetHandler.manager.get(assetHandler.bulletSpreadPath);
                 break;
 
             case LASER:
-                sprite = new Sprite(new Texture("bullet-laser.png"));
+                bulletTexture = assetHandler.manager.get(assetHandler.bulletLaserPath);
                 break;
+
             case AIRSTRIKE:
-                sprite = new Sprite(new Texture("bullet-missile.png"));
+                bulletTexture = assetHandler.manager.get(assetHandler.bulletMissilePath);
                 break;
         }
+        sprite = new Sprite(bulletTexture);
         sprite.setPosition(-10, -10);
         sprite.setOriginCenter();
 
@@ -196,6 +200,10 @@ public class Projectile extends GameSprite implements Pool.Poolable {
 
     public boolean isAlive() {
         return alive;
+    }
+
+    public void setAlive(boolean alive) {
+        this.alive = alive;
     }
 
     @Override

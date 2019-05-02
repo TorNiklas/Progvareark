@@ -207,7 +207,7 @@ class ConnectedThread extends Thread {
             output.write(str.getBytes());
 //            output.write(0);
         } catch (IOException e) {
-            System.out.println("ERROR SENDING STRING");
+            System.out.println("ERROR SENDING STRING:" + str);
             e.printStackTrace();
         }
     }

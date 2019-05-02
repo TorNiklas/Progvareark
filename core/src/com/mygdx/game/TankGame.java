@@ -6,14 +6,17 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.mygdx.game.states.GameStateManager;
-import com.mygdx.game.states.MenuState;
-import com.mygdx.game.states.OptionState;
+import com.mygdx.game.states.LoadingState;
 
 public class TankGame extends ApplicationAdapter {
 	public static final int WIDTH = 1280;
 	public static final int HEIGHT = 720;
 	public static final String TITLE = "PANZERWAGEN";
+
+	public AssetHandler assetHandler;
+	public static TextureAtlas textureAtlas;
 
 	public static Music music_level1;
 	public static float volume = 0.2f;
@@ -35,6 +38,13 @@ public class TankGame extends ApplicationAdapter {
 
 	@Override
 	public void create () {
+		assetHandler = new AssetHandler();
+		GameStateManager.getGsm().push(new LoadingState());
+
+		// TODO: use me
+		//textureAtlas = assetHandler.manager.get(assetHandler.textureAtlasPath);
+
+		// music
 		music_level1 = Gdx.audio.newMusic(Gdx.files.internal("sounds/level1.ogg"));
 		music_level1.setLooping(true);
 		music_level1.play();
@@ -43,7 +53,6 @@ public class TankGame extends ApplicationAdapter {
 		sb = new SpriteBatch();
 		psb = new PolygonSpriteBatch();
 		Gdx.gl.glClearColor(0, 0, 0, 1);
-		GameStateManager.getGsm().push(new MenuState(/*gsm*/));
 	}
 
 	@Override
@@ -56,5 +65,6 @@ public class TankGame extends ApplicationAdapter {
 	@Override
 	public void dispose () {
 		super.dispose();
+		assetHandler.dispose();
 	}
 }
