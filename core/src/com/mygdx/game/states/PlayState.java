@@ -493,7 +493,7 @@ public class PlayState extends State {
         //stage.draw();
 
         // box-2d
-        debugRenderer.render(world, cam.combined);
+        //debugRenderer.render(world, cam.combined);
         world.step(1/60f, 6, 2);
     }
 
