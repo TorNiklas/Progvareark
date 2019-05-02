@@ -267,12 +267,6 @@ public class PlayState extends State {
         particleEffectPool = new ParticleEffectPool(explosionEffect, 0, 10);
         effects = new Array<ParticleEffectPool.PooledEffect>();
 
-        /*Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run() {
-                readNetSprites();
-            }
-        }, 100, 100, TimeUnit.MILLISECONDS);*/
     }
 
     public void fireFromPool(Projectile.AmmoType type, Vector2 pos, Vector2 force, boolean local) {
@@ -398,25 +392,11 @@ public class PlayState extends State {
     private void readJSON() {
         while (!TankGame.getBluetooth().getSprites().isEmpty()) {
             SpriteJSON j = TankGame.getBluetooth().getSprites().pop();
+            SpriteJSON.Type type = j.getType();
+//            System.out.println(j);
 
-            switch (j.getType()) {
-                case PROJECTILE:
-                    boolean exists = false;
-                    for (Projectile p : activeProjectiles) {
+            switch (type) {
 
-                        if (p.getId() == j.getID()) {
-                            //System.out.println("Found existing proj");
-                            exists = true;
-                            p.readJSON(j);
-                            break;
-                        }
-                    }
-                    if (!exists) {
-                        idCounter.set(j.getID());
-                        // TODO: check active ammotype
-                        fireFromPool(Projectile.AmmoType.STANDARD, j.getPos(), j.getVel(), false);
-                    }
-                    break;
                 case TANK:
                     // Tanks should always exist
                     for (GameSprite g : gameSprites) {
@@ -434,29 +414,24 @@ public class PlayState extends State {
                         }
                     }
                     break;
+                default: //Projectile
+                    boolean exists = false;
+                    for (Projectile p : activeProjectiles) {
+
+                        if (p.getId() == j.getID()) {
+                            //System.out.println("Found existing proj");
+                            exists = true;
+                            p.readJSON(j);
+                            break;
+                        }
+                    }
+                    if (!exists) {
+//                        System.out.println(j);
+                        idCounter.set(j.getID());
+                        fireFromPool(j.getAmmoType(), j.getPos(), j.getVel(), false);
+                    }
+                    break;
             }
-/*
-//            System.out.println(j.toString());
-            boolean exists = false;
-//            System.out.println(j.getID());
-//            System.out.println(j);
-            for (GameSprite g : gameSprites) {
-//                System.out.println(g.getId());
-                System.out.println("Found:");
-                System.out.println(j);
-                System.out.println(j.getID());
-                if (j.getID() == g.getId()) { //Update existing
-                    g.readJSON(j);
-                    exists = true;
-                }
-            }
-            if (!exists) { //Add new
-                idCounter.set(j.getID());
-                if (j.getType() == SpriteJSON.Type.PROJECTILE) {
-                    // TODO: check active ammotype
-                    fireFromPool(Projectile.AmmoType.STANDARD, j.getPos(), new Vector2(), false);
-                }
-            }*/
         }
     }
 

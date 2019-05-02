@@ -28,6 +28,7 @@ public class Projectile extends GameSprite implements Pool.Poolable {
     private Image displayImage;
     private Texture bulletTexture;
     private AssetHandler assetHandler;
+    private AmmoType type;
 
     public enum AmmoType {
         STANDARD,
@@ -85,6 +86,8 @@ public class Projectile extends GameSprite implements Pool.Poolable {
     }
 
     public void init(World world, AmmoType type, Vector2 pos, Vector2 velocity) {
+        this.type = type;
+
         switch (type) {
             case STANDARD:
                 bulletTexture = assetHandler.manager.get(assetHandler.bulletPath);
@@ -119,7 +122,7 @@ public class Projectile extends GameSprite implements Pool.Poolable {
                 break;
         }
         // particle effect
-        trailEffect(type, pos.x, pos.y, 0.2f, 2000);
+        trailEffect(/*type, */pos.x, pos.y, 0.2f, 2000);
         alive = true;
     }
 
@@ -165,7 +168,7 @@ public class Projectile extends GameSprite implements Pool.Poolable {
         return !(body.isAwake() && body.getLinearVelocity().len() > 0.001f);
     }
 
-    public void trailEffect(AmmoType type, float x, float y, float scale, int duration) {
+    public void trailEffect(/*AmmoType type, */float x, float y, float scale, int duration) {
         // create effect
         trailEffect = new ParticleEffect();
         switch (type) {
@@ -217,7 +220,13 @@ public class Projectile extends GameSprite implements Pool.Poolable {
 
     @Override
     public SpriteJSON getJSON() {
-        return new SpriteJSON(id, SpriteJSON.Type.PROJECTILE, getBodyPosition(), body.getLinearVelocity(), 0);
+        switch(type) {
+            case STANDARD: return new SpriteJSON(id, SpriteJSON.Type.STANDARD, getBodyPosition(), body.getLinearVelocity(), 0);
+            case LASER: return new SpriteJSON(id, SpriteJSON.Type.LASER, getBodyPosition(), body.getLinearVelocity(), 0);
+            case AIRSTRIKE: return new SpriteJSON(id, SpriteJSON.Type.AIRSTRIKE, getBodyPosition(), body.getLinearVelocity(), 0);
+            case SPREAD: return new SpriteJSON(id, SpriteJSON.Type.SPREAD, getBodyPosition(), body.getLinearVelocity(), 0);
+        }
+        return null;
     }
 
     @Override

@@ -219,13 +219,13 @@ public class Tank extends GameSprite {
             //body.setLinearVelocity(new Vector2(30f, body.getLinearVelocity().y));
             moveRight = true;
             moveLeft = false;
-            System.out.println("Right");
+//            System.out.println("Right");
         }
         else if (posDiff < -1) {
             //body.setLinearVelocity(new Vector2(-30f, body.getLinearVelocity().y));
             moveRight = false;
             moveLeft = true;
-            System.out.println("Left");
+//            System.out.println("Left");
         }
         else {
             //body.setLinearVelocity(new Vector2(0, body.getLinearVelocity().y));
@@ -237,9 +237,9 @@ public class Tank extends GameSprite {
 
     public void readBarrelJSON(SpriteJSON json) {
 	    float diff = json.getAngle() - barrelDeg;
-        System.out.println(json.getAngle());
-        System.out.println(barrelDeg);
-        System.out.println(diff);
+//        System.out.println(json.getAngle());
+//        System.out.println(barrelDeg);
+//        System.out.println(diff);
 	    if (diff > 5) {
 	        increase = false;
 	        decrease = true;
