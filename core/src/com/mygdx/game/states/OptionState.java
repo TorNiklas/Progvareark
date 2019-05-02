@@ -36,7 +36,7 @@ public class OptionState extends State {
         bg = new Texture("bg.png");
 //        soundBtn.setPosition(cam.position.x - soundBtn.getWidth()/2, 400);
 
-        optionTitle = new Texture("optionTitle.png");
+        optionTitle = new Texture("options.png");
         stage = new Stage(new ScreenViewport());
 
         volumeOn = new Image(new Texture("volumeOnTextBtn.png"));
@@ -150,7 +150,7 @@ public class OptionState extends State {
         sb.setProjectionMatrix(cam.combined);
         sb.begin();
         sb.draw(bg, 0,0, 1280, 720);
-        sb.draw(optionTitle, cam.position.x - optionTitle.getWidth()/2, 500+optionTitle.getHeight()/4);
+        sb.draw(optionTitle, cam.position.x - optionTitle.getWidth(), 500+optionTitle.getHeight()/4, optionTitle.getWidth()*2,optionTitle.getHeight()*2);
         sb.end();
 
         // draw stage actors
