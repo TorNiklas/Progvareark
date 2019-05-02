@@ -56,6 +56,20 @@ public class AssetHandler {
     public final String volumeOffBtnPath = "volumeOffTextBtn.png";
     public final String homeBtnPath = "homeBtn.png";
 
+    // background textures
+    public final String desertSkyPath = "backgrounds/desert/sky.png";
+    public final String desertRocks1Path = "backgrounds/desert/rocks_1.png";
+    public final String desertRocks2Path = "backgrounds/desert/rocks_2.png";
+    public final String desertClouds1Path = "backgrounds/desert/clouds_1.png";
+    public final String desertClouds2Path = "backgrounds/desert/clouds_2.png";
+    public final String desertClouds3Path = "backgrounds/desert/clouds_3.png";
+    public final String forestSkyPath = "backgrounds/forest/sky.png";
+    public final String forestRocks1Path = "backgrounds/forest/rocks_1.png";
+    public final String forestRocks2Path = "backgrounds/forest/rocks_2.png";
+    public final String forestClouds1Path = "backgrounds/forest/clouds_1.png";
+    public final String forestClouds2Path = "backgrounds/forest/clouds_2.png";
+    public final String forestClouds3Path = "backgrounds/forest/clouds_3.png";
+
     // TODO: use texture atlas for some textures to short down this list
     public final String textureAtlasPath = "output/game.atlas";
 
@@ -130,6 +144,18 @@ public class AssetHandler {
         manager.load(homeBtnPath, Texture.class);
         manager.load(volumeOnBtnPath, Texture.class);
         manager.load(volumeOffBtnPath, Texture.class);
+        manager.load(desertSkyPath, Texture.class);
+        manager.load(desertRocks1Path, Texture.class);
+        manager.load(desertRocks2Path, Texture.class);
+        manager.load(desertClouds1Path, Texture.class);
+        manager.load(desertClouds2Path, Texture.class);
+        manager.load(desertClouds3Path, Texture.class);
+        manager.load(forestSkyPath, Texture.class);
+        manager.load(forestRocks1Path, Texture.class);
+        manager.load(forestRocks2Path, Texture.class);
+        manager.load(forestClouds1Path, Texture.class);
+        manager.load(forestClouds2Path, Texture.class);
+        manager.load(forestClouds3Path, Texture.class);
     }
 
     public void loadMusic() {

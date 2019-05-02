@@ -144,7 +144,6 @@ public class PlayState extends State {
                 // own tank hit
                 if(bodyB.isBullet() && bodyA == (gameSprites.get(0)).getBody() && (gameSprites.get(0)) instanceof Tank){
                     System.out.println("Own tank hit!" + bodyB.getPosition());
-
                     // what to do here?
                 }
             }
@@ -223,11 +222,11 @@ public class PlayState extends State {
             gameSprites.add(new Tank(world, this, 600, spawnHeight, true, -2));
             gameSprites.add(new Tank(world, this, 500, spawnHeight, false, -1));
         }
-/*
-        gameSprites.add(new Tank(world, this, pos, spawnHeight));
+
+        /*gameSprites.add(new Tank(world, this, pos, spawnHeight));
         gameSprites.add(new Tank(world, this, 600, spawnHeight));*/
 
-        // test simple gui
+        // add gui
         gui = new GUI(this, guiHeight);
 
         // particle effect

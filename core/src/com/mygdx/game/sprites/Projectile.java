@@ -202,6 +202,10 @@ public class Projectile extends GameSprite implements Pool.Poolable {
         return alive;
     }
 
+    public void setAlive(boolean alive) {
+        this.alive = alive;
+    }
+
     @Override
     public Vector2 getPosition() {
         return new Vector2(sprite.getX(), sprite.getY());

@@ -1,9 +1,12 @@
 package com.mygdx.game.sprites;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
+import com.mygdx.game.AssetHandler;
+import com.mygdx.game.TankGame;
 
 public class Background {
     private int width;
@@ -14,6 +17,7 @@ public class Background {
     private float scrollSpeed;
     private Array<Sprite> staticLayers;
     private Array<Sprite> dynamicLayers;
+    private AssetHandler assetHandler;
 
     public Background(int width, int height, int x, int y, float scrollSpeed, String path) {
         // init input parameters
@@ -24,22 +28,24 @@ public class Background {
         this.scrollSpeed = scrollSpeed;
         this.path = path;
 
+        assetHandler = ((TankGame) Gdx.app.getApplicationListener()).assetHandler;
+
         // init static and dynamic layer arrays
         staticLayers = new Array<Sprite>();
         dynamicLayers = new Array<Sprite>();
 
         // load static layers
-        Sprite sky = new Sprite(new Texture(path + "sky.png"));
-        Sprite rocks1 = new Sprite(new Texture(path + "rocks_1.png"));
-        Sprite rocks2 = new Sprite(new Texture(path + "rocks_2.png"));
+        Sprite sky = new Sprite((Texture) assetHandler.manager.get(path + "sky.png"));
+        Sprite rocks1 = new Sprite((Texture) assetHandler.manager.get(path + "rocks_1.png"));
+        Sprite rocks2 = new Sprite((Texture) assetHandler.manager.get(path + "rocks_2.png"));
 
         // load dynamic layers
-        Sprite clouds1_1 = new Sprite(new Texture(path + "clouds_1.png"));
-        Sprite clouds1_2 = new Sprite(new Texture(path + "clouds_1.png"));
-        Sprite clouds2_1 = new Sprite(new Texture(path + "clouds_2.png"));
-        Sprite clouds2_2 = new Sprite(new Texture(path + "clouds_2.png"));
-        Sprite clouds3_1 = new Sprite(new Texture(path + "clouds_3.png"));
-        Sprite clouds3_2 = new Sprite(new Texture(path + "clouds_3.png"));
+        Sprite clouds1_1 = new Sprite((Texture) assetHandler.manager.get(path + "clouds_1.png"));
+        Sprite clouds1_2 = new Sprite((Texture) assetHandler.manager.get(path + "clouds_1.png"));
+        Sprite clouds2_1 = new Sprite((Texture) assetHandler.manager.get(path + "clouds_2.png"));
+        Sprite clouds2_2 = new Sprite((Texture) assetHandler.manager.get(path + "clouds_2.png"));
+        Sprite clouds3_1 = new Sprite((Texture) assetHandler.manager.get(path + "clouds_3.png"));
+        Sprite clouds3_2 = new Sprite((Texture) assetHandler.manager.get(path + "clouds_3.png"));
 
         // add statics to static array
         staticLayers.add(sky);
@@ -94,12 +100,12 @@ public class Background {
     }
 
     public void dispose() {
-        for(Sprite sLayer : staticLayers) {
+        /*for(Sprite sLayer : staticLayers) {
            sLayer.getTexture().dispose();
         }
 
         for(Sprite dLayer : dynamicLayers) {
             dLayer.getTexture().dispose();
-        }
+        }*/
     }
 }
