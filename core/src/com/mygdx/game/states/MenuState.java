@@ -9,19 +9,19 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
+import com.mygdx.game.AssetHandler;
 import com.mygdx.game.TankGame;
 
-import javax.swing.text.View;
 
 public class MenuState extends State{
-    private Texture bg;
+    private Image bg;
     private Image hostBtn;
     private Image connectBtn;
     private Image optionBtn;
     private Image tutorialBtn;
     private Stage stage;
+    private AssetHandler assetHandler;
 
     private Runnable onConnected = new Runnable() {
         @Override
@@ -39,13 +39,16 @@ public class MenuState extends State{
 
     public MenuState() {
         super();
-        cam.setToOrtho(false, TankGame.WIDTH, TankGame.HEIGHT);
-        bg = new Texture("bg.png");
 
-        hostBtn = new Image(new Texture("host.png"));
-        connectBtn = new Image(new Texture("connect.png"));
-        optionBtn = new Image(new Texture("options.png"));
-        tutorialBtn = new Image(new Texture("tutorialBtn.png"));
+        // set asset handler
+        assetHandler = ((TankGame)Gdx.app.getApplicationListener()).assetHandler;
+
+        bg = new Image((Texture) assetHandler.manager.get(assetHandler.bgPath));
+
+        hostBtn = new Image((Texture) assetHandler.manager.get(assetHandler.hostPath));
+        connectBtn = new Image((Texture) assetHandler.manager.get(assetHandler.connectPath));
+        optionBtn = new Image((Texture) assetHandler.manager.get(assetHandler.optionsPath));
+        tutorialBtn = new Image((Texture) assetHandler.manager.get(assetHandler.tutorialPath));
 
         // set pos and size
         float center = TankGame.WIDTH/2 - hostBtn.getWidth()/2;
@@ -53,12 +56,15 @@ public class MenuState extends State{
         connectBtn.setPosition(center, 350);
         optionBtn.setPosition(center, 250);
         tutorialBtn.setPosition(center, 150);
+
         // create stage and add maps as actors
         stage = new Stage(new StretchViewport(TankGame.WIDTH, TankGame.HEIGHT, cam));
+        stage.addActor(bg);
         stage.addActor(hostBtn);
         stage.addActor(connectBtn);
         stage.addActor(optionBtn);
         stage.addActor(tutorialBtn);
+
         // move l8r
         Gdx.input.setInputProcessor(stage);
         // event handlers, should probably not be here
@@ -142,23 +148,25 @@ public class MenuState extends State{
 
     @Override
     public void render(SpriteBatch sb, PolygonSpriteBatch psb) {
+        stage.act();
+        stage.draw();
+
         sb.setProjectionMatrix(cam.combined);
         sb.begin();
 
-
         // background
-        sb.draw(bg, 0,0, 1280, 720);
+        //sb.draw(bg, 0,0, 1280, 720);
 
         // menu buttons
-        hostBtn.draw(sb, 1f);
-        connectBtn.draw(sb, 1f);
-        optionBtn.draw(sb, 1f);
-        tutorialBtn.draw(sb, 1f);
+        //hostBtn.draw(sb, 1f);
+        //connectBtn.draw(sb, 1f);
+        //optionBtn.draw(sb, 1f);
+        //tutorialBtn.draw(sb, 1f);
         sb.end();
     }
 
     @Override
     public void dispose() {
-        bg.dispose();
+        //bg.dispose();
     }
 }

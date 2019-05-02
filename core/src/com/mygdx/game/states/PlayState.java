@@ -2,20 +2,15 @@ package com.mygdx.game.states;
 
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.ParticleEffectPool;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -25,30 +20,11 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
-import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Event;
-import com.badlogic.gdx.scenes.scene2d.EventListener;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.Touchable;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.badlogic.gdx.utils.viewport.StretchViewport;
-import com.mygdx.game.BTInterface;
+import com.mygdx.game.AssetHandler;
 import com.mygdx.game.TankGame;
 import com.mygdx.game.network.SpriteJSON;
 import com.mygdx.game.sprites.Background;
@@ -58,16 +34,9 @@ import com.mygdx.game.sprites.Ground;
 import com.mygdx.game.sprites.Projectile;
 import com.mygdx.game.sprites.Tank;
 
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import static java.lang.Math.cos;
-import static java.lang.StrictMath.sin;
 
 public class PlayState extends State {
     private static final AtomicInteger idCounter = new AtomicInteger(); //Highest id
@@ -101,7 +70,7 @@ public class PlayState extends State {
 
     private int level;
 
-    private int opponentTime = 0;
+    private AssetHandler assetHandler;
 
     public PlayState(int level, int seed) {
         super();
@@ -109,14 +78,16 @@ public class PlayState extends State {
         this.seed = seed;
         System.out.println("Level: " + level);
         System.out.println("Seed: " + seed);
-        cam.setToOrtho(false, TankGame.WIDTH, TankGame.HEIGHT);
+
+        // set asset handler
+        assetHandler = ((TankGame)Gdx.app.getApplicationListener()).assetHandler;
 
         // add shadow to give more depth to terrain
-        shadow = new Sprite(new Texture("fade.png"));
+        shadow = new Sprite((Texture) assetHandler.manager.get(assetHandler.fadePath)); //new Sprite(new Texture("fade.png"));
         shadow.setSize(TankGame.WIDTH, 550);
 
         // load sound effects
-        explosionSound = Gdx.audio.newSound(Gdx.files.internal("sounds/explosion-7.mp3"));
+        explosionSound = assetHandler.manager.get(assetHandler.explosionSoundPath); //Gdx.audio.newSound(Gdx.files.internal("sounds/explosion-7.mp3"));
 
         // init box2d world
         Box2D.init();
@@ -168,6 +139,12 @@ public class PlayState extends State {
 
                     // delete bullet
                     bodyB.setAwake(false);
+                }
+
+                // own tank hit
+                if(bodyB.isBullet() && bodyA == (gameSprites.get(0)).getBody() && (gameSprites.get(0)) instanceof Tank){
+                    System.out.println("Own tank hit!" + bodyB.getPosition());
+                    // what to do here?
                 }
             }
 
@@ -245,11 +222,11 @@ public class PlayState extends State {
             gameSprites.add(new Tank(world, this, 600, spawnHeight, true, -2));
             gameSprites.add(new Tank(world, this, 500, spawnHeight, false, -1));
         }
-/*
-        gameSprites.add(new Tank(world, this, pos, spawnHeight));
+
+        /*gameSprites.add(new Tank(world, this, pos, spawnHeight));
         gameSprites.add(new Tank(world, this, 600, spawnHeight));*/
 
-        // test simple gui
+        // add gui
         gui = new GUI(this, guiHeight);
         gui.setPlayable(TankGame.host);
 
@@ -550,7 +527,7 @@ public class PlayState extends State {
         //stage.draw();
 
         // box-2d
-        debugRenderer.render(world, cam.combined);
+        //debugRenderer.render(world, cam.combined);
         world.step(1/60f, 6, 2);
     }
 
@@ -572,7 +549,7 @@ public class PlayState extends State {
         world.dispose();
         gui.dispose();
         debugRenderer.dispose();
-        explosionSound.dispose();
+        //explosionSound.dispose();
         /*for (GameSprite gs : gameSprites) {
             gs.dispose();
         }*/

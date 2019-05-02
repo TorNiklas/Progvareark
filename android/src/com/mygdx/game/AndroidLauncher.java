@@ -132,6 +132,7 @@ public class AndroidLauncher extends AndroidApplication implements BTInterface {
 					}
 					else {
 						onActivityResult(1, RESULT_OK, enableBtIntent);
+						System.out.println("CLIENT CONN");
 					}
 				}
 			}

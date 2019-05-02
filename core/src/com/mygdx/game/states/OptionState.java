@@ -4,52 +4,51 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.Event;
-import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
+import com.mygdx.game.AssetHandler;
 import com.mygdx.game.TankGame;
-import com.mygdx.game.sprites.Tank;
-
 
 public class OptionState extends State {
-    private Texture bg;
-    private Texture optionTitle;
+    private Image bg;
+    private Image optionTitle;
     private Image volumeOn;
     private Image volumeOff;
     private Image surrenderBtn;
     private Image homeBtn;
     private Image returnToGameBtn;
     private Stage stage;
+    private AssetHandler assetHandler;
 
     public OptionState(boolean fromMenuState) {
         super();
-        cam.setToOrtho(false, TankGame.WIDTH, TankGame.HEIGHT);
-        bg = new Texture("bg.png");
-//        soundBtn.setPosition(cam.position.x - soundBtn.getWidth()/2, 400);
 
-        optionTitle = new Texture("options.png");
-        stage = new Stage(new ScreenViewport());
+        // set asset handler
+        assetHandler = ((TankGame)Gdx.app.getApplicationListener()).assetHandler;
 
-        volumeOn = new Image(new Texture("volumeOnTextBtn.png"));
+        bg = new Image((Texture) assetHandler.manager.get(assetHandler.bgPath));
+        //soundBtn.setPosition(cam.position.x - soundBtn.getWidth()/2, 400);
+
+        optionTitle = new Image((Texture) assetHandler.manager.get(assetHandler.optionsTitlePath));
+        optionTitle.setSize(optionTitle.getWidth(), optionTitle.getHeight());
+        optionTitle.setPosition(cam.position.x - optionTitle.getWidth()/2, 500+optionTitle.getHeight()/4);
+
+        volumeOn = new Image((Texture) assetHandler.manager.get(assetHandler.volumeOnBtnPath));
         volumeOn.setSize(volumeOn.getWidth(), volumeOn.getHeight());
         volumeOn.setPosition(cam.position.x - volumeOn.getWidth()/2, 400);
-        stage.addActor(volumeOn);
 
-
-
-        volumeOff = new Image(new Texture("volumeOffTextBtn.png"));
+        volumeOff = new Image((Texture) assetHandler.manager.get(assetHandler.volumeOffBtnPath));
         volumeOff.setSize(volumeOff.getWidth(), volumeOff.getHeight());
         volumeOff.setPosition(cam.position.x - volumeOff.getWidth()/2, 400);
+
+        stage = new Stage(new StretchViewport(TankGame.WIDTH, TankGame.HEIGHT, cam));
+        stage.addActor(bg);
+        stage.addActor(optionTitle);
         stage.addActor(volumeOff);
+        stage.addActor(volumeOn);
 
         //Volume is on by default
         if(TankGame.music_level1.getVolume() > 0){
@@ -65,12 +64,13 @@ public class OptionState extends State {
 
 
         if(fromMenuState){
-            homeBtn = new Image(new Texture("homeBtn.png"));
+            homeBtn = new Image((Texture) assetHandler.manager.get(assetHandler.homeBtnPath));
             homeBtn.setSize(homeBtn.getWidth(), homeBtn.getHeight());
             homeBtn.setPosition(cam.position.x - homeBtn.getWidth()/2,300);
             stage.addActor(homeBtn);
         }
 
+        // not used?
         if(!fromMenuState){
             surrenderBtn = new Image(new Texture("surrenderBtn.png"));
             surrenderBtn.setPosition(cam.position.x - surrenderBtn.getWidth()/2,  300);
@@ -149,8 +149,8 @@ public class OptionState extends State {
     public void render(SpriteBatch sb, PolygonSpriteBatch psb) {
         sb.setProjectionMatrix(cam.combined);
         sb.begin();
-        sb.draw(bg, 0,0, 1280, 720);
-        sb.draw(optionTitle, cam.position.x - optionTitle.getWidth(), 500+optionTitle.getHeight()/4, optionTitle.getWidth()*2,optionTitle.getHeight()*2);
+        //sb.draw(bg, 0,0, 1280, 720);
+        //sb.draw(optionTitle, cam.position.x - optionTitle.getWidth()/2, 500+optionTitle.getHeight()/4);
         sb.end();
 
         // draw stage actors
@@ -161,7 +161,7 @@ public class OptionState extends State {
 
     @Override
     public void dispose() {
-        bg.dispose();
-        optionTitle.dispose();
+        //bg.dispose();
+        //optionTitle.dispose();
     }
 }
