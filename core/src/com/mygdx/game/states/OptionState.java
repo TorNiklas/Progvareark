@@ -4,22 +4,13 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.Event;
-import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.mygdx.game.AssetHandler;
 import com.mygdx.game.TankGame;
-import com.mygdx.game.sprites.Tank;
-
 
 public class OptionState extends State {
     private Image bg;
@@ -34,13 +25,12 @@ public class OptionState extends State {
 
     public OptionState(boolean fromMenuState) {
         super();
-        cam.setToOrtho(false, TankGame.WIDTH, TankGame.HEIGHT);
 
         // set asset handler
         assetHandler = ((TankGame)Gdx.app.getApplicationListener()).assetHandler;
 
         bg = new Image((Texture) assetHandler.manager.get(assetHandler.bgPath));
-//        soundBtn.setPosition(cam.position.x - soundBtn.getWidth()/2, 400);
+        //soundBtn.setPosition(cam.position.x - soundBtn.getWidth()/2, 400);
 
         optionTitle = new Image((Texture) assetHandler.manager.get(assetHandler.optionsTitlePath));
         optionTitle.setSize(optionTitle.getWidth(), optionTitle.getHeight());

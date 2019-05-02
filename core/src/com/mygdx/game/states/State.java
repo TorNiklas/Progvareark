@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
+import com.mygdx.game.TankGame;
 
 public abstract class State {
     protected OrthographicCamera cam;
@@ -13,6 +14,7 @@ public abstract class State {
     public State(/*GameStateManager gsm*/){
         //this.gsm = gsm;
         cam = new OrthographicCamera();
+        cam.setToOrtho(false, TankGame.WIDTH, TankGame.HEIGHT);
         mouse = new Vector3();
     }
 
