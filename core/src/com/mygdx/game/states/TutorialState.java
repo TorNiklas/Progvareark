@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.mygdx.game.TankGame;
 
 public class TutorialState extends State {
@@ -26,9 +27,9 @@ public class TutorialState extends State {
         super();
         bg = new Texture("bg.png");
 
-        tutorialGuiHelp = new Texture("tutorial_bottom_gui.png");
+        tutorialGuiHelp = new Texture("tutorial_bottom_gui.PNG");
 
-        stage = new Stage(new ScreenViewport());
+        stage = new Stage(new StretchViewport(TankGame.WIDTH, TankGame.HEIGHT, cam));
 
         if(fromMenuState){
             homeBtn = new Image(new Texture("homeBtn.png"));
