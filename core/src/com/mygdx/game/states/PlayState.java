@@ -120,10 +120,35 @@ public class PlayState extends State {
 
                 // enemy tank hit
                 if(bodyB.isBullet() && bodyA == (gameSprites.get(1)).getBody() && (gameSprites.get(1)) instanceof Tank){
+                    Projectile p = null;
+                    for(int i = activeProjectiles.size; --i >= 0;) {
+                        p = activeProjectiles.get(i);
+                        if (p.getBody() == bodyB) {
+                            break;
+                        }
+                    }
+
+                    float dmg = 2f;
+
+                    assert p != null;
+                    switch (p.getType()) {
+                        case STANDARD:
+                            break;
+                        case SPREAD:
+                            dmg = 0.4f;
+                            break;
+                        case LASER:
+                            dmg = 1f;
+                            break;
+                        case AIRSTRIKE:
+                            dmg = 4f;
+                            break;
+                    }
+                    
                     System.out.println("Enemy tank hit!" + bodyB.getPosition());
                     System.out.println("Enemy tank health was: " + ((Tank)gameSprites.get(1)).getHealth());
 
-                    ((Tank)gameSprites.get(1)).setHealth(((Tank)gameSprites.get(1)).getHealth()-25f);
+                    ((Tank)gameSprites.get(1)).setHealth(((Tank)gameSprites.get(1)).getHealth()-dmg);
 
                     System.out.println("Enemy tank health now: " + ((Tank)gameSprites.get(1)).getHealth());
 
@@ -142,13 +167,7 @@ public class PlayState extends State {
                     // delete bullet
                     bodyB.setAwake(false);
 
-                    Projectile p;
-                    for(int i = activeProjectiles.size; --i >= 0;) {
-                        p = activeProjectiles.get(i);
-                        if (p.getBody() == bodyB) {
-                            p.setAlive(false);
-                        }
-                    }
+                    p.setAlive(false);
                 }
 
                 // own tank hit
