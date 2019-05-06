@@ -508,6 +508,7 @@ public class GUI {
 
     public void setPlayable(Boolean bool){
         playable = bool;
+        stage.cancelTouchFocus();
         showTurnGraphic();
         Array<Actor> stageActors = stage.getActors();
         for (Actor a: stageActors) {
