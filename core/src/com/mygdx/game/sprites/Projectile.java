@@ -206,6 +206,10 @@ public class Projectile extends GameSprite implements Pool.Poolable {
         this.alive = alive;
     }
 
+    public AmmoType getType(){
+        return type;
+    }
+
     @Override
     public Vector2 getPosition() {
         return new Vector2(sprite.getX(), sprite.getY());
