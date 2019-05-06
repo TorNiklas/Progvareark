@@ -307,11 +307,11 @@ public class Tank extends GameSprite {
 
     public void move() {
         if(moveLeft && energy > 0) {
-            energy -= 0.25; //TODO uncomment
-            body.setLinearVelocity(new Vector2(-30f, body.getLinearVelocity().y));
+            energy -= 0.25;
+            body.setLinearVelocity(new Vector2( body.getPosition().x > (tankSprite.getWidth()/2) ? -30f : 0f, body.getLinearVelocity().y));
         } else if(moveRight && energy > 0) {
-            energy -= 0.25; //TODO uncomment
-            body.setLinearVelocity(new Vector2(30f, body.getLinearVelocity().y));
+            energy -= 0.25;
+            body.setLinearVelocity(new Vector2(body.getPosition().x < TankGame.WIDTH - (tankSprite.getWidth() / 2) ? 30f : 0f, body.getLinearVelocity().y));
         } else {
             body.setLinearVelocity(new Vector2(0f, body.getLinearVelocity().y));
         }
@@ -328,10 +328,10 @@ public class Tank extends GameSprite {
     }
 
     public void updateAirStrike() {
-        if(airStrikeIncrease) {
+        if(airStrikeIncrease && airStrikePos < TankGame.WIDTH-airStrike.getWidth()) {
             airStrikePos += 5;
         }
-        if(airStrikeDecrease) {
+        if(airStrikeDecrease && airStrikePos > 0) {
             airStrikePos -= 5;
         }
         airStrike.setPosition(airStrikePos, airStrike.getY());

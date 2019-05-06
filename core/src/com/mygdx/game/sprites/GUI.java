@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -54,6 +55,7 @@ public class GUI {
     private Image endGameV;
     private Image endGameD;
     private Image ammoImage;
+    private Image enemyTurn;
 
     private ProgressBar healthBar;
     private ProgressBar tankHealthBar;
@@ -145,6 +147,8 @@ public class GUI {
         endGameD.setSize(600, 200);
         endGameD.setPosition(TankGame.WIDTH/2-endGameD.getWidth()/2, TankGame.HEIGHT/2);
 
+        enemyTurn = new Image(new Texture("enemyTurn.png"));
+        enemyTurn.setPosition(TankGame.WIDTH/2-enemyTurn.getWidth()/2, TankGame.HEIGHT/1.25f);
 
         // create energy bar
         energyBar = generateProgressBar(20, height-58, 390, 30, 100f, 100f, Color.DARK_GRAY, Color.GOLD);
@@ -196,8 +200,11 @@ public class GUI {
         stage.addActor(surrender);
         stage.addActor(endGameV);
         stage.addActor(endGameD);
+        stage.addActor(enemyTurn);
         endGameV.setVisible(false);
         endGameD.setVisible(false);
+        enemyTurn.setVisible(false);
+
 
         //Volume is on by default
         if(TankGame.music_level1.getVolume() > 0f){
@@ -468,9 +475,10 @@ public class GUI {
 
     public void resetTimer() {
         timer = System.currentTimeMillis();
+        timeLeft = 60;
     }
 
-    private int timeLeft = 0;
+    private int timeLeft = 60;
 
     public void setTimeLeft(int timeLeft) {
         this.timeLeft = timeLeft;
@@ -478,6 +486,7 @@ public class GUI {
 
     public long getTime(){
         if (!TankGame.host) {
+//            System.out.println(timeLeft);
             return timeLeft;
         }
         long diff = 60 - ((System.currentTimeMillis()-timer)/1000);
@@ -486,8 +495,6 @@ public class GUI {
         }
         return 0;
     }
-
-
 
     public void endSplash(boolean winner){
         if(winner){
@@ -501,6 +508,7 @@ public class GUI {
 
     public void setPlayable(Boolean bool){
         playable = bool;
+        showTurnGraphic();
         Array<Actor> stageActors = stage.getActors();
         for (Actor a: stageActors) {
             if(a.getName() != null) {
@@ -516,10 +524,34 @@ public class GUI {
         }
     }
 
-    public void togglePlayable() {
+    private void showTurnGraphic() {
+        enemyTurn.setVisible(!playable);
+        if(!playable){
+            increaseElevation.getImage().setColor(Color.GRAY);
+            decreaseElevation.getImage().setColor(Color.GRAY);
+            fireButton.getImage().setColor(Color.GRAY);
+            leftBtn.getImage().setColor(Color.GRAY);
+            rightBtn.getImage().setColor(Color.GRAY);
+            nextAmmoBtn.getImage().setColor(Color.GRAY);
+            prevAmmoBtn.getImage().setColor(Color.GRAY);
+        }
+        else{
+            increaseElevation.getImage().setColor(Color.WHITE);
+            decreaseElevation.getImage().setColor(Color.WHITE);
+            fireButton.getImage().setColor(Color.WHITE);
+            leftBtn.getImage().setColor(Color.WHITE);
+            rightBtn.getImage().setColor(Color.WHITE);
+            nextAmmoBtn.getImage().setColor(Color.WHITE);
+            prevAmmoBtn.getImage().setColor(Color.WHITE);
+        }
+    }
+
+    /*public void togglePlayable() {
         System.out.println("TOGGLING PLAYABILITY: " + !playable);
         setPlayable(!playable);
-    }
+
+
+    }*/
 
     public void update() {
         energyBar.setValue(tank.getEnergy());
@@ -541,9 +573,9 @@ public class GUI {
             fireButton.setTouchable(Touchable.disabled);
         }
 
-        if(getTime() == 0) {
+        /*if(getTime() == 0) {
             setPlayable(false);
-        }
+        }*/
     }
 
     public void draw(SpriteBatch batch) {
