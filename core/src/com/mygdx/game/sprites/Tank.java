@@ -328,10 +328,10 @@ public class Tank extends GameSprite {
     }
 
     public void updateAirStrike() {
-        if(airStrikeIncrease) {
+        if(airStrikeIncrease && airStrikePos < TankGame.WIDTH-airStrike.getWidth()) {
             airStrikePos += 5;
         }
-        if(airStrikeDecrease) {
+        if(airStrikeDecrease && airStrikePos > 0) {
             airStrikePos -= 5;
         }
         airStrike.setPosition(airStrikePos, airStrike.getY());
