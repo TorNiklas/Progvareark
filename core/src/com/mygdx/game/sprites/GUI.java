@@ -508,6 +508,7 @@ public class GUI {
 
     public void setPlayable(Boolean bool){
         playable = bool;
+        stage.cancelTouchFocus();
         showTurnGraphic();
         Array<Actor> stageActors = stage.getActors();
         for (Actor a: stageActors) {
@@ -534,8 +535,7 @@ public class GUI {
             rightBtn.getImage().setColor(Color.GRAY);
             nextAmmoBtn.getImage().setColor(Color.GRAY);
             prevAmmoBtn.getImage().setColor(Color.GRAY);
-        }
-        else{
+        } else {
             increaseElevation.getImage().setColor(Color.WHITE);
             decreaseElevation.getImage().setColor(Color.WHITE);
             fireButton.getImage().setColor(Color.WHITE);
