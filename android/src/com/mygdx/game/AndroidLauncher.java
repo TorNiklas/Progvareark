@@ -148,8 +148,12 @@ public class AndroidLauncher extends AndroidApplication implements BTInterface {
 
 	@Override
 	public void disconnect() {
+		sprites = new Stack<>();
 		if (connThread != null) {
 			connThread.cancel();
+		}
+		if (onDisconnect != null) {
+			onDisconnect.run();
 		}
 	}
 

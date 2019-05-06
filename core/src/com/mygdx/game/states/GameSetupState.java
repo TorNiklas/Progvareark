@@ -54,7 +54,9 @@ public class GameSetupState extends State {
     private Runnable onDisconnect = new Runnable() {
         @Override
         public void run() {
+            connected = false;
             System.out.println("Disconnected :(");
+            selectedState = null;
         }
     };
 
@@ -100,6 +102,7 @@ public class GameSetupState extends State {
         forestMapBtn.addListener(new InputListener() {
                 public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
                     System.out.println("forest selected");
+                    System.out.println("Connected: " + connected);
 
                     // set selected
                     if(selectedMap != Map.FOREST) {

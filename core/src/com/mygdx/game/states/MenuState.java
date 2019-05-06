@@ -14,7 +14,7 @@ import com.mygdx.game.AssetHandler;
 import com.mygdx.game.TankGame;
 
 
-public class MenuState extends State{
+public class MenuState extends State {
     private Image bg;
     private Image hostBtn;
     private Image connectBtn;
@@ -70,6 +70,7 @@ public class MenuState extends State{
         // event handlers, should probably not be here
         hostBtn.addListener(new InputListener() {
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                TankGame.getBluetooth().disconnect();
                 TankGame.host = true;
                 System.out.println("host selected");
                 GameStateManager.getGsm().set(new GameSetupState());
@@ -82,8 +83,10 @@ public class MenuState extends State{
                 System.out.println("connect selected");
                 //GameStateManager.getGsm().set(new ConnectState());
                 Input.TextInputListener textInputListener = new Input.TextInputListener() {
+
                     @Override
                     public void input(String text) {
+                        TankGame.getBluetooth().disconnect();
                         // handle input
                         System.out.println(text);
                         TankGame.getBluetooth().startClientConnection(text, onConnected, onDisconnect);
@@ -119,6 +122,8 @@ public class MenuState extends State{
         });
 
     }
+
+
 
     @Override
     public void handleInput() {

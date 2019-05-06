@@ -447,7 +447,7 @@ public class PlayState extends State {
                     getOpponent().setEnergy(j.getEnergy());
                     getOpponent().setAmmo(j.getAmmo());
                     getOpponent().setHealth(j.getHealth());
-                    System.out.println(getOpponent());
+//                    System.out.println(getOpponent());
                     break;
                 case STATE:
                     if (j.getPlayer() == 0) {
@@ -530,10 +530,14 @@ public class PlayState extends State {
 
 
         if(getPlayer().getHealth() <= 0){
+            /*System.out.println(getPlayer());
+            System.out.println(getOpponent());*/
             projectilePool.freeAll(activeProjectiles);
             gui.setPlayable(false);
             gui.endSplash(false);
         } else if (getOpponent().getHealth() <= 0) {
+            /*System.out.println(getPlayer());
+            System.out.println(getOpponent());*/
             projectilePool.freeAll(activeProjectiles);
             gui.setPlayable(false);
             gui.endSplash(true);

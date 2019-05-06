@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 class ConnectedThread extends Thread {
@@ -33,6 +34,8 @@ class ConnectedThread extends Thread {
     //    private ArrayList<SpriteJSON> objs = new ArrayList<>();
     private AndroidLauncher act;
     private String code;
+
+    private ScheduledExecutorService exec;
 
     public ConnectedThread(BluetoothSocket socket, boolean host, AndroidLauncher act) {
         this.act = act;
@@ -116,7 +119,8 @@ class ConnectedThread extends Thread {
     }
 
     private void startWriteLoop() {
-        Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new Runnable() {
+        exec = Executors.newScheduledThreadPool(1);
+        exec.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
 //                System.out.println("Loop send");
@@ -228,6 +232,9 @@ class ConnectedThread extends Thread {
 
     // Call this method from the main activity to shut down the connection.
     public void cancel() {
+        if (exec != null) {
+            exec.shutdown();
+        }
         try {
             mmSocket.close();
         } catch (IOException e) {
