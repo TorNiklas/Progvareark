@@ -155,10 +155,16 @@ public class PlayState extends State {
                 // own tank hit
                 if(bodyB.isBullet() && bodyA == (gameSprites.get(0)).getBody() && (gameSprites.get(0)) instanceof Tank){
                     System.out.println("Own tank hit!" + bodyB.getPosition());
-                    // what to do here?
                     for (GameSprite g : gameSprites) {
                         if (g.getBody() == bodyB) {
                             if (!g.isLocal()) {
+                                Projectile p = null;
+                                for(int i = activeProjectiles.size; --i >= 0;) {
+                                    p = activeProjectiles.get(i);
+                                    if (p.getBody() == bodyB) {
+                                        break;
+                                    }
+                                }
                                 getPlayer().reduceHealth((Float)bodyB.getUserData());
                                 // explosion effect
                                 Vector2 hitPos = bodyB.getPosition();
@@ -174,7 +180,7 @@ public class PlayState extends State {
 
                                 // delete bullet
                                 bodyB.setAwake(false);
-//                                g.setAlive(false);
+                                p.setAlive(false);
                             }
                             break;
                         }
