@@ -112,12 +112,12 @@ public class GUI {
 
         rightBtn = new ImageButton(rightBtnTr);
         rightBtn.setSize(200, height - 75);
-        rightBtn.setPosition(leftBtn.getWidth() + 20, 10);
+        rightBtn.setPosition(leftBtn.getWidth() + 10, 10);
 
         ammoTexture = assetHandler.manager.get(assetHandler.ammoStandardPath);
         ammoImage = new Image(ammoTexture);
         ammoImage.setSize(100, 100);
-        ammoImage.setPosition(TankGame.WIDTH/2 - 15, ammoImage.getHeight()/2 + 35, 1);
+        ammoImage.setPosition(TankGame.WIDTH/2 - 15, ammoImage.getHeight()/2 + 45, 1);
 
         nextAmmoBtn = new ImageButton(nextAmmoBtnTr);
         nextAmmoBtn.setSize(50, 100);
@@ -589,6 +589,7 @@ public class GUI {
         batch.begin();
         font.draw(batch, "Time: " + getTime(), TankGame.WIDTH - 175, 700);
         font.draw(batch, "Ammo: " + tank.getAmmo() + "/" + tank.getMaxAmmo(), TankGame.WIDTH/2 - 15, height-25, 0f, 1, false);
+        font.draw(batch, "Cost: " + tank.getActiveAmmoType().getCost(), TankGame.WIDTH/2 - 15, height-190, 0f, 1, false);
         batch.end();
     }
 
