@@ -366,6 +366,10 @@ public class Tank extends GameSprite {
         return ammo;
     }
 
+    public void setAmmo(int ammo){
+	    this.ammo = ammo;
+    }
+
     public int getMaxAmmo() {
         return maxAmmo;
     }

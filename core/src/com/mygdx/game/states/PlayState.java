@@ -260,17 +260,22 @@ public class PlayState extends State {
         if (TankGame.host && (player.getEnergy() <= 0 || oppo.getEnergy() <= 0 || gui.getTime() == 0)) {
             gui.resetTimer();
             hostActive = !hostActive;
+            if (TankGame.host == hostActive) { //Playing
+                gui.setPlayable(true);
+                if(player.getAmmo()+5 < 10){
+                    player.setAmmo(player.getAmmo() + 5);
+                } else {
+                    player.setAmmo(10);
+                }
+            }
+            else { //Not playing
+                player.setMoveRight(false);
+                player.setMoveLeft(false);
+                player.setEnergy(100);
+                gui.setPlayable(false);
+            }
         }
 
-        if (TankGame.host == hostActive) { //Playing
-            gui.setPlayable(true);
-        }
-        else if (TankGame.host != hostActive) { //Not playing
-            player.setMoveRight(false);
-            player.setMoveLeft(false);
-            player.setEnergy(100);
-            gui.setPlayable(false);
-        }
     }
 
     public void fireFromPool(Projectile.AmmoType type, Vector2 pos, Vector2 force, boolean local) {

@@ -475,10 +475,10 @@ public class GUI {
 
     public void resetTimer() {
         timer = System.currentTimeMillis();
-        timeLeft = 60;
+        timeLeft = 20;
     }
 
-    private int timeLeft = 60;
+    private int timeLeft = 20;
 
     public void setTimeLeft(int timeLeft) {
         this.timeLeft = timeLeft;
@@ -489,7 +489,7 @@ public class GUI {
 //            System.out.println(timeLeft);
             return timeLeft;
         }
-        long diff = 60 - ((System.currentTimeMillis()-timer)/1000);
+        long diff = 20 - ((System.currentTimeMillis()-timer)/1000);
         if(diff > 0) {
             return diff;
         }
