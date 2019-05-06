@@ -489,7 +489,7 @@ public class GUI {
 //            System.out.println(timeLeft);
             return timeLeft;
         }
-        long diff = 20 - ((System.currentTimeMillis()-timer)/1000);
+        long diff = 30 - ((System.currentTimeMillis()-timer)/1000);
         if(diff > 0) {
             return diff;
         }
@@ -567,10 +567,14 @@ public class GUI {
         tankFirePower.setPosition(tankPos.x - tankFirePower.getWidth()/2, tankPos.y + 20);
         tankFirePower.setValue(tank.getFirePower());
 
-        if(tank.getAmmo() <= 0 && fireButton.getTouchable().equals(Touchable.enabled)) {
-            //TODO: fix disabled style for button
+        if(tank.getAmmo() < tank.getActiveAmmoType().getCost() && fireButton.getTouchable().equals(Touchable.enabled)) {
             fireButton.setDisabled(true);
             fireButton.setTouchable(Touchable.disabled);
+            fireButton.getImage().setColor(Color.GRAY);
+        } else if (playable && tank.getAmmo() >= tank.getActiveAmmoType().getCost() && fireButton.getTouchable().equals(Touchable.disabled)) {
+            fireButton.setDisabled(false);
+            fireButton.setTouchable(Touchable.enabled);
+            fireButton.getImage().setColor(Color.WHITE);
         }
 
         /*if(getTime() == 0) {

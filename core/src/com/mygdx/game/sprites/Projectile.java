@@ -47,6 +47,28 @@ public class Projectile extends GameSprite implements Pool.Poolable {
             System.out.println(vals[prevIndex % vals.length]);
             return vals[prevIndex % vals.length];
         }
+
+        public int getCost() {
+            int cost = 1;
+            switch (this) {
+                case STANDARD:
+                    cost = 1;
+                    break;
+
+                case SPREAD:
+                    cost = 5;
+                    break;
+
+                case LASER:
+                    cost = 5;
+                    break;
+
+                case AIRSTRIKE:
+                    cost = 7;
+                    break;
+            }
+            return cost;
+        }
     }
 
     // particle effect

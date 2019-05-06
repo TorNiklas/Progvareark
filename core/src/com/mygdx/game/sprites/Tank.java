@@ -302,7 +302,7 @@ public class Tank extends GameSprite {
         firePower = 1;
 
         // decrease ammo count
-        ammo -= 1;
+        ammo -= getActiveAmmoType().getCost();
 	}
 
     public void move() {
