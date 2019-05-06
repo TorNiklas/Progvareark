@@ -522,6 +522,17 @@ public class PlayState extends State {
             }
         }
 
+
+        if(getPlayer().getHealth() <= 0){
+            projectilePool.freeAll(activeProjectiles);
+            gui.setPlayable(false);
+            gui.endSplash(false);
+        } else if (getOpponent().getHealth() <= 0) {
+            projectilePool.freeAll(activeProjectiles);
+            gui.setPlayable(false);
+            gui.endSplash(true);
+        }
+
         // update bg
         bg.update();
     }
@@ -538,17 +549,6 @@ public class PlayState extends State {
         bg.draw(sb);
         for (int i = 0; i < gameSprites.size(); i++) {
             GameSprite sprite = gameSprites.get(i);
-            if(sprite instanceof  Tank){
-                if (((Tank) sprite).getHealth() <= 0){
-                    boolean won = false;
-                    if(sprite.getId() == -2){
-                        won = true;
-                    }
-                    projectilePool.freeAll(activeProjectiles);
-                    gui.setPlayable(false);
-                    gui.endSplash(won);
-                }
-            }
             sprite.draw(sb);
         }
 
