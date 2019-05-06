@@ -28,6 +28,7 @@ public class Projectile extends GameSprite implements Pool.Poolable {
     private Texture bulletTexture;
     private AssetHandler assetHandler;
     private AmmoType type;
+    private float dmg;
 
     public enum AmmoType {
         STANDARD,
@@ -88,20 +89,25 @@ public class Projectile extends GameSprite implements Pool.Poolable {
         this.type = type;
 
         switch (type) {
+            // TODO: BALANCE BULLET DAMAGE
             case STANDARD:
                 bulletTexture = assetHandler.manager.get(assetHandler.bulletPath);
+                dmg = 15.0f;
                 break;
 
             case SPREAD:
                 bulletTexture = assetHandler.manager.get(assetHandler.bulletSpreadPath);
+                dmg = 7.5f;
                 break;
 
             case LASER:
                 bulletTexture = assetHandler.manager.get(assetHandler.bulletLaserPath);
+                dmg = 10.0f;
                 break;
 
             case AIRSTRIKE:
                 bulletTexture = assetHandler.manager.get(assetHandler.bulletMissilePath);
+                dmg = 10.0f;
                 break;
         }
         sprite = new Sprite(bulletTexture);
@@ -152,6 +158,9 @@ public class Projectile extends GameSprite implements Pool.Poolable {
         // attach fixtures
         fixtureDef.shape = shape;
         body.createFixture(fixtureDef);
+
+        // set user data with dmg
+        body.setUserData(dmg);
 
         // clean up
         shape.dispose();
