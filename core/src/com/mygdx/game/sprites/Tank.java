@@ -362,12 +362,20 @@ public class Tank extends GameSprite {
         return health;
     }
 
+    public void reduceHealth(float health) {
+	    this.health -= health;
+    }
+
     public int getAmmo() {
         return ammo;
     }
 
-    public void setAmmo(int ammo){
-	    this.ammo = ammo;
+    public void setAmmo(int ammo) {
+        this.ammo = ammo;
+    }
+
+    public void addAmmo(int ammo) {
+	    this.ammo += ammo;
     }
 
     public int getMaxAmmo() {
@@ -403,5 +411,18 @@ public class Tank extends GameSprite {
                 airStrike.draw(batch);
                 break;
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Tank{" +
+                "energy=" + energy +
+                ", health=" + health +
+                ", ammo=" + ammo +
+                ", maxAmmo=" + maxAmmo +
+                ", activeAmmoType=" + activeAmmoType +
+                ", id=" + id +
+                ", local=" + local +
+                '}';
     }
 }

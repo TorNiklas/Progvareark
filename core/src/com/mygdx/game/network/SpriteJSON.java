@@ -34,13 +34,70 @@ public class SpriteJSON extends JSONObject {
         this.put("ANGLE", padNum((int)angle));
     }
 
+    public SpriteJSON(Type type, int ammo, float energy, float health) {
+//        super(4);
+        this.put("ID", padNum(ammo));
+        this.put("TYPE", padNum(type.ordinal()));
+        this.put("POSX", padNum((int)health));
+        this.put("POSY", padNum((int)energy));
+        this.put("VELX", padNum(0));
+        this.put("VELY", padNum(0));
+        this.put("ANGLE", padNum(0));
+    }
+
+    public SpriteJSON(Type type, int player, float time) {
+//        super(4);
+        this.put("ID", padNum(player));
+        this.put("TYPE", padNum(type.ordinal()));
+        this.put("POSX", padNum((int)time));
+        this.put("POSY", padNum(0));
+        this.put("VELX", padNum(0));
+        this.put("VELY", padNum(0));
+        this.put("ANGLE", padNum(0));
+    }
+
     public static String padNum(int num) {
         return String.format(new Locale("us"),"%05d", num);
+    }
+
+    public float getEnergy() {
+        if (getType() == Type.ENERGY) {
+            return this.getPosY();
+        }
+        return 0;
+    }
+
+    public float getHealth() {
+        if (getType() == Type.ENERGY) {
+            return this.getPosX();
+        }
+        return 0;
+    }
+
+    public int getTime() {
+        return getPosX();
+    }
+
+    public int getPlayer() {
+//        System.out.println(this.toString());
+        return getID();
+    }
+
+    public int getAmmo() {
+        return getID();
     }
 
     public int getID() {
 //        System.out.println(this.toString());
         return this.getInt("ID");
+    }
+
+    private int getPosX() {
+        return this.getInt("POSX");
+    }
+
+    private int getPosY() {
+        return this.getInt("POSY");
     }
 
     public Type getType() {

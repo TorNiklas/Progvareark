@@ -475,10 +475,10 @@ public class GUI {
 
     public void resetTimer() {
         timer = System.currentTimeMillis();
-        timeLeft = 20;
+        timeLeft = 30;
     }
 
-    private int timeLeft = 20;
+    private int timeLeft = 30;
 
     public void setTimeLeft(int timeLeft) {
         this.timeLeft = timeLeft;
@@ -507,20 +507,22 @@ public class GUI {
     private boolean playable = true;
 
     public void setPlayable(Boolean bool){
-        playable = bool;
-        stage.cancelTouchFocus();
-        showTurnGraphic();
-        Array<Actor> stageActors = stage.getActors();
-        for (Actor a: stageActors) {
-            if(a.getName() != null) {
-                if (a.getName().equals("surrender") || a.getName().equals("volumeOn") || a.getName().equals("volumeOff") || a.getName().equals("endGame")) {
-                    return;
+        if (bool != playable) {
+            playable = bool;
+            stage.cancelTouchFocus();
+            showTurnGraphic();
+            Array<Actor> stageActors = stage.getActors();
+            for (Actor a : stageActors) {
+                if (a.getName() != null) {
+                    if (a.getName().equals("surrender") || a.getName().equals("volumeOn") || a.getName().equals("volumeOff") || a.getName().equals("endGame")) {
+                        return;
+                    }
                 }
-            }
-            if(bool) {
-                a.setTouchable(Touchable.enabled);
-            } else {
-                a.setTouchable(Touchable.disabled);
+                if (bool) {
+                    a.setTouchable(Touchable.enabled);
+                } else {
+                    a.setTouchable(Touchable.disabled);
+                }
             }
         }
     }

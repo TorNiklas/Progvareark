@@ -129,11 +129,11 @@ public class PlayState extends State {
                     }
                     
                     System.out.println("Enemy tank hit!" + bodyB.getPosition());
-                    System.out.println("Enemy tank health was: " + ((Tank)gameSprites.get(1)).getHealth());
+//                    System.out.println("Enemy tank health was: " + ((Tank)gameSprites.get(1)).getHealth());
 
-                    ((Tank)gameSprites.get(1)).setHealth(((Tank)gameSprites.get(1)).getHealth() - (Float)bodyB.getUserData());
+//                    ((Tank)gameSprites.get(1)).setHealth(((Tank)gameSprites.get(1)).getHealth() - (Float)bodyB.getUserData());
 
-                    System.out.println("Enemy tank health now: " + ((Tank)gameSprites.get(1)).getHealth());
+//                    System.out.println("Enemy tank health now: " + ((Tank)gameSprites.get(1)).getHealth());
 
                     // explosion effect
                     Vector2 hitPos = bodyB.getPosition();
@@ -156,6 +156,29 @@ public class PlayState extends State {
                 if(bodyB.isBullet() && bodyA == (gameSprites.get(0)).getBody() && (gameSprites.get(0)) instanceof Tank){
                     System.out.println("Own tank hit!" + bodyB.getPosition());
                     // what to do here?
+                    for (GameSprite g : gameSprites) {
+                        if (g.getBody() == bodyB) {
+                            if (!g.isLocal()) {
+                                getPlayer().reduceHealth((Float)bodyB.getUserData());
+                                // explosion effect
+                                Vector2 hitPos = bodyB.getPosition();
+                                explodeEffect(hitPos.x, hitPos.y, 0.3f, 100);
+
+                                // explosion sound effect
+                                if(!TankGame.isMuted) {
+                                    explosionSound.play();
+                                }
+
+                                // vibrate on tank hit, maybe only if own tank is hit?
+                                //Gdx.input.vibrate(500);
+
+                                // delete bullet
+                                bodyB.setAwake(false);
+//                                g.setAlive(false);
+                            }
+                            break;
+                        }
+                    }
                 }
             }
 
@@ -257,23 +280,37 @@ public class PlayState extends State {
         Tank player = getPlayer();
         Tank oppo = getOpponent();
 
-        if (TankGame.host && ((player.getEnergy() <= 0 && player.getAmmo() <= 0) || (oppo.getEnergy() <= 0 && oppo.getAmmo() <= 0) || gui.getTime() == 0)) {
-            gui.resetTimer();
-            hostActive = !hostActive;
+        if (TankGame.host == hostActive) { //Playing
+            gui.setPlayable(true);
+        }
+        else { //Not playing
+            gui.setPlayable(false);
+            player.setMoveRight(false);
+            player.setMoveLeft(false);
+            player.setEnergy(100);
+            player.setAmmo(10);
+        }
 
-            if (TankGame.host == hostActive) { //Playing
-                gui.setPlayable(true);
-                if(player.getAmmo()+5 < 10){
-                    player.setAmmo(player.getAmmo() + 5);
-                } else {
-                    player.setAmmo(10);
-                }
-            }
-            else { //Not playing
-                player.setMoveRight(false);
-                player.setMoveLeft(false);
-                player.setEnergy(100);
-                gui.setPlayable(false);
+        if (player.getAmmo() == 0 || gui.getTime() == 0) { //Disable controls
+//            player.setEnergy(100);
+            gui.setPlayable(false);
+            player.setMoveRight(false);
+            player.setMoveLeft(false);
+        }
+
+        if (TankGame.host) { //Switch turns
+            if (player.getAmmo() == 0) {
+                hostActive = false;
+                gui.resetTimer();
+                System.out.println("Client turn");
+            } else if (oppo.getAmmo() == 0) {
+                hostActive = true;
+                gui.resetTimer();
+                System.out.println("Host turn");
+            } else if (gui.getTime() == 0) {
+                hostActive = !hostActive;
+                gui.resetTimer();
+                System.out.println("Swap turn");
             }
         }
     }
@@ -364,33 +401,19 @@ public class PlayState extends State {
         if(Gdx.input.justTouched()) {
             //explodeEffect(Gdx.input.getX(), Gdx.input.getY());
         }
-        /*
-        // for testing purposes
-        if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-            GameStateManager.getGsm().push(new MenuState(*//*gsm*//*));
-        }
-
-        if(Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
-            ((Tank)gameSprites.get(0)).drive(new Vector2(-50f, -5f));
-        }
-
-        if(Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
-            ((Tank)gameSprites.get(0)).drive(new Vector2(50f, -5f));
-        }*/
-
     }
 
     public static ArrayList<SpriteJSON> getJSON() {
         ArrayList<SpriteJSON> ret = new ArrayList<SpriteJSON>();
 //        System.out.println(gameSprites);
-        ret.add(new SpriteJSON(-1, SpriteJSON.Type.ENERGY, new Vector2(), new Vector2(), getPlayer().getEnergy()));
+        ret.add(new SpriteJSON(SpriteJSON.Type.ENERGY, getPlayer().getAmmo(), getPlayer().getEnergy(), getPlayer().getHealth()));
         if (TankGame.host) {
             //ret.add(new SpriteJSON(-1, SpriteJSON.Type.TIME, new Vector2(), new Vector2(), gui.getTime()));
             if (hostActive) {
-                ret.add(new SpriteJSON(1, SpriteJSON.Type.STATE, new Vector2(), new Vector2(), gui.getTime()));
+                ret.add(new SpriteJSON(SpriteJSON.Type.STATE,1, gui.getTime()));
             }
             else {
-                ret.add(new SpriteJSON(0, SpriteJSON.Type.STATE, new Vector2(), new Vector2(), gui.getTime()));
+                ret.add(new SpriteJSON(SpriteJSON.Type.STATE, 0, gui.getTime()));
             }
         }
         for (GameSprite g : gameSprites) {
@@ -415,20 +438,19 @@ public class PlayState extends State {
 
             switch (type) {
                 case ENERGY:
-                    getOpponent().setEnergy(j.getAngle());
+                    getOpponent().setEnergy(j.getEnergy());
+                    getOpponent().setAmmo(j.getAmmo());
+                    getOpponent().setHealth(j.getHealth());
+                    System.out.println(getOpponent());
                     break;
-                /*case TIME:
-//                    System.out.println("TIME RECEIVED: " + j.getAngle());
-                    gui.setTimeLeft(j.getAngle());
-                    break;*/
                 case STATE:
-                    if (j.getID() == 0) {
+                    if (j.getPlayer() == 0) {
                         hostActive = false;
                     }
                     else {
                         hostActive = true;
                     }
-                    gui.setTimeLeft(j.getAngle());
+                    gui.setTimeLeft(j.getTime());
                     break;
                 case TANK:
                     // Tanks should always exist
