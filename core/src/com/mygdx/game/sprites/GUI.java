@@ -392,9 +392,7 @@ public class GUI {
         ClickListener endListener = new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if(endGameV.isVisible()){
-                    GameStateManager.getGsm().set(new MenuState());
-                }
+                GameStateManager.getGsm().set(new MenuState());
             }
         };
 
@@ -406,7 +404,6 @@ public class GUI {
                 if(obj.equals(true)){
                     TankGame.getBluetooth().disconnect();
                     GameStateManager.getGsm().set(new MenuState());
-
                 }
                 System.out.println("result "+obj);
             }
