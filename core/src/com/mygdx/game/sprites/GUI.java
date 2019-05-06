@@ -475,9 +475,10 @@ public class GUI {
 
     public void resetTimer() {
         timer = System.currentTimeMillis();
+        timeLeft = 60;
     }
 
-    private int timeLeft = 0;
+    private int timeLeft = 60;
 
     public void setTimeLeft(int timeLeft) {
         this.timeLeft = timeLeft;
@@ -485,6 +486,7 @@ public class GUI {
 
     public long getTime(){
         if (!TankGame.host) {
+//            System.out.println(timeLeft);
             return timeLeft;
         }
         long diff = 60 - ((System.currentTimeMillis()-timer)/1000);
@@ -493,8 +495,6 @@ public class GUI {
         }
         return 0;
     }
-
-
 
     public void endSplash(boolean winner){
         if(winner){
@@ -508,6 +508,7 @@ public class GUI {
 
     public void setPlayable(Boolean bool){
         playable = bool;
+        showTurnGraphic();
         Array<Actor> stageActors = stage.getActors();
         for (Actor a: stageActors) {
             if(a.getName() != null) {
@@ -523,9 +524,7 @@ public class GUI {
         }
     }
 
-    public void togglePlayable() {
-        System.out.println("TOGGLING PLAYABILITY: " + !playable);
-        setPlayable(!playable);
+    private void showTurnGraphic() {
         enemyTurn.setVisible(!playable);
         if(!playable){
             increaseElevation.getImage().setColor(Color.GRAY);
@@ -545,8 +544,14 @@ public class GUI {
             nextAmmoBtn.getImage().setColor(Color.WHITE);
             prevAmmoBtn.getImage().setColor(Color.WHITE);
         }
-
     }
+
+    /*public void togglePlayable() {
+        System.out.println("TOGGLING PLAYABILITY: " + !playable);
+        setPlayable(!playable);
+
+
+    }*/
 
     public void update() {
         energyBar.setValue(tank.getEnergy());
@@ -568,9 +573,9 @@ public class GUI {
             fireButton.setTouchable(Touchable.disabled);
         }
 
-        if(getTime() == 0) {
+        /*if(getTime() == 0) {
             setPlayable(false);
-        }
+        }*/
     }
 
     public void draw(SpriteBatch batch) {

@@ -70,6 +70,8 @@ public class PlayState extends State {
 
     private int level;
 
+    private static boolean hostActive = true; // true = host
+
     private AssetHandler assetHandler;
 
     public PlayState(int level, int seed) {
@@ -231,12 +233,8 @@ public class PlayState extends State {
             gameSprites.add(new Tank(world, this, 500, spawnHeight, false, -1));
         }
 
-        /*gameSprites.add(new Tank(world, this, pos, spawnHeight));
-        gameSprites.add(new Tank(world, this, 600, spawnHeight));*/
-
         // add gui
         gui = new GUI(this, guiHeight);
-        gui.setPlayable(TankGame.host);
 
         // particle effect
         explosionEffect = new ParticleEffect();
@@ -258,17 +256,19 @@ public class PlayState extends State {
         Tank player = getPlayer();
         Tank oppo = getOpponent();
 
-        if (player.getEnergy() == 0 || oppo.getEnergy() == 0 || gui.getTime() == 0) {
-            gui.togglePlayable();
-            player.setEnergy(100);
-            oppo.setEnergy(100);
+        if (TankGame.host && (player.getEnergy() <= 0 || oppo.getEnergy() <= 0 || gui.getTime() == 0)) {
+            gui.resetTimer();
+            hostActive = !hostActive;
+        }
 
-            player.setMoveLeft(false);
+        if (TankGame.host == hostActive) { //Playing
+            gui.setPlayable(true);
+        }
+        else if (TankGame.host != hostActive) { //Not playing
             player.setMoveRight(false);
-
-            if (TankGame.host) {
-                gui.resetTimer();
-            }
+            player.setMoveLeft(false);
+            player.setEnergy(100);
+            gui.setPlayable(false);
         }
     }
 
@@ -379,7 +379,13 @@ public class PlayState extends State {
 //        System.out.println(gameSprites);
         ret.add(new SpriteJSON(-1, SpriteJSON.Type.ENERGY, new Vector2(), new Vector2(), getPlayer().getEnergy()));
         if (TankGame.host) {
-            ret.add(new SpriteJSON(-1, SpriteJSON.Type.TIME, new Vector2(), new Vector2(), gui.getTime()));
+            //ret.add(new SpriteJSON(-1, SpriteJSON.Type.TIME, new Vector2(), new Vector2(), gui.getTime()));
+            if (hostActive) {
+                ret.add(new SpriteJSON(1, SpriteJSON.Type.STATE, new Vector2(), new Vector2(), gui.getTime()));
+            }
+            else {
+                ret.add(new SpriteJSON(0, SpriteJSON.Type.STATE, new Vector2(), new Vector2(), gui.getTime()));
+            }
         }
         for (GameSprite g : gameSprites) {
             if (g.isLocal()) {
@@ -405,8 +411,17 @@ public class PlayState extends State {
                 case ENERGY:
                     getOpponent().setEnergy(j.getAngle());
                     break;
-                case TIME:
+                /*case TIME:
 //                    System.out.println("TIME RECEIVED: " + j.getAngle());
+                    gui.setTimeLeft(j.getAngle());
+                    break;*/
+                case STATE:
+                    if (j.getID() == 0) {
+                        hostActive = false;
+                    }
+                    else {
+                        hostActive = true;
+                    }
                     gui.setTimeLeft(j.getAngle());
                     break;
                 case TANK:
