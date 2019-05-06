@@ -254,6 +254,10 @@ public class PlayState extends State {
             gui.togglePlayable();
             player.setEnergy(100);
             oppo.setEnergy(100);
+
+            player.setMoveLeft(false);
+            player.setMoveRight(false);
+
             if (TankGame.host) {
                 gui.resetTimer();
             }
