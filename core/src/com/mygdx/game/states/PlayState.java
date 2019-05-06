@@ -139,6 +139,14 @@ public class PlayState extends State {
 
                     // delete bullet
                     bodyB.setAwake(false);
+
+                    Projectile p;
+                    for(int i = activeProjectiles.size; --i >= 0;) {
+                        p = activeProjectiles.get(i);
+                        if (p.getBody() == bodyB) {
+                            p.setAlive(false);
+                        }
+                    }
                 }
 
                 // own tank hit
