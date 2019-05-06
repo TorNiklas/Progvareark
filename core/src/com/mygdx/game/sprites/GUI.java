@@ -392,7 +392,7 @@ public class GUI {
         ClickListener endListener = new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if(endGameV.isVisible()){
+                if(endGameV.isVisible() || endGameD.isVisible()){
                     GameStateManager.getGsm().set(new MenuState());
                 }
             }
@@ -405,7 +405,6 @@ public class GUI {
             public void result(Object obj) {
                 if(obj.equals(true)){
                     GameStateManager.getGsm().set(new MenuState());
-
                 }
                 System.out.println("result "+obj);
             }

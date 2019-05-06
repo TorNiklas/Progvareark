@@ -119,7 +119,7 @@ public class PlayState extends State {
                 }
 
                 // enemy tank hit
-                if(bodyB.isBullet() && bodyA == (gameSprites.get(1)).getBody() && (gameSprites.get(1)) instanceof Tank){
+                if(bodyB.isBullet() && bodyA == getOpponent().getBody()){
                     Projectile p = null;
                     for(int i = activeProjectiles.size; --i >= 0;) {
                         p = activeProjectiles.get(i);
@@ -149,11 +149,12 @@ public class PlayState extends State {
 
                     // delete bullet
                     bodyB.setAwake(false);
+                    assert p != null;
                     p.setAlive(false);
                 }
 
                 // own tank hit
-                if(bodyB.isBullet() && bodyA == (gameSprites.get(0)).getBody() && (gameSprites.get(0)) instanceof Tank){
+                if(bodyB.isBullet() && bodyA == getPlayer().getBody()){
                     System.out.println("Own tank hit!" + bodyB.getPosition());
                     for (GameSprite g : gameSprites) {
                         if (g.getBody() == bodyB) {
