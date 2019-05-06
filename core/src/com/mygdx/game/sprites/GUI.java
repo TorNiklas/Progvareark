@@ -392,9 +392,7 @@ public class GUI {
         ClickListener endListener = new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if(endGameV.isVisible() || endGameD.isVisible()){
-                    GameStateManager.getGsm().set(new MenuState());
-                }
+                GameStateManager.getGsm().set(new MenuState());
             }
         };
 
