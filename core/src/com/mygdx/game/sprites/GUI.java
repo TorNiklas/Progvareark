@@ -535,8 +535,7 @@ public class GUI {
             rightBtn.getImage().setColor(Color.GRAY);
             nextAmmoBtn.getImage().setColor(Color.GRAY);
             prevAmmoBtn.getImage().setColor(Color.GRAY);
-        }
-        else{
+        } else {
             increaseElevation.getImage().setColor(Color.WHITE);
             decreaseElevation.getImage().setColor(Color.WHITE);
             fireButton.getImage().setColor(Color.WHITE);
@@ -572,6 +571,7 @@ public class GUI {
             //TODO: fix disabled style for button
             fireButton.setDisabled(true);
             fireButton.setTouchable(Touchable.disabled);
+            fireButton.getImage().setColor(Color.GRAY);
         }
 
         /*if(getTime() == 0) {
