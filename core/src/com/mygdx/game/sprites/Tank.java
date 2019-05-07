@@ -322,10 +322,10 @@ public class Tank extends GameSprite {
     }
 
     public void updateBarrel() {
-        if(increase && barrelDeg > Math.toDegrees(body.getAngle())) {
+        if(increase && barrelDeg+10 > Math.toDegrees(body.getAngle())) {
             barrelDeg -= aimRate;
         }
-        if(decrease && barrelDeg < 180+Math.toDegrees(body.getAngle())) {
+        if(decrease && barrelDeg-10 < 180+Math.toDegrees(body.getAngle())) {
             barrelDeg += aimRate;
         }
         barrelSprite.setRotation(barrelDeg);
