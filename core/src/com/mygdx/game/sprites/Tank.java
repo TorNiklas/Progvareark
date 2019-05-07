@@ -36,8 +36,9 @@ public class Tank extends GameSprite {
 
     private int firePower;
     private int maxFirePower;
+    private int step;
 
-    private int barrelDeg;
+    private float barrelDeg;
     private int airStrikePos;
     private int aimRate;
 
@@ -97,7 +98,8 @@ public class Tank extends GameSprite {
         isPoweringUp = false;
         gainPower = true;
         firePower = 1;
-        maxFirePower = 150;
+        maxFirePower = 300;
+        step = 2;
 
         // airstrike
         airStrikePos = x;
@@ -167,7 +169,7 @@ public class Tank extends GameSprite {
         // barrel
         barrelSprite.setPosition(body.getPosition().x - barrelSprite.getWidth()/2 + 8f, body.getPosition().y - barrelSprite.getHeight()/2 + 4f);
 
-        barrelDeg = Math.round(barrelSprite.getRotation() - (currTank-tankSprite.getRotation()));
+        barrelDeg = barrelSprite.getRotation() - (currTank-tankSprite.getRotation());
         updateBarrel();
     }
 
@@ -274,9 +276,9 @@ public class Tank extends GameSprite {
             }
 
             if(gainPower) {
-                firePower += 1;
+                firePower += step;
             } else {
-                firePower -= 1;
+                firePower -= step;
             }
 		}
 	}

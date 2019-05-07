@@ -526,7 +526,12 @@ public class GUI {
             Array<Actor> stageActors = stage.getActors();
             for (Actor a : stageActors) {
                 if (a.getName() != null) {
-                    if (a.getName().equals("surrender") || a.getName().equals("volumeOn") || a.getName().equals("volumeOff") || a.getName().equals("endGameV") || a.getName().equals("endGameD")) {
+                    if (a.getName().equals("surrender") ||
+                            a.getName().equals("volumeOn") ||
+                            a.getName().equals("volumeOff") ||
+                            a.getName().equals("endGameV") ||
+                            a.getName().equals("endGameD") ||
+                            a.getName().equals("enemyDc")) {
                         return;
                     }
                 }

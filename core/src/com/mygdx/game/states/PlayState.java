@@ -268,12 +268,12 @@ public class PlayState extends State {
         //Host is on the left
         //First added tank is local player
         if (TankGame.host) {
-            gameSprites.add(new Tank(world, this, 500, spawnHeight, true, -1));
-            gameSprites.add(new Tank(world, this, 600, spawnHeight, false, -2));
+            gameSprites.add(new Tank(world, this, 300, spawnHeight, true, -1));
+            gameSprites.add(new Tank(world, this, 900, spawnHeight, false, -2));
         }
         else {
-            gameSprites.add(new Tank(world, this, 600, spawnHeight, true, -2));
-            gameSprites.add(new Tank(world, this, 500, spawnHeight, false, -1));
+            gameSprites.add(new Tank(world, this, 900, spawnHeight, true, -2));
+            gameSprites.add(new Tank(world, this, 300, spawnHeight, false, -1));
         }
 
         // add gui
