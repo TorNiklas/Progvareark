@@ -51,7 +51,7 @@ public class PlayState extends State {
     private Sound explosionSound;
 
     // active projectiles
-    private final Array<Projectile> activeProjectiles = new Array<Projectile>();
+    private final static Array<Projectile> activeProjectiles = new Array<Projectile>();
 
     // projectile pool
     private final Pool<Projectile> projectilePool = new Pool<Projectile>() {
@@ -416,18 +416,14 @@ public class PlayState extends State {
     }
 
     @Override
-    protected void handleInput() {
-        if(Gdx.input.justTouched()) {
-            //explodeEffect(Gdx.input.getX(), Gdx.input.getY());
-        }
-    }
+    protected void handleInput() {}
 
     public static ArrayList<SpriteJSON> getJSON() {
         ArrayList<SpriteJSON> ret = new ArrayList<SpriteJSON>();
-//        System.out.println(gameSprites);
+
+        // Send game state stuff
         ret.add(new SpriteJSON(SpriteJSON.Type.ENERGY, getPlayer().getAmmo(), getPlayer().getEnergy(), getPlayer().getHealth()));
         if (TankGame.host) {
-            //ret.add(new SpriteJSON(-1, SpriteJSON.Type.TIME, new Vector2(), new Vector2(), gui.getTime()));
             if (hostActive) {
                 ret.add(new SpriteJSON(SpriteJSON.Type.STATE,1, gui.getTime()));
             }
@@ -435,12 +431,15 @@ public class PlayState extends State {
                 ret.add(new SpriteJSON(SpriteJSON.Type.STATE, 0, gui.getTime()));
             }
         }
-        for (GameSprite g : gameSprites) {
-            if (g.isLocal()) {
-                ret.add(g.getJSON());
-                if (g instanceof Tank) {
-                    ret.add(((Tank) g).getBarrelJSON());
-                }
+
+        //Send player tank location info
+        ret.add(getPlayer().getJSON());
+        ret.add(getPlayer().getBarrelJSON());
+
+        //Send active projectiles
+        for (Projectile p : activeProjectiles) {
+            if (p.isLocal()) {
+                ret.add(p.getJSON());
             }
         }
 
@@ -453,14 +452,12 @@ public class PlayState extends State {
         while (!TankGame.getBluetooth().getSprites().isEmpty()) {
             SpriteJSON j = TankGame.getBluetooth().getSprites().pop();
             SpriteJSON.Type type = j.getType();
-//            System.out.println(j);
 
             switch (type) {
                 case ENERGY:
                     getOpponent().setEnergy(j.getEnergy());
                     getOpponent().setAmmo(j.getAmmo());
                     getOpponent().setHealth(j.getHealth());
-//                    System.out.println(getOpponent());
                     break;
                 case STATE:
                     if (j.getPlayer() == 0) {
@@ -473,25 +470,14 @@ public class PlayState extends State {
                     break;
                 case TANK:
                     // Tanks should always exist
-                    for (GameSprite g : gameSprites) {
-                        if (g.getId() == j.getID()) {
-                            g.readJSON(j);
-                            break;
-                        }
-                    }
+                    getOpponent().readJSON(j);
                     break;
                 case BARREL:
-                    for (GameSprite g : gameSprites) {
-                        if (g.getId() == j.getID()) {
-                            ((Tank)g).readBarrelJSON(j);
-                            break;
-                        }
-                    }
+                    getOpponent().readBarrelJSON(j);
                     break;
                 default: //Projectile
                     boolean exists = false;
                     for (Projectile p : activeProjectiles) {
-
                         if (p.getId() == j.getID()) {
                             //System.out.println("Found existing proj");
                             exists = true;
@@ -500,7 +486,6 @@ public class PlayState extends State {
                         }
                     }
                     if (!exists) {
-//                        System.out.println(j);
                         idCounter.set(j.getID());
                         if (j.getAmmoType() == Projectile.AmmoType.SPREAD) {
                             fireFromPool(Projectile.AmmoType.STANDARD, j.getPos(), j.getVel(), false);
