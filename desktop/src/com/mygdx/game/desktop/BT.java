@@ -28,6 +28,11 @@ public class BT implements BTInterface {
     }
 
     @Override
+    public void setOnDisconnect(Runnable onDisconnect) {
+
+    }
+
+    @Override
     public Stack<SpriteJSON> getSprites() {
         return null;
     }
