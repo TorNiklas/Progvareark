@@ -72,7 +72,7 @@ public class AndroidLauncher extends AndroidApplication implements BTInterface {
 			@Override
 			public void run() {
 				try {
-					Thread.sleep(500); //Hack, it won't always change to new menu otherwise
+					Thread.sleep(50); //Hack, it won't always change to new menu otherwise
 				}
 				catch (Exception e) {}
 				showToast("Starting host connection...");
