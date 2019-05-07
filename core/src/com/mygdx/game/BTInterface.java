@@ -14,5 +14,7 @@ public interface BTInterface {
 
     public void disconnect();
 
+    public void setOnDisconnect(Runnable onDisconnect);
+
     public Stack<SpriteJSON> getSprites();
 }

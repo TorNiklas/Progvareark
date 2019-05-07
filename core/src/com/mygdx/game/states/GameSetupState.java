@@ -43,6 +43,7 @@ public class GameSetupState extends State {
         @Override
         public void run() {
             System.out.println("Connected!");
+            System.out.println(GameSetupState.this);
             //while (selectedState == null) {}
             connected = true;
             if (selectedState != null) {
@@ -102,7 +103,7 @@ public class GameSetupState extends State {
         forestMapBtn.addListener(new InputListener() {
                 public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
                     System.out.println("forest selected");
-                    System.out.println("Connected: " + connected);
+                    System.out.println(GameSetupState.this);
 
                     // set selected
                     if(selectedMap != Map.FOREST) {
@@ -126,6 +127,8 @@ public class GameSetupState extends State {
         snowMapBtn.addListener(new InputListener() {
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
                 System.out.println("snow selected");
+                System.out.println(GameSetupState.this);
+
 
                 // set selected
                 if(selectedMap != Map.SNOW) {
@@ -149,6 +152,8 @@ public class GameSetupState extends State {
         desertMapBtn.addListener(new InputListener() {
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
                 System.out.println("desert selected");
+                System.out.println(GameSetupState.this);
+
 
                 // set selected
                 if(selectedMap != Map.DESERT) {
@@ -250,5 +255,22 @@ public class GameSetupState extends State {
     @Override
     public void dispose() {
         //bg.dispose();
+    }
+
+    @Override
+    public void onLoad() {
+        selectedMap = null;
+        selectedState = null;
+        connected = false;
+    }
+
+    @Override
+    public String toString() {
+        return "GameSetupState{" +
+                "stage=" + stage +
+                ", selectedMap=" + selectedMap +
+                ", selectedState=" + selectedState +
+                ", connected=" + connected +
+                '}';
     }
 }

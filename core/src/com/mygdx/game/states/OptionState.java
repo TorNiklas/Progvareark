@@ -164,4 +164,9 @@ public class OptionState extends State {
         //bg.dispose();
         //optionTitle.dispose();
     }
+
+    @Override
+    public void onLoad() {
+
+    }
 }
