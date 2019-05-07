@@ -108,7 +108,7 @@ public class SpriteJSON extends JSONObject {
         switch (getType()) {
             case STANDARD: return Projectile.AmmoType.STANDARD;
             case LASER: return Projectile.AmmoType.LASER;
-            case SPREAD: return Projectile.AmmoType.SPREAD;
+            case SPREAD: return Projectile.AmmoType.STANDARD;
             case AIRSTRIKE: return Projectile.AmmoType.AIRSTRIKE;
         }
         return null;
