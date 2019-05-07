@@ -502,7 +502,12 @@ public class PlayState extends State {
                     if (!exists) {
 //                        System.out.println(j);
                         idCounter.set(j.getID());
-                        fireFromPool(j.getAmmoType(), j.getPos(), j.getVel(), false);
+                        if (j.getAmmoType() == Projectile.AmmoType.SPREAD) {
+                            fireFromPool(Projectile.AmmoType.STANDARD, j.getPos(), j.getVel(), false);
+                        }
+                        else {
+                            fireFromPool(j.getAmmoType(), j.getPos(), j.getVel(), false);
+                        }
                     }
                     break;
             }

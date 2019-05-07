@@ -139,7 +139,7 @@ class ConnectedThread extends Thread {
                     e.printStackTrace();
                 }
             }
-        }, 0, 50, TimeUnit.MILLISECONDS);
+        }, 0, 100, TimeUnit.MILLISECONDS);
     }
 
     private StringBuilder builder;
