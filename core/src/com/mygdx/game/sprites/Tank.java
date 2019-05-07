@@ -167,7 +167,7 @@ public class Tank extends GameSprite {
         // barrel
         barrelSprite.setPosition(body.getPosition().x - barrelSprite.getWidth()/2 + 8f, body.getPosition().y - barrelSprite.getHeight()/2 + 4f);
 
-        barrelDeg = Math.round(barrelSprite.getRotation() - (currTank-tankSprite.getRotation()));
+        barrelDeg = barrelSprite.getRotation() - (currTank-tankSprite.getRotation());
         updateBarrel();
     }
 
