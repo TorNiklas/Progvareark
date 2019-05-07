@@ -54,6 +54,7 @@ public class GUI {
 
     private Image endGameV;
     private Image endGameD;
+    private Image enemyDc;
     private Image ammoImage;
     private Image enemyTurn;
 
@@ -149,6 +150,10 @@ public class GUI {
         endGameV.setName("endGameD");
         endGameD.setPosition(TankGame.WIDTH/2-endGameD.getWidth()/2, TankGame.HEIGHT/2);
 
+        enemyDc = new Image(new Texture("enemyDc.png"));
+        enemyDc.setName("enemyDc");
+        enemyDc.setPosition(TankGame.WIDTH/2-enemyDc.getWidth()/2, TankGame.HEIGHT/2);
+
         enemyTurn = new Image(new Texture("enemyTurn.png"));
         enemyTurn.setPosition(TankGame.WIDTH/2-enemyTurn.getWidth()/2, TankGame.HEIGHT/1.25f);
 
@@ -202,9 +207,11 @@ public class GUI {
         stage.addActor(surrender);
         stage.addActor(endGameV);
         stage.addActor(endGameD);
+        stage.addActor(enemyDc);
         stage.addActor(enemyTurn);
         endGameV.setVisible(false);
         endGameD.setVisible(false);
+        enemyDc.setVisible(false);
         enemyTurn.setVisible(false);
 
 
@@ -400,6 +407,7 @@ public class GUI {
 
         endGameV.addListener(endListener);
         endGameD.addListener(endListener);
+        enemyDc.addListener(endListener);
 
         final Dialog dialog = new Dialog("Warning", skin, "dialog") {
             public void result(Object obj) {
@@ -502,6 +510,10 @@ public class GUI {
         } else {
             endGameD.setVisible(true);
         }
+    }
+
+    public void enemyDcEnd(){
+        enemyDc.setVisible(true);
     }
 
     private boolean playable = true;
