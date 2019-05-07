@@ -168,12 +168,6 @@ public class Tank extends GameSprite {
         barrelSprite.setPosition(body.getPosition().x - barrelSprite.getWidth()/2 + 8f, body.getPosition().y - barrelSprite.getHeight()/2 + 4f);
 
         barrelDeg = Math.round(barrelSprite.getRotation() - (currTank-tankSprite.getRotation()));
-        if (isLocal()) {
-            System.out.println("Curr barrel: " + barrelSprite.getRotation() + " \n " +
-                    "Old tank rotate: " + currTank + " \n " +
-                    "New tank rotate: " + tankSprite.getRotation() + " \n " +
-                    (barrelSprite.getRotation() - (currTank-tankSprite.getRotation())));
-        }
         updateBarrel();
     }
 
