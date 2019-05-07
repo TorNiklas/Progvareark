@@ -153,9 +153,6 @@ public class Tank extends GameSprite {
         // handle movement
         move();
 
-        // handle barrel rotation
-        updateBarrel();
-
         // handle fire power
         powerUp();
 
@@ -164,10 +161,20 @@ public class Tank extends GameSprite {
 
         // tank
         tankSprite.setPosition(body.getPosition().x - tankSprite.getWidth()/2, body.getPosition().y - tankSprite.getHeight()/2);
+        float currTank = tankSprite.getRotation();
         tankSprite.setRotation(body.getAngle() * MathUtils.radiansToDegrees);
 
         // barrel
         barrelSprite.setPosition(body.getPosition().x - barrelSprite.getWidth()/2 + 8f, body.getPosition().y - barrelSprite.getHeight()/2 + 4f);
+
+        barrelDeg = Math.round(barrelSprite.getRotation() - (currTank-tankSprite.getRotation()));
+        if (isLocal()) {
+            System.out.println("Curr barrel: " + barrelSprite.getRotation() + " \n " +
+                    "Old tank rotate: " + currTank + " \n " +
+                    "New tank rotate: " + tankSprite.getRotation() + " \n " +
+                    (barrelSprite.getRotation() - (currTank-tankSprite.getRotation())));
+        }
+        updateBarrel();
     }
 
     @Override
@@ -319,10 +326,10 @@ public class Tank extends GameSprite {
     }
 
     public void updateBarrel() {
-        if(increase && barrelDeg > -60) {
+        if(increase && barrelDeg > Math.toDegrees(body.getAngle())) {
             barrelDeg -= aimRate;
         }
-        if(decrease && barrelDeg < 240) {
+        if(decrease && barrelDeg < 180+Math.toDegrees(body.getAngle())) {
             barrelDeg += aimRate;
         }
         barrelSprite.setRotation(barrelDeg);
