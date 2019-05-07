@@ -13,6 +13,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.concurrent.Executors;
@@ -138,8 +139,11 @@ class ConnectedThread extends Thread {
                     e.printStackTrace();
                 }
             }
-        }, 100, 100, TimeUnit.MILLISECONDS);
+        }, 0, 50, TimeUnit.MILLISECONDS);
     }
+
+    private StringBuilder builder;
+    private InputStreamReader isReader;
 
     public void run() {
         System.out.println("ConnThread running...");
@@ -152,7 +156,43 @@ class ConnectedThread extends Thread {
         startWriteLoop();
 
         System.out.println("Starting listen");
-        buffer = new byte[1024];
+        builder = new StringBuilder(JOLength);
+        isReader = new InputStreamReader(input);
+
+        while (true) {
+            try {
+                int ch = isReader.read();
+                if (ch != -1) {
+                    char b = (char) ch;
+                    switch (b) {
+                        case '{': //New JSON object, empty the string builder
+//                            builder.setLength(0);
+                            builder = new StringBuilder(JOLength);
+                            builder.append(b);
+                            break;
+                        case '}': //End of JSON object
+                            builder.append(b);
+                            act.sprites.push(new SpriteJSON(builder.toString()));
+                            break;
+                        default:
+                            builder.append(b);
+                            break;
+                    }
+                }
+            }
+            catch (IOException e) {
+                System.out.println("Input stream disconnected");
+                cancel();
+                e.printStackTrace();
+                break;
+            }
+        }
+
+
+
+
+        //-----------------------
+        /*buffer = new byte[1024];
         int numBytes; // bytes returned from read()
         String in;
 
@@ -163,8 +203,8 @@ class ConnectedThread extends Thread {
 
                 in = new String(buffer, 0, numBytes);
 
-                /*System.out.println("READ FROM STREAM:");
-                System.out.println(in);*/
+                *//*System.out.println("READ FROM STREAM:");
+                System.out.println(in);*//*
 
                 int len = in.length();
 
@@ -190,9 +230,9 @@ class ConnectedThread extends Thread {
                 }
 
 
-                /*else if (len == 120) {
+                *//*else if (len == 120) {
 
-                }*/
+                }*//*
 
             } catch (IOException e) {
                 System.out.println("Input stream disconnected");
@@ -200,11 +240,11 @@ class ConnectedThread extends Thread {
                 e.printStackTrace();
                 break;
             }
-            /*catch (JSONException e) {
+            *//*catch (JSONException e) {
                 e.printStackTrace();
                 System.out.println("ERROR IN JSON");
-            }*/
-        }
+            }*//*
+        }*/
     }
 
     // Call this from the main activity to send data to the remote device.
