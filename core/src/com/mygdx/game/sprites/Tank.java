@@ -37,7 +37,7 @@ public class Tank extends GameSprite {
     private int firePower;
     private int maxFirePower;
 
-    private int barrelDeg;
+    private float barrelDeg;
     private int airStrikePos;
     private int aimRate;
 
