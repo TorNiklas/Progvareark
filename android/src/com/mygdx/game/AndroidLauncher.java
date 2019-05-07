@@ -140,12 +140,6 @@ public class AndroidLauncher extends AndroidApplication implements BTInterface {
 
 	}
 
-	/*@Override
-	public void startClientGame(String code) {
-		System.out.println("Starting client game");
-		connThread.startGameClient(code);
-	}*/
-
 	@Override
 	public void disconnect() {
 		sprites = new Stack<>();
@@ -162,7 +156,6 @@ public class AndroidLauncher extends AndroidApplication implements BTInterface {
 
 
 
-	// Create a BroadcastReceiver for ACTION_FOUND.
 	private final BroadcastReceiver receiver = new BroadcastReceiver() {
 		//ArrayList<BluetoothDevice> devices = new ArrayList<>();
 
@@ -172,8 +165,6 @@ public class AndroidLauncher extends AndroidApplication implements BTInterface {
 				public void run() {
 					String action = intent.getAction();
 					if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-						// Discovery has found a device. Get the BluetoothDevice
-						// object and its info from the Intent.
 						BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
 						System.out.println("BT unit found: " + device.getName());
 						String name = device.getName();
@@ -242,17 +233,16 @@ public class AndroidLauncher extends AndroidApplication implements BTInterface {
 				else if (requestCode == 1 || requestCode == 2) {
 				    if (resultCode == RESULT_OK) {
                         System.out.println("Client req accepted, start discovery");
-						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {  // Only ask for these permissions on runtime when running Android 6.0 or higher
+						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 							runOnUiThread(new Runnable() {
 								@Override
 								public void run() {
 									switch (ContextCompat.checkSelfPermission(getBaseContext(), Manifest.permission.ACCESS_COARSE_LOCATION)) {
 										case PackageManager.PERMISSION_DENIED:
 											((TextView) new AlertDialog.Builder(AndroidLauncher.this)
-													.setTitle("Runtime Permissions up ahead")
-													.setMessage(Html.fromHtml("<p>To find nearby bluetooth devices please click \"Allow\" on the runtime permissions popup.</p>" +
-															"<p>For more info see <a href=\"http://developer.android.com/about/versions/marshmallow/android-6.0-changes.html#behavior-hardware-id\">here</a>.</p>"))
-													.setNeutralButton("Okay", new DialogInterface.OnClickListener() {
+													.setTitle("Bluetooth permission approval")
+													.setMessage(Html.fromHtml("<p>In order to discover nearby Bluetooth devices, we need permission to scan your local area. Please click \"Allow\" on the permission popup.</p>"))
+													.setNeutralButton("OK", new DialogInterface.OnClickListener() {
 														@Override
 														public void onClick(DialogInterface dialog, int which) {
 															if (ContextCompat.checkSelfPermission(getBaseContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -264,7 +254,7 @@ public class AndroidLauncher extends AndroidApplication implements BTInterface {
 													})
 													.show()
 													.findViewById(android.R.id.message))
-													.setMovementMethod(LinkMovementMethod.getInstance());       // Make the link clickable. Needs to be called after show(), in order to generate hyperlinks
+													.setMovementMethod(LinkMovementMethod.getInstance());
 											break;
 										case PackageManager.PERMISSION_GRANTED:
 											BluetoothAdapter.getDefaultAdapter().startDiscovery();
