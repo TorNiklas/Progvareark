@@ -32,8 +32,8 @@ public class OptionState extends State {
         bg = new Image((Texture) assetHandler.manager.get(assetHandler.bgPath));
         //soundBtn.setPosition(cam.position.x - soundBtn.getWidth()/2, 400);
 
-        optionTitle = new Image((Texture) assetHandler.manager.get(assetHandler.optionsTitlePath));
-        optionTitle.setSize(optionTitle.getWidth(), optionTitle.getHeight());
+        optionTitle = new Image((Texture) assetHandler.manager.get(assetHandler.optionsPath));
+        optionTitle.setSize(optionTitle.getWidth()*1.5f, optionTitle.getHeight()*1.5f);
         optionTitle.setPosition(cam.position.x - optionTitle.getWidth()/2, 500+optionTitle.getHeight()/4);
 
         volumeOn = new Image((Texture) assetHandler.manager.get(assetHandler.volumeOnBtnPath));
