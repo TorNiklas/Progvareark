@@ -404,7 +404,7 @@ public class GUI {
         final Dialog dialog = new Dialog("Warning", skin, "dialog") {
             public void result(Object obj) {
                 if(obj.equals(true)){
-                    TankGame.getBluetooth().disconnect();
+                    //TankGame.getBluetooth().disconnect();
                     GameStateManager.getGsm().set(new MenuState());
                 }
                 System.out.println("result "+obj);
