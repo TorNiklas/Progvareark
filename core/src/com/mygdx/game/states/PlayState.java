@@ -74,6 +74,14 @@ public class PlayState extends State {
 
     private AssetHandler assetHandler;
 
+    private Runnable onDisconnect = new Runnable() {
+        @Override
+        public void run() {
+            System.out.println("Disconnected, setting menustate");
+            GameStateManager.getGsm().set(new MenuState());
+        }
+    };
+
     public PlayState(int level, int seed) {
         super();
         this.level = level;
@@ -626,5 +634,10 @@ public class PlayState extends State {
 
     public static ArrayList<GameSprite> getGameSprites() {
         return gameSprites;
+    }
+
+    @Override
+    public void onLoad() {
+        TankGame.getBluetooth().setOnDisconnect(onDisconnect);
     }
 }

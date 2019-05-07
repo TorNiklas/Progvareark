@@ -90,4 +90,9 @@ public class LoadingState extends State {
     public void dispose() {
 
     }
+
+    @Override
+    public void onLoad() {
+
+    }
 }

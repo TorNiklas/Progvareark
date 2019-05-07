@@ -141,10 +141,12 @@ public class GUI {
 
         endGameV = new Image(new Texture("victory.png"));
         endGameV.setSize(600, 200);
+        endGameV.setName("endGameV");
         endGameV.setPosition(TankGame.WIDTH/2-endGameV.getWidth()/2, TankGame.HEIGHT/2);
 
         endGameD = new Image(new Texture("defeat.png"));
         endGameD.setSize(600, 200);
+        endGameV.setName("endGameD");
         endGameD.setPosition(TankGame.WIDTH/2-endGameD.getWidth()/2, TankGame.HEIGHT/2);
 
         enemyTurn = new Image(new Texture("enemyTurn.png"));
@@ -512,7 +514,7 @@ public class GUI {
             Array<Actor> stageActors = stage.getActors();
             for (Actor a : stageActors) {
                 if (a.getName() != null) {
-                    if (a.getName().equals("surrender") || a.getName().equals("volumeOn") || a.getName().equals("volumeOff") || a.getName().equals("endGame")) {
+                    if (a.getName().equals("surrender") || a.getName().equals("volumeOn") || a.getName().equals("volumeOff") || a.getName().equals("endGameV") || a.getName().equals("endGameD")) {
                         return;
                     }
                 }

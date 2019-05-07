@@ -19,6 +19,7 @@ public class GameStateManager {
     }
 
     public void push(State state){
+        state.onLoad();
         states.push(state);
     }
 
@@ -28,6 +29,7 @@ public class GameStateManager {
 
 
     public void set(State state){
+        state.onLoad();
         states.pop().dispose();
         states.push(state);
     }

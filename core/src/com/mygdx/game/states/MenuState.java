@@ -70,7 +70,6 @@ public class MenuState extends State {
         // event handlers, should probably not be here
         hostBtn.addListener(new InputListener() {
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                TankGame.getBluetooth().disconnect();
                 TankGame.host = true;
                 System.out.println("host selected");
                 GameStateManager.getGsm().set(new GameSetupState());
@@ -86,7 +85,6 @@ public class MenuState extends State {
 
                     @Override
                     public void input(String text) {
-                        TankGame.getBluetooth().disconnect();
                         // handle input
                         System.out.println(text);
                         TankGame.getBluetooth().startClientConnection(text, onConnected, onDisconnect);
@@ -173,5 +171,12 @@ public class MenuState extends State {
     @Override
     public void dispose() {
         //bg.dispose();
+    }
+
+    @Override
+    public void onLoad() {
+        System.out.println("MenuState.onLoad()");
+        TankGame.getBluetooth().setOnDisconnect(onDisconnect);
+        TankGame.getBluetooth().disconnect();
     }
 }

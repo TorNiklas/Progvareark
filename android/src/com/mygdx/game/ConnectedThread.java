@@ -75,14 +75,20 @@ class ConnectedThread extends Thread {
 /*                System.out.println("WRITE");
                 System.out.println(s);
                 System.out.println();*/
-            write(s);
+            try {
+                write(s);
+            }
+            catch (IOException e) {
+                System.out.println("ERROR SENDING STUFF");
+                e.printStackTrace();
+                cancel();
+            }
         }
     }
 
     public void startGameHost() {
         //Send seed
         try {
-
             write(level + "");
             System.out.println("Sent level: " + level);
             input.read();
@@ -149,7 +155,6 @@ class ConnectedThread extends Thread {
         buffer = new byte[1024];
         int numBytes; // bytes returned from read()
         String in;
-        StringBuilder bldr = new StringBuilder();
 
         // Keep listening to the InputStream until an exception occurs.
         while (true) {
@@ -191,6 +196,7 @@ class ConnectedThread extends Thread {
 
             } catch (IOException e) {
                 System.out.println("Input stream disconnected");
+                cancel();
                 e.printStackTrace();
                 break;
             }
@@ -202,18 +208,13 @@ class ConnectedThread extends Thread {
     }
 
     // Call this from the main activity to send data to the remote device.
-    public void write(SpriteJSON obj) {
+    public void write(SpriteJSON obj) throws IOException {
         write(obj.toString());
     }
 
-    public void write(String str) {
-        try {
-            output.write(str.getBytes());
+    public void write(String str) throws IOException {
+        output.write(str.getBytes());
 //            output.write(0);
-        } catch (IOException e) {
-            System.out.println("ERROR SENDING STRING:" + str);
-            e.printStackTrace();
-        }
     }
 
     private String readString() { //Read a single string
@@ -235,6 +236,8 @@ class ConnectedThread extends Thread {
         if (exec != null) {
             exec.shutdown();
         }
+        Gdx.app.postRunnable(act.onDisconnect);
+//        act.onDisconnect.run();
         try {
             mmSocket.close();
         } catch (IOException e) {
