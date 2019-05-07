@@ -75,7 +75,8 @@ public class Tank extends GameSprite {
 
         // barrel sprite
         barrelSprite = new Sprite((Texture) assetHandler.manager.get(assetHandler.barrelPath)); //new Sprite(new Texture("barrel.png"));
-        barrelSprite.setOrigin(0f, barrelSprite.getHeight()/2);
+        barrelSprite.setScale(1.3f, 1f);
+        barrelSprite.setOrigin(0, barrelSprite.getHeight()/2f);
 
         // create box2d tank
         generateTank(world, new Vector2(tankSprite.getX(), tankSprite.getY()));
