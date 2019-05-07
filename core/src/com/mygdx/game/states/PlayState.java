@@ -81,7 +81,7 @@ public class PlayState extends State {
             gui.setPlayable(false);
             gui.enemyDcEnd();
             System.out.println("Disconnected, setting menustate");
-            GameStateManager.getGsm().set(new MenuState());
+            //GameStateManager.getGsm().set(new MenuState());
         }
     };
 
