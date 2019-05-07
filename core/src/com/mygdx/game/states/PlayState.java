@@ -137,11 +137,12 @@ public class PlayState extends State {
                     }
                     
                     System.out.println("Enemy tank hit!" + bodyB.getPosition());
-//                    System.out.println("Enemy tank health was: " + ((Tank)gameSprites.get(1)).getHealth());
 
-//                    ((Tank)gameSprites.get(1)).setHealth(((Tank)gameSprites.get(1)).getHealth() - (Float)bodyB.getUserData());
-
-//                    System.out.println("Enemy tank health now: " + ((Tank)gameSprites.get(1)).getHealth());
+                    if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
+                        System.out.println("Enemy tank health was: " + ((Tank)gameSprites.get(1)).getHealth());
+                        ((Tank)gameSprites.get(1)).setHealth(((Tank)gameSprites.get(1)).getHealth() - (Float)bodyB.getUserData());
+                        System.out.println("Enemy tank health now: " + ((Tank)gameSprites.get(1)).getHealth());
+                    }
 
                     // explosion effect
                     Vector2 hitPos = bodyB.getPosition();
