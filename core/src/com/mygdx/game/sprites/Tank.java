@@ -36,6 +36,7 @@ public class Tank extends GameSprite {
 
     private int firePower;
     private int maxFirePower;
+    private int step;
 
     private float barrelDeg;
     private int airStrikePos;
@@ -97,7 +98,8 @@ public class Tank extends GameSprite {
         isPoweringUp = false;
         gainPower = true;
         firePower = 1;
-        maxFirePower = 150;
+        maxFirePower = 300;
+        step = 2;
 
         // airstrike
         airStrikePos = x;
@@ -274,9 +276,9 @@ public class Tank extends GameSprite {
             }
 
             if(gainPower) {
-                firePower += 1;
+                firePower += step;
             } else {
-                firePower -= 1;
+                firePower -= step;
             }
 		}
 	}
