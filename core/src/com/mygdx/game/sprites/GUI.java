@@ -168,7 +168,7 @@ public class GUI {
         //tankHealthBar = generateProgressBar(0, 0, 35, 5, Color.FIREBRICK, Color.GREEN);
 
         // create tank fire power bar
-        tankFirePower = generateProgressBar(0, 0, 60, 10, 0f, 150f, Color.BLACK, Color.RED);
+        tankFirePower = generateProgressBar(0, 0, 60, 10, 0f, 300f, Color.BLACK, Color.RED);
         tankFirePower.setVisible(false);
 
         timer = System.currentTimeMillis();
