@@ -86,6 +86,7 @@ public class MenuState extends State {
                     @Override
                     public void input(String text) {
                         // handle input
+                        TankGame.host = false;
                         System.out.println(text);
                         TankGame.getBluetooth().startClientConnection(text, onConnected, onDisconnect);
 
@@ -124,30 +125,10 @@ public class MenuState extends State {
 
 
     @Override
-    public void handleInput() {
-        /*if(Gdx.input.justTouched()){
-            //TankGame.getBluetooth().startHost();
-            if (Gdx.input.getX() > Gdx.graphics.getWidth() / 2 && Gdx.input.getY() > Gdx.graphics.getHeight() / 2) {
-                System.out.println("HOST");
-                TankGame.getBluetooth().startHost();
-            }
-            else if (Gdx.input.getX() < Gdx.graphics.getWidth() / 2 && Gdx.input.getY() > Gdx.graphics.getHeight() / 2) {
-                System.out.println("CLIENT");
-                TankGame.getBluetooth().startClient();
-            }
-            else {
-
-                GameStateManager.getGsm().set(new GameSetupState(*//*gsm*//*));
-            }
-            // go to game setup always, for testing
-            GameStateManager.getGsm().set(new GameSetupState(*//*gsm*//*));
-        }*/
-    }
+    public void handleInput() {}
 
     @Override
-    public void update(float dt) {
-        //handleInput();
-    }
+    public void update(float dt) {}
 
     @Override
     public void render(SpriteBatch sb, PolygonSpriteBatch psb) {
@@ -157,21 +138,11 @@ public class MenuState extends State {
         sb.setProjectionMatrix(cam.combined);
         sb.begin();
 
-        // background
-        //sb.draw(bg, 0,0, 1280, 720);
-
-        // menu buttons
-        //hostBtn.draw(sb, 1f);
-        //connectBtn.draw(sb, 1f);
-        //optionBtn.draw(sb, 1f);
-        //tutorialBtn.draw(sb, 1f);
         sb.end();
     }
 
     @Override
-    public void dispose() {
-        //bg.dispose();
-    }
+    public void dispose() {}
 
     @Override
     public void onLoad() {
