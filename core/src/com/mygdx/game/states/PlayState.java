@@ -77,8 +77,11 @@ public class PlayState extends State {
     private Runnable onDisconnect = new Runnable() {
         @Override
         public void run() {
+            projectilePool.freeAll(activeProjectiles);
+            gui.setPlayable(false);
+            gui.enemyDcEnd();
             System.out.println("Disconnected, setting menustate");
-            GameStateManager.getGsm().set(new MenuState());
+            //GameStateManager.getGsm().set(new MenuState());
         }
     };
 
