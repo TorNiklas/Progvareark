@@ -67,7 +67,7 @@ public class AndroidLauncher extends AndroidApplication implements BTInterface {
 			@Override
 			public void run() {
 				try {
-					Thread.sleep(50); //Hack, it won't always change to new menu otherwise
+					Thread.sleep(50);
 				}
 				catch (Exception e) {}
 				showToast("Starting host connection...");
@@ -81,9 +81,6 @@ public class AndroidLauncher extends AndroidApplication implements BTInterface {
 				while(!BluetoothAdapter.getDefaultAdapter().getName().equals(newName)) {}
 				showToast("Name changed");
 
-				//currentMode = BTMode.GAME_HOST;
-				//HOST
-				//Makes device discoverable
 				Intent discoverableIntent =
 						new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
 				discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 60);
@@ -172,7 +169,6 @@ public class AndroidLauncher extends AndroidApplication implements BTInterface {
 								connThread.startGameClient();
 							} catch (IOException e) {
 								e.printStackTrace();
-								//Ikke riktig device?
 							}
 						}
 					}
