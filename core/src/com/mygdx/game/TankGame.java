@@ -41,9 +41,6 @@ public class TankGame extends ApplicationAdapter {
 		assetHandler = new AssetHandler();
 		GameStateManager.getGsm().push(new LoadingState());
 
-		// TODO: use me
-		//textureAtlas = assetHandler.manager.get(assetHandler.textureAtlasPath);
-
 		// music
 		music_level1 = Gdx.audio.newMusic(Gdx.files.internal("sounds/level1.ogg"));
 		music_level1.setLooping(true);

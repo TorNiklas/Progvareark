@@ -111,7 +111,6 @@ public class Projectile extends GameSprite implements Pool.Poolable {
         this.type = type;
 
         switch (type) {
-            // TODO: BALANCE BULLET DAMAGE
             case STANDARD:
                 bulletTexture = assetHandler.manager.get(assetHandler.bulletPath);
                 dmg = 15.0f;

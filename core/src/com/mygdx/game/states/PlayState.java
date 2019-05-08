@@ -335,11 +335,7 @@ public class PlayState extends State {
     }
 
     public void fireFromPool(Projectile.AmmoType type, Vector2 pos, Vector2 force, boolean local) {
-        /*System.out.println("FIRING " + pos.x + " - " + pos.y);
-        System.out.println("FORCE " + force.x + " - " + force.y);
-        System.out.println("Local " + local);*/
 
-        // TODO: add more types
         switch (type) {
             case STANDARD:
                 Projectile p = projectilePool.obtain();

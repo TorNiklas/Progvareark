@@ -25,8 +25,6 @@ public abstract class GameSprite {
     public abstract void dispose();
     public abstract Vector2 getPosition();
     public abstract Sprite getSprite();
-    /*SpriteSerialize getSerialize();
-    void readSerialize(SpriteSerialize sprite);*/
 
     public abstract SpriteJSON getJSON();
 

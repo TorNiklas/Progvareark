@@ -1,7 +1,6 @@
 package com.mygdx.game.network;
 
 import com.badlogic.gdx.math.Vector2;
-import com.mygdx.game.sprites.GameSprite;
 import com.mygdx.game.sprites.Projectile;
 
 import org.json.JSONObject;
@@ -15,16 +14,14 @@ public class SpriteJSON extends JSONObject {
         STANDARD,
         SPREAD,
         LASER,
-        AIRSTRIKE // todo Ammo types exist both here and in Projectile
+        AIRSTRIKE
     }
 
     public SpriteJSON(String in) {
         super(in);
-//        System.out.println(in);
     }
 
     public SpriteJSON(int id, Type type, Vector2 pos, Vector2 vel, float angle) {
-//        super(4);
         this.put("ID", padNum(id));
         this.put("TYPE", padNum(type.ordinal()));
         this.put("POSX", padNum((int)pos.x));
@@ -35,7 +32,6 @@ public class SpriteJSON extends JSONObject {
     }
 
     public SpriteJSON(Type type, int ammo, float energy, float health) {
-//        super(4);
         this.put("ID", padNum(ammo));
         this.put("TYPE", padNum(type.ordinal()));
         this.put("POSX", padNum((int)health));
@@ -46,7 +42,6 @@ public class SpriteJSON extends JSONObject {
     }
 
     public SpriteJSON(Type type, int player, float time) {
-//        super(4);
         this.put("ID", padNum(player));
         this.put("TYPE", padNum(type.ordinal()));
         this.put("POSX", padNum((int)time));
@@ -79,7 +74,6 @@ public class SpriteJSON extends JSONObject {
     }
 
     public int getPlayer() {
-//        System.out.println(this.toString());
         return getID();
     }
 
@@ -88,7 +82,6 @@ public class SpriteJSON extends JSONObject {
     }
 
     public int getID() {
-//        System.out.println(this.toString());
         return this.getInt("ID");
     }
 

@@ -19,17 +19,12 @@ import android.support.v4.content.ContextCompat;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.mygdx.game.network.SpriteJSON;
 
-import org.json.JSONObject;
-
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Stack;
 import java.util.UUID;
 
@@ -119,12 +114,9 @@ public class AndroidLauncher extends AndroidApplication implements BTInterface {
 			@Override
 			public void run() {
 				showToast("Starting client connection...");
-				//currentMode = BTMode.GAME_CLIENT;
 				BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
 
-				if (adapter == null) {
-					// Device doesn't support Bluetooth
-				}
+				if (adapter == null) {}
 				else {
 					Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
 					if (!adapter.isEnabled()) {
@@ -176,8 +168,8 @@ public class AndroidLauncher extends AndroidApplication implements BTInterface {
 							try {
 								BluetoothSocket socket = device.createInsecureRfcommSocketToServiceRecord(uuid);
 								socket.connect();
-								connThread = new ConnectedThread(socket, false, AndroidLauncher.this);
-								connThread.startGameClient(code);
+								connThread = new ConnectedThread(socket, AndroidLauncher.this);
+								connThread.startGameClient();
 							} catch (IOException e) {
 								e.printStackTrace();
 								//Ikke riktig device?
@@ -210,15 +202,13 @@ public class AndroidLauncher extends AndroidApplication implements BTInterface {
 							//Connected
 							showToast("Connected, stopping server socket");
 							serverSocket.close();
-							connThread = new ConnectedThread(socket, true, AndroidLauncher.this);
+							connThread = new ConnectedThread(socket, AndroidLauncher.this);
 
 							if (ConnectedThread.level != -1 && ConnectedThread.seed != -1) {
 								connThread.startGameHost();
 							}
-							//connThread.start();
 						}
 						catch (Exception e) {
-							//TODO: Error handling
 							System.out.println("Error accepting sockets");
 							e.printStackTrace();
 						}
@@ -289,13 +279,6 @@ public class AndroidLauncher extends AndroidApplication implements BTInterface {
 
 	private void showToast(final String text) {
 		System.out.println(text);
-		// FIXME: doesn't work on all android devices?
-		/*runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				Toast.makeText(AndroidLauncher.this, text, Toast.LENGTH_SHORT).show();
-			}
-		});*/
 	}
 
 	@Override
