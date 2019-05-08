@@ -20,7 +20,6 @@ import com.badlogic.gdx.utils.ShortArray;
 import com.mygdx.game.TankGame;
 
 import java.util.ArrayList;
-import static com.badlogic.gdx.math.MathUtils.random;
 
 public class Ground {
     private Vector3 position;

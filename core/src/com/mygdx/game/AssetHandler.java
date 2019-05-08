@@ -70,7 +70,6 @@ public class AssetHandler {
     public final String forestClouds2Path = "backgrounds/forest/clouds_2.png";
     public final String forestClouds3Path = "backgrounds/forest/clouds_3.png";
 
-    // TODO: use texture atlas for some textures to short down this list
     public final String textureAtlasPath = "output/game.atlas";
 
 

@@ -3,7 +3,6 @@ package com.mygdx.game.desktop;
 import com.mygdx.game.BTInterface;
 import com.mygdx.game.network.SpriteJSON;
 
-import java.util.ArrayList;
 import java.util.Stack;
 
 public class BT implements BTInterface {

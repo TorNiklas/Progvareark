@@ -8,9 +8,6 @@ import com.mygdx.game.network.SpriteJSON;
 import com.mygdx.game.states.GameStateManager;
 import com.mygdx.game.states.PlayState;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -22,8 +19,6 @@ import java.util.concurrent.TimeUnit;
 
 class ConnectedThread extends Thread {
     private final BluetoothSocket mmSocket;
-    /*private final InputStream mmInStream;
-    private final OutputStream mmOutStream;*/
     private final InputStream input;
     private final OutputStream output;
     private final int JOLength = 105; //JSON Object length in chars
@@ -32,32 +27,27 @@ class ConnectedThread extends Thread {
     public static int level = -1;
     public static int seed = -1;
 
-    //    private ArrayList<SpriteJSON> objs = new ArrayList<>();
     private AndroidLauncher act;
-    private String code;
 
     private ScheduledExecutorService exec;
 
-    public ConnectedThread(BluetoothSocket socket, boolean host, AndroidLauncher act) {
+    public ConnectedThread(BluetoothSocket socket, AndroidLauncher act) {
         this.act = act;
         System.out.println("Creating ConnThread");
         mmSocket = socket;
 
         InputStream tmpIn = null;
         OutputStream tmpOut = null;
-        // Get the input and output streams; using temp objects because
-        // member streams are final.
+
         System.out.println("Creating streams...");
         try {
             tmpIn = socket.getInputStream();
-            //tmpOIS = new ObjectInputStream(socket.getInputStream());
             System.out.println("Input stream created...");
         } catch (IOException e) {
             Log.e("TAG", "Error occurred when creating input stream", e);
         }
         try {
             tmpOut = socket.getOutputStream();
-            //tmpOOS = new ObjectOutputStream(socket.getOutputStream());
             System.out.println("Output stream created...");
         } catch (IOException e) {
             Log.e("TAG", "Error occurred when creating output stream", e);
@@ -65,17 +55,11 @@ class ConnectedThread extends Thread {
 
         input = tmpIn;
         output = tmpOut;
-
-        //mmInStream = tmpIn;
-        //mmOutStream = tmpOut;
     }
 
     private void writeSprites() {
         ArrayList<SpriteJSON> json = PlayState.getJSON();
         for (SpriteJSON s : json) {
-/*                System.out.println("WRITE");
-                System.out.println(s);
-                System.out.println();*/
             try {
                 write(s);
             }
@@ -103,8 +87,7 @@ class ConnectedThread extends Thread {
         this.start();
     }
 
-    public void startGameClient(String code) {
-        this.code = code;
+    public void startGameClient() {
         try {
             final int level = Integer.parseInt(readString());
             System.out.println("Read level: " + level);
@@ -130,8 +113,6 @@ class ConnectedThread extends Thread {
         exec.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
-//                System.out.println("Loop send");
-//                System.out.println(objs);
                 try {
                     writeSprites();
                 } catch (Exception e) {
@@ -147,7 +128,6 @@ class ConnectedThread extends Thread {
 
     public void run() {
         System.out.println("ConnThread running...");
-        //act.onConnected.run();
 
         Gdx.app.postRunnable(act.onConnected);
 
@@ -166,7 +146,6 @@ class ConnectedThread extends Thread {
                     char b = (char) ch;
                     switch (b) {
                         case '{': //New JSON object, empty the string builder
-//                            builder.setLength(0);
                             builder = new StringBuilder(JOLength);
                             builder.append(b);
                             break;
@@ -187,74 +166,14 @@ class ConnectedThread extends Thread {
                 break;
             }
         }
-
-
-
-
-        //-----------------------
-        /*buffer = new byte[1024];
-        int numBytes; // bytes returned from read()
-        String in;
-
-        // Keep listening to the InputStream until an exception occurs.
-        while (true) {
-            try {
-                numBytes = input.read(buffer);
-
-                in = new String(buffer, 0, numBytes);
-
-                *//*System.out.println("READ FROM STREAM:");
-                System.out.println(in);*//*
-
-                int len = in.length();
-
-                if (len == JOLength) {
-                    act.sprites.push(new SpriteJSON(in));
-
-                }
-                else if (len % JOLength == 0){
-
-                    int amount = len / JOLength;
-
-                    for (int i = 0; i < amount; i++) {
-                        int pos = i * JOLength;
-                        String s = in.substring(pos, pos + JOLength);
-                        //System.out.println(s);
-                        act.sprites.push(new SpriteJSON(s));
-                    }
-                }
-                else {
-                    System.out.println("DIFF INPUT O SHIT");
-                    System.out.println(in);
-                    System.out.println(in.getBytes().length);
-                }
-
-
-                *//*else if (len == 120) {
-
-                }*//*
-
-            } catch (IOException e) {
-                System.out.println("Input stream disconnected");
-                cancel();
-                e.printStackTrace();
-                break;
-            }
-            *//*catch (JSONException e) {
-                e.printStackTrace();
-                System.out.println("ERROR IN JSON");
-            }*//*
-        }*/
     }
 
-    // Call this from the main activity to send data to the remote device.
     public void write(SpriteJSON obj) throws IOException {
         write(obj.toString());
     }
 
     public void write(String str) throws IOException {
         output.write(str.getBytes());
-//            output.write(0);
     }
 
     private String readString() { //Read a single string
@@ -262,7 +181,6 @@ class ConnectedThread extends Thread {
         try {
             int num = input.read(buffer);
             String ret = new String(buffer, 0, num);
-//            System.out.println(ret);
             return ret;
         } catch (IOException e) {
             e.printStackTrace();
@@ -271,13 +189,11 @@ class ConnectedThread extends Thread {
         return "";
     }
 
-    // Call this method from the main activity to shut down the connection.
     public void cancel() {
         if (exec != null) {
             exec.shutdown();
         }
         Gdx.app.postRunnable(act.onDisconnect);
-//        act.onDisconnect.run();
         try {
             mmSocket.close();
         } catch (IOException e) {

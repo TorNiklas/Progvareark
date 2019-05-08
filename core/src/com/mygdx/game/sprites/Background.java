@@ -99,13 +99,5 @@ public class Background {
         }
     }
 
-    public void dispose() {
-        /*for(Sprite sLayer : staticLayers) {
-           sLayer.getTexture().dispose();
-        }
-
-        for(Sprite dLayer : dynamicLayers) {
-            dLayer.getTexture().dispose();
-        }*/
-    }
+    public void dispose() {}
 }
