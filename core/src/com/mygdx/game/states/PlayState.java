@@ -188,9 +188,6 @@ public class PlayState extends State {
                                     explosionSound.play();
                                 }
 
-                                // vibrate on tank hit, maybe only if own tank is hit?
-                                //Gdx.input.vibrate(500);
-
                                 // delete bullet
                                 bodyB.setAwake(false);
                                 p.setAlive(false);
@@ -335,11 +332,6 @@ public class PlayState extends State {
     }
 
     public void fireFromPool(Projectile.AmmoType type, Vector2 pos, Vector2 force, boolean local) {
-        /*System.out.println("FIRING " + pos.x + " - " + pos.y);
-        System.out.println("FORCE " + force.x + " - " + force.y);
-        System.out.println("Local " + local);*/
-
-        // TODO: add more types
         switch (type) {
             case STANDARD:
                 Projectile p = projectilePool.obtain();
@@ -479,7 +471,6 @@ public class PlayState extends State {
                     boolean exists = false;
                     for (Projectile p : activeProjectiles) {
                         if (p.getId() == j.getID()) {
-                            //System.out.println("Found existing proj");
                             exists = true;
                             p.readJSON(j);
                             break;
@@ -528,14 +519,10 @@ public class PlayState extends State {
 
 
         if(getPlayer().getHealth() <= 0){
-            /*System.out.println(getPlayer());
-            System.out.println(getOpponent());*/
             projectilePool.freeAll(activeProjectiles);
             gui.setPlayable(false);
             gui.endSplash(false);
         } else if (getOpponent().getHealth() <= 0) {
-            /*System.out.println(getPlayer());
-            System.out.println(getOpponent());*/
             projectilePool.freeAll(activeProjectiles);
             gui.setPlayable(false);
             gui.endSplash(true);
@@ -549,9 +536,6 @@ public class PlayState extends State {
     public void render(SpriteBatch sb, PolygonSpriteBatch psb) {
         sb.setProjectionMatrix(cam.combined);
         sb.begin();
-        /*for (Iterator<GameSprite> it = gameSprites.iterator(); it.hasNext();) {
-            it.next().draw(sb);
-        }*/
 
         // draw bg
         bg.draw(sb);
@@ -577,20 +561,12 @@ public class PlayState extends State {
         psb.begin();
         ground.draw(psb);
         psb.end();
-
-        // find another way to do this maybe, gives more depth to terrain
         sb.begin();
         shadow.draw(sb);
         sb.end();
 
         gui.draw(sb);
 
-        //stage for buttons
-        //stage.act(Gdx.graphics.getDeltaTime());
-        //stage.draw();
-
-        // box-2d
-        //debugRenderer.render(world, cam.combined);
         world.step(1/60f, 6, 2);
     }
 

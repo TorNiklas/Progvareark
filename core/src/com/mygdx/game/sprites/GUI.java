@@ -165,7 +165,6 @@ public class GUI {
 
         // create tank health bar
         tankHealthBar = generateProgressBar(0, 0, 35, 5, 100f, 100f, Color.FIREBRICK, Color.GREEN);
-        //tankHealthBar = generateProgressBar(0, 0, 35, 5, Color.FIREBRICK, Color.GREEN);
 
         // create tank fire power bar
         tankFirePower = generateProgressBar(0, 0, 60, 10, 0f, 300f, Color.BLACK, Color.RED);
@@ -233,16 +232,8 @@ public class GUI {
         handleInput();
     }
 
-    // move this elsewhere mby
     public void handleInput() {
-        //Button event handlers, should probably not be here
         leftBtn.addListener(new ClickListener() {
-            /*@Override
-            public boolean handle(Event event) {
-                System.out.println("Pressed left button");
-                //((Tank)gameSprites.get(0)).drive(new Vector2(-50f, -5f));
-                return true;
-            }*/
 
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 System.out.println("touch down - left");
@@ -494,7 +485,6 @@ public class GUI {
 
     public long getTime(){
         if (!TankGame.host) {
-//            System.out.println(timeLeft);
             return timeLeft;
         }
         long diff = 30 - ((System.currentTimeMillis()-timer)/1000);
@@ -565,13 +555,6 @@ public class GUI {
         }
     }
 
-    /*public void togglePlayable() {
-        System.out.println("TOGGLING PLAYABILITY: " + !playable);
-        setPlayable(!playable);
-
-
-    }*/
-
     public void update() {
         energyBar.setValue(tank.getEnergy());
         healthBar.setValue(tank.getHealth());
@@ -579,8 +562,6 @@ public class GUI {
         Vector2 enemyTankPos = enemyTank.getPosition();
         tankHealthBar.setPosition(enemyTankPos.x - tankHealthBar.getWidth()/2, enemyTankPos.y + 20);
         tankHealthBar.setValue(enemyTank.getHealth());
-        // TODO: fix rotation?
-        //tankHealthBar.setRotation(tank.getSprite().getRotation());
 
         Vector2 tankPos = tank.getPosition();
         tankFirePower.setPosition(tankPos.x - tankFirePower.getWidth()/2, tankPos.y + 20);
@@ -595,10 +576,6 @@ public class GUI {
             fireButton.setTouchable(Touchable.enabled);
             fireButton.getImage().setColor(Color.WHITE);
         }
-
-        /*if(getTime() == 0) {
-            setPlayable(false);
-        }*/
     }
 
     public void draw(SpriteBatch batch) {

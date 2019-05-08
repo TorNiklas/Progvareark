@@ -53,7 +53,6 @@ public class Tank extends GameSprite {
     private AssetHandler assetHandler;
 
     PlayState state;
-    //private static final AtomicInteger idCounter = new AtomicInteger();
 
 	public Tank(World world, PlayState state, int x, int y, boolean local, int id) {
 	    this(world, state, x, y);
@@ -177,7 +176,6 @@ public class Tank extends GameSprite {
     public Vector2 getPosition() {
         return new Vector2(tankSprite.getX() + (tankSprite.getWidth() / 2),
                 tankSprite.getY() + (tankSprite.getHeight() / 2));
-//        return body.getWorldCenter();
     }
 
     public Vector2 getBarrelPosition() {
@@ -205,8 +203,6 @@ public class Tank extends GameSprite {
 
     @Override
     public SpriteJSON getJSON() {
-//        System.out.println("Get JSON from tank");
-//        System.out.println(getPosition());
 	    return new SpriteJSON(id, SpriteJSON.Type.TANK, getPosition(), body.getLinearVelocity(), body.getAngle());
     }
 
@@ -219,30 +215,21 @@ public class Tank extends GameSprite {
         float posDiff = obj.getPos().x - getPosition().x;
         setEnergy(100);
         if (posDiff > 1) {
-            //body.setLinearVelocity(new Vector2(30f, body.getLinearVelocity().y));
             moveRight = true;
             moveLeft = false;
-//            System.out.println("Right");
         }
         else if (posDiff < -1) {
-            //body.setLinearVelocity(new Vector2(-30f, body.getLinearVelocity().y));
             moveRight = false;
             moveLeft = true;
-//            System.out.println("Left");
         }
         else {
-            //body.setLinearVelocity(new Vector2(0, body.getLinearVelocity().y));
             moveRight = false;
             moveLeft = false;
-//            System.out.println("Stop");
         }
     }
 
     public void readBarrelJSON(SpriteJSON json) {
 	    float diff = json.getAngle() - barrelDeg;
-//        System.out.println(json.getAngle());
-//        System.out.println(barrelDeg);
-//        System.out.println(diff);
 	    if (diff > 5) {
 	        increase = false;
 	        decrease = true;
@@ -257,8 +244,6 @@ public class Tank extends GameSprite {
             increase = false;
             decrease = false;
         }
-	    /*barrelDeg = json.getAngle();
-	    barrelSprite.setRotation(barrelDeg);*/
     }
 
     public int getFirePower() {
@@ -401,9 +386,6 @@ public class Tank extends GameSprite {
 
     @Override
     public void dispose(){
-        //tankSprite.getTexture().dispose();
-        //barrelSprite.getTexture().dispose();
-        //airStrike.getTexture().dispose();
     }
 
     @Override

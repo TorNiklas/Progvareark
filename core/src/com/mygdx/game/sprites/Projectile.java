@@ -19,12 +19,8 @@ import com.mygdx.game.TankGame;
 import com.mygdx.game.network.SpriteJSON;
 
 public class Projectile extends GameSprite implements Pool.Poolable {
-    private Vector3 position;
-    private Vector3 velocity;
-    private Rectangle bounds;
     private Sprite sprite;
     private boolean alive;
-    private Image displayImage;
     private Texture bulletTexture;
     private AssetHandler assetHandler;
     private AmmoType type;
@@ -81,7 +77,6 @@ public class Projectile extends GameSprite implements Pool.Poolable {
     }
 
     public Projectile(World world, float x, float y, Vector2 force) {
-        //id = idCounter.incrementAndGet();
         local = true;
         System.out.println("New projectile local: " + id);
         sprite = new Sprite(new Texture("bullet.png"));
@@ -97,7 +92,6 @@ public class Projectile extends GameSprite implements Pool.Poolable {
     public Projectile(World world, int id, float x, float y, Vector2 linVel) {
         System.out.println("New projectile from network: " + id);
         local = false;
-        //idCounter.set(id);
         this.id = id;
         bulletTexture = assetHandler.manager.get(assetHandler.bulletPath);
         sprite = new Sprite(bulletTexture);
@@ -225,9 +219,6 @@ public class Projectile extends GameSprite implements Pool.Poolable {
         }
     }
 
-    public void setVelocity(Vector3 velocity) {
-        this.velocity = velocity;
-    }
 
     public boolean isAlive() {
         return alive;
@@ -244,7 +235,6 @@ public class Projectile extends GameSprite implements Pool.Poolable {
     @Override
     public Vector2 getPosition() {
         return new Vector2(sprite.getX(), sprite.getY());
-//        return body.getWorldCenter();
     }
 
     public Vector2 getBodyPosition() {
@@ -278,9 +268,6 @@ public class Projectile extends GameSprite implements Pool.Poolable {
         }
     }
 
-    public Rectangle getBounds() {
-        return bounds;
-    }
 
     @Override
     public void dispose(){

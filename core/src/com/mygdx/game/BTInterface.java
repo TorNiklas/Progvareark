@@ -4,17 +4,15 @@ import com.mygdx.game.network.SpriteJSON;
 import java.util.Stack;
 
 public interface BTInterface {
-    public void startHostConnection(String code, Runnable onConnected, Runnable onDisconnect);
+    void startHostConnection(String code, Runnable onConnected, Runnable onDisconnect);
 
-    public void startHostGame(int level, int seed);
+    void startHostGame(int level, int seed);
 
-    public void startClientConnection(String code, Runnable onConnected, Runnable onDisconnect);
+    void startClientConnection(String code, Runnable onConnected, Runnable onDisconnect);
 
-    //public void startClientGame();
+    void disconnect();
 
-    public void disconnect();
+    void setOnDisconnect(Runnable onDisconnect);
 
-    public void setOnDisconnect(Runnable onDisconnect);
-
-    public Stack<SpriteJSON> getSprites();
+    Stack<SpriteJSON> getSprites();
 }

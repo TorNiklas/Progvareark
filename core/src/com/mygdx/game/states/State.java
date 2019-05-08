@@ -9,10 +9,8 @@ import com.mygdx.game.TankGame;
 public abstract class State {
     protected OrthographicCamera cam;
     protected Vector3 mouse;
-    //protected static GameStateManager gsm;
 
-    public State(/*GameStateManager gsm*/){
-        //this.gsm = gsm;
+    public State(){
         cam = new OrthographicCamera();
         cam.setToOrtho(false, TankGame.WIDTH, TankGame.HEIGHT);
         mouse = new Vector3();

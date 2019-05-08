@@ -97,7 +97,6 @@ public class TutorialState extends State {
     @Override
     public void dispose() {
         bg.dispose();
-        //optionTitle.dispose();
     }
 
     @Override

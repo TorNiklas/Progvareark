@@ -44,7 +44,6 @@ public class GameSetupState extends State {
         public void run() {
             System.out.println("Connected!");
             System.out.println(GameSetupState.this);
-            //while (selectedState == null) {}
             connected = true;
             if (selectedState != null) {
                 GameStateManager.getGsm().set(selectedState);
@@ -99,7 +98,7 @@ public class GameSetupState extends State {
         stage.addActor(backBtn);
 
         Gdx.input.setInputProcessor(stage);
-        // event handlers, should probably not be here
+
         forestMapBtn.addListener(new InputListener() {
                 public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
                     System.out.println("forest selected");
@@ -183,11 +182,6 @@ public class GameSetupState extends State {
 
     }
 
-    /*public static void setSelectedState(int level) {
-        System.out.println("Selected level: " + level);
-        selectedState = new PlayState(level);
-    }*/
-
     public static PlayState getSelectedState() {
         return selectedState;
     }
@@ -241,9 +235,6 @@ public class GameSetupState extends State {
 
         sb.setProjectionMatrix(cam.combined);
         sb.begin();
-
-        // background
-        //sb.draw(bg, 0,0, 1280, 720);
 
         // game code
         gameCode.draw(sb, "Game Code: " + gameCodeString, TankGame.WIDTH/2, 500, 0f, 1, false);

@@ -104,7 +104,6 @@ public class AssetHandler {
         loadParticleEffects();
         loadSkins();
         loadFonts();
-        //manager.finishLoading();
     }
 
     public void loadTextures() {

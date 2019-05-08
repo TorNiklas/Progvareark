@@ -30,7 +30,6 @@ public class OptionState extends State {
         assetHandler = ((TankGame)Gdx.app.getApplicationListener()).assetHandler;
 
         bg = new Image((Texture) assetHandler.manager.get(assetHandler.bgPath));
-        //soundBtn.setPosition(cam.position.x - soundBtn.getWidth()/2, 400);
 
         optionTitle = new Image((Texture) assetHandler.manager.get(assetHandler.optionsPath));
         optionTitle.setSize(optionTitle.getWidth()*1.5f, optionTitle.getHeight()*1.5f);
@@ -115,24 +114,6 @@ public class OptionState extends State {
                 }
             });
         }
-        /*if(!fromMenuState){
-            returnToGameBtn.addListener(new InputListener() {
-                public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                    System.out.println("Return to game");
-                    State prevState = GameStateManager.getGsm().peek();
-
-                    GameStateManager.getGsm().push(prevState); //set(new MenuState());
-                    return true;
-                }
-            });
-            surrenderBtn.addListener(new InputListener() {
-                public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                    System.out.println("Surrender");
-                    return false;
-                }
-            });
-        }*/
-
     }
 
     @Override
@@ -149,8 +130,6 @@ public class OptionState extends State {
     public void render(SpriteBatch sb, PolygonSpriteBatch psb) {
         sb.setProjectionMatrix(cam.combined);
         sb.begin();
-        //sb.draw(bg, 0,0, 1280, 720);
-        //sb.draw(optionTitle, cam.position.x - optionTitle.getWidth()/2, 500+optionTitle.getHeight()/4);
         sb.end();
 
         // draw stage actors
@@ -161,8 +140,6 @@ public class OptionState extends State {
 
     @Override
     public void dispose() {
-        //bg.dispose();
-        //optionTitle.dispose();
     }
 
     @Override
